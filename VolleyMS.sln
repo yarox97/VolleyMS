@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyMS", "VolleyMS\VolleyMS.csproj", "{EBBE51CF-4CBC-4D38-A7AD-919C6B014C59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyMS.Core", "VolleyMS.Core\VolleyMS.Core.csproj", "{BC268B9D-246B-4583-8221-7C2FC67BEF42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyMS.DataAccess", "VolleyMS.DataAccess\VolleyMS.DataAccess.csproj", "{91512940-229B-4E22-BC39-41167EE8BE1F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBBE51CF-4CBC-4D38-A7AD-919C6B014C59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBBE51CF-4CBC-4D38-A7AD-919C6B014C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBBE51CF-4CBC-4D38-A7AD-919C6B014C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBBE51CF-4CBC-4D38-A7AD-919C6B014C59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC268B9D-246B-4583-8221-7C2FC67BEF42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC268B9D-246B-4583-8221-7C2FC67BEF42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC268B9D-246B-4583-8221-7C2FC67BEF42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC268B9D-246B-4583-8221-7C2FC67BEF42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91512940-229B-4E22-BC39-41167EE8BE1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91512940-229B-4E22-BC39-41167EE8BE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91512940-229B-4E22-BC39-41167EE8BE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91512940-229B-4E22-BC39-41167EE8BE1F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
