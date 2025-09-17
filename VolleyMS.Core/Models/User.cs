@@ -2,12 +2,6 @@
 
 namespace VolleyMS.Core.Models
 {
-    public enum UserType
-    {
-        Admin,
-        Coach,
-        Player
-    }
     public class User
     {
         private User(Guid id, string userName, string password, UserType userType, decimal? contractSalary, Guid? teamId)
