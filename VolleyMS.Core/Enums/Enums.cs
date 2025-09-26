@@ -4,3 +4,10 @@
     Coach,
     Player
 }
+
+public enum TaskType
+{
+    Attendance,
+    FileConfirmation,
+    MarkAsRead
+}

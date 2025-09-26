@@ -1,28 +1,29 @@
 ﻿using System.Runtime.CompilerServices;
+using VolleyMS.Core.Common;
 
 namespace VolleyMS.Core.Models
 {
-    public class User
+    public class User : AuditableFields
     {
-        private User(Guid id, string userName, string password, UserType userType, decimal? contractSalary, Guid? teamId)
+        private User(Guid id, string userName, string password, UserType userType, string name, string surname)
         {
             Id = id;
             UserName = userName;
             Password = password;
             UserType = userType;
-            ContractSalary = contractSalary;
-            TeamId = teamId;
+            Name = name;
+            Surname = surname;
         }
 
         public Guid Id { get; }
         public string UserName { get; } = string.Empty;
         public string Password { get; } = string.Empty;
         public UserType UserType { get; } = UserType.Player;
-        public decimal? ContractSalary;
-        public Guid? TeamId; 
+        public string Name { get; } = string.Empty;
+        public string Surname { get; } = string.Empty;
 
         public static (User user, string error) Create(Guid id, string userName, string password, 
-                                                      UserType userType, decimal? contractSalary, Guid? teamId)
+                                                      UserType userType, string name, string surname)
         {
             var error = string.Empty;
             if (string.IsNullOrEmpty(userName))
@@ -37,11 +38,12 @@ namespace VolleyMS.Core.Models
             {
                 error = "Invalid user type";
             }
-            if(contractSalary is not null and < 0)
+            if(string.IsNullOrEmpty(surname) || string.IsNullOrEmpty(name))
             {
-                error = "Contract salary cannot be negative";
+                error = "Invalid name or surname";
             }
-            var user = new User(id, userName, password, userType, contractSalary, teamId);
+            
+            var user = new User(id, userName, password, userType, name, surname);
             return (user, error);
         }
     }
