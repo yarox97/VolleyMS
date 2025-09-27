@@ -11,3 +11,12 @@ public enum TaskType
     FileConfirmation,
     MarkAsRead
 }
+
+public enum Currency
+{
+    USD,
+    EUR,
+    PLN,
+    UAH,
+    CZK
+}
