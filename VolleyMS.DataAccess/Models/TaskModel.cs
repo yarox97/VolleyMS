@@ -22,8 +22,8 @@ namespace VolleyMS.DataAccess.Models
         public TaskStatus TaskStatus { get; set; }
         public PenaltyType PenaltyType { get; set; }
         public DateTime DueDate { get; set; }
-        public string Title = string.Empty;
-        public string Description = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
 
         public IList<CommentModel> CommentModels { get; set; }
         public Guid SenderId { get; set; }

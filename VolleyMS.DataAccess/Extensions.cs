@@ -14,7 +14,7 @@ namespace VolleyMS.DataAccess
         {
             serviceCollection.AddDbContext<VolleyMsDbContext>(o =>
             {
-                o.UseNpgsql("host=localhost port=5432 dbname=VolleyMsDb user=postgres password=1234");
+                o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb;Username=postgres;password=GabeNewwel228");
             });
         }
     }

@@ -12,7 +12,7 @@ namespace VolleyMS.DataAccess.Configurations
 
             builder.HasOne(c => c.UserModel_sender)
                 .WithMany(u => u.CommentModels)
-                .HasForeignKey(c => c.UserModel_sender.Id);
+                .HasForeignKey(c => c.SenderId);
 
             builder.Property(c => c.Text)
                 .HasMaxLength(250);
