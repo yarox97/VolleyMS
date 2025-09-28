@@ -11,7 +11,8 @@ namespace VolleyMS.DataAccess.Entities
         {
             ContractModels = new List<ContractModel>();
             ClubModels = new List<ClubModel>();
-            TaskModels = new List<TaskModel>();
+            SenderTaskModels = new List<TaskModel>();
+            ReceiverTaskModels = new List<TaskModel>();
             CommentModels = new List<CommentModel>();
         }
         public Guid Id { get; set; }
@@ -23,7 +24,8 @@ namespace VolleyMS.DataAccess.Entities
 
         public IList<ContractModel> ContractModels { get; set; }
         public IList<ClubModel> ClubModels { get; set; }
-        public IList<TaskModel> TaskModels { get; set; }
+        public IList<TaskModel> SenderTaskModels { get; set; }
+        public IList<TaskModel> ReceiverTaskModels { get; set; }
         public IList<CommentModel> CommentModels { get; set; }
     }
 }

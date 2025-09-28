@@ -32,8 +32,12 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasMany(u => u.ClubModels)
                 .WithMany(c => c.UserModels);
 
-            builder.HasMany(u => u.TaskModels)
+            builder.HasMany(u => u.ReceiverTaskModels)
                 .WithMany(t => t.UserModel_receivers);
+
+            builder.HasMany(u => u.SenderTaskModels)
+                .WithOne(t => t.UserModel_sender)
+                .HasForeignKey(t => t.SenderId);
 
             builder.HasMany(u => u.CommentModels)
                 .WithOne(c => c.UserModel_sender)
