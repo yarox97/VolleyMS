@@ -20,4 +20,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VolleyMS.DataAccess\VolleyMS.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>

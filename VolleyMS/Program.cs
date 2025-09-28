@@ -1,4 +1,8 @@
+using VolleyMS.DataAccess;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDataBase();
 
 // Add services to the container.
 
