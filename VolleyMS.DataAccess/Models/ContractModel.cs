@@ -3,12 +3,12 @@ using VolleyMS.Core.Models;
 
 namespace VolleyMS.DataAccess.Entities
 {
-    public class ContractEntity : AuditableFields
+    public class ContractModel : AuditableFields
     {
-        public ContractEntity()
+        public ContractModel()
         {
-            UserEntity = new UserEntity();
-            ClubEntity = new ClubEntity();
+            UserModel = new UserModel();
+            ClubModel = new ClubModel();
         }
         public Guid Id { get; set; }
         public decimal? MontlySalary { get; set; }
@@ -17,8 +17,8 @@ namespace VolleyMS.DataAccess.Entities
         public DateTime EndsBy { get; set; }
 
         public Guid UserId { get; set; }
-        public UserEntity UserEntity { get; set; }
+        public UserModel UserModel { get; set; }
         public Guid TeamId { get; set; }
-        public ClubEntity ClubEntity { get; set; }
+        public ClubModel ClubModel { get; set; }
     }
 }

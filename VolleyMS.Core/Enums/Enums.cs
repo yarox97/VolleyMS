@@ -11,6 +11,22 @@ public enum TaskType
     FileConfirmation,
     MarkAsRead
 }
+public enum TaskStatus
+{
+    Completed,
+    Uncompleted,
+    Returned,
+    Confirmed
+}
+
+public enum PenaltyType
+{
+    None,
+    PercentPremia,
+    ValuePremia,
+    PercentFine,
+    ValueFine
+}
 
 public enum Currency
 {
