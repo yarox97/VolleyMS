@@ -17,10 +17,15 @@ namespace VolleyMS.Core.Models
 
         public Guid Id { get; }
         public string UserName { get; } = string.Empty;
-        public string Password { get; } = string.Empty;
+        public string Password { get; private set; } = string.Empty;
         public UserType UserType { get; } = UserType.Player;
         public string Name { get; } = string.Empty;
         public string Surname { get; } = string.Empty;
+
+        public void SetHashedPassword(string hashedPassword)
+        {
+            Password = hashedPassword;
+        }
 
         public static (User user, string error) Create(Guid id, string userName, string password, 
                                                       UserType userType, string name, string surname)
