@@ -21,10 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\VolleyMS.BusinessLogic\VolleyMS.BusinessLogic.csproj" />
     <ProjectReference Include="..\VolleyMS.DataAccess\VolleyMS.DataAccess.csproj" />
   </ItemGroup>
 
