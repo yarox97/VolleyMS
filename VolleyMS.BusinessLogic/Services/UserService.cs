@@ -1,17 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.Core.Models;
 using VolleyMS.DataAccess;
 using VolleyMS.DataAccess.Repositories;
 
-namespace VolleyMS.BusinessLogic;
+namespace VolleyMS.BusinessLogic.Services;
 
 public class UserService
 {
     private readonly UserRepository _userRepository;
-    
-    public UserService(UserRepository userRepository)
+    private readonly JwtService _jwtService;
+    public UserService(UserRepository userRepository, JwtService jwtService)
     {
         _userRepository = userRepository;
+        _jwtService = jwtService;
     }
     public async Task Register(string userName, string password, string name, string surname)
     {
@@ -34,6 +36,22 @@ public class UserService
         else
         { 
             throw new Exception($"Error while creating a user: {userTuple.error}");
+        }
+    }
+
+    public async Task<string> Authorize(string userName, string password)
+    {
+        
+        var user = await _userRepository.GetByUserName(userName);
+        var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, password);
+
+        if (result == PasswordVerificationResult.Success)
+        {
+            return _jwtService.GenerateToken(user);
+        }
+        else
+        {
+            throw new Exception("Authorisation failed!");
         }
     }
 

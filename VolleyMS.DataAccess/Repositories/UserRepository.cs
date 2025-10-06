@@ -19,27 +19,32 @@ namespace VolleyMS.DataAccess.Repositories
         }
         public async Task<bool> IsLoginTaken(string userName)
         {
-            var user = await _context.Users.AnyAsync(u => u.UserName == userName);
-                                     
-            if (user == default)
-            {
-                return false;
-            }
-            return true;
+            return await _context.Users.AnyAsync(u => u.UserName == userName);                           
         }
         public async Task AddUser(User user)
         {
             var userModel = new UserModel
             {
-                Id = user.Id,
                 UserName = user.UserName,
                 Password = user.Password,
                 userType = user.UserType,
                 Name = user.Name,
                 Surname = user.Surname
             };
+            await _context.Users.AddAsync(userModel);
             await _context.SaveChangesAsync();
         }
 
+        public async Task<User> GetByUserName(string userName)
+        {
+            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+
+            if (userEntity == null)
+            {
+                throw new Exception("User not found!");
+            }
+
+            return User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user;
+        }
     }
 }

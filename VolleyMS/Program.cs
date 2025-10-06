@@ -1,4 +1,5 @@
-using VolleyMS.BusinessLogic;
+using VolleyMS.BusinessLogic.Authorisation;
+using VolleyMS.BusinessLogic.Services;
 using VolleyMS.DataAccess;
 using VolleyMS.DataAccess.Repositories;
 
@@ -13,11 +14,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<JwtService>();
+builder.Services.Configure<AuthConfiguration>(builder.Configuration
+                                                     .GetSection("AuthConfiguration"));
+builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
-
+app.UseAuthentication();
+app.UseAuthorization();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
