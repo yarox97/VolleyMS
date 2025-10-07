@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Services;
 
@@ -16,13 +15,14 @@ namespace VolleyMS.Controllers
             _userService = userService;
         }
 
-        [HttpPost("registration")]
-        public async Task<IActionResult> Registration(string userName, string Password, string Name, string Surname)
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Get(string userName)
         {
             try
             {
-                await _userService.Register(userName, Password, Name, Surname);
-                return Ok(Password);
+                var user = await _userService.Get(userName);
+                return Ok(user);
             }
             catch (Exception ex)
             {
@@ -30,18 +30,5 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpPost("authorisation")]
-        //[Authorize]
-        public async Task<IActionResult> Authorization(string userName, string password)
-        {
-            try
-            {
-                return Ok(await _userService.Authorize(userName, password));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }

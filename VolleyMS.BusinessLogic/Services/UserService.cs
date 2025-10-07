@@ -54,6 +54,9 @@ public class UserService
             throw new Exception("Authorisation failed!");
         }
     }
-
-  
+ 
+    public async Task<User> Get(string userName)
+    {
+        return await _userRepository.GetByUserName(userName);
+    }
 }
