@@ -19,7 +19,7 @@ namespace VolleyMS.DataAccess.Repositories
         }
         public async Task<bool> IsLoginTaken(string userName)
         {
-            return await _context.Users.AnyAsync(u => u.UserName == userName);                           
+            return await _context.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());                           
         }
         public async Task AddUser(User user)
         {
@@ -37,7 +37,7 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task<User> GetByUserName(string userName)
         {
-            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
 
             if (userEntity == null)
             {
