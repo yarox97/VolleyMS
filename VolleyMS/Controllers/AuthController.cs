@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.BusinessLogic.Services;
+using VolleyMS.Contracts;
 
 namespace VolleyMS.Controllers
 {
@@ -11,18 +14,20 @@ namespace VolleyMS.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserService _userService;
-        public AuthController(UserService userService)
+        private readonly AuthService _authService;
+        public AuthController(UserService userService, AuthService authService)
         {
             _userService = userService;
+            _authService = authService;
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Registration(string userName, string Password, string Name, string Surname)
+        public async Task<IActionResult> Registration([FromBody] RegistrationRequest registerRequest)
         {
             try
             {
-                await _userService.Register(userName, Password, Name, Surname);
-                return Ok(Password);
+                await _authService.Register(registerRequest.userName, registerRequest.password, registerRequest.name, registerRequest.surname);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -31,11 +36,11 @@ namespace VolleyMS.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Authorization(string userName, string password)
+        public async Task<IActionResult> Authorization([FromBody] Contracts.LoginRequest loginRequest)
         {
             try
             {
-                return Ok(await _userService.Authorize(userName, password));
+                return Ok(await _authService.Authorize(loginRequest.userName, loginRequest.password));
             }
             catch (Exception ex)
             {
