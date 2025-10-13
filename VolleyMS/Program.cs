@@ -18,6 +18,7 @@ builder.Services.AddScoped<JwtService>();
 builder.Services.Configure<AuthConfiguration>(builder.Configuration
                                                      .GetSection("AuthConfiguration"));
 builder.Services.AddAuth(builder.Configuration);
+
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();

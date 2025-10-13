@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +30,13 @@ namespace VolleyMS.BusinessLogic.Authorisation
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfiguration.SecretKey))
                     };
                 });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireClaim("UserType", UserType.Admin.ToString()));
+                options.AddPolicy("Coach", policy => policy.RequireClaim("UserType", UserType.Coach.ToString()));
+                options.AddPolicy("Player", policy => policy.RequireClaim("UserType", UserType.Player.ToString()));
+            });
+
             return services;
         }
     }
