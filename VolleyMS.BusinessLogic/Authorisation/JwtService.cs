@@ -20,6 +20,7 @@ namespace VolleyMS.BusinessLogic.Authorisation
                 new Claim("userName", user.UserName),
                 new Claim("firstName", user.Name),
                 new Claim("surName", user.Surname),
+                new Claim("UserType", user.UserType.ToString()),
                 new Claim("id", user.Id.ToString())
             };
 
