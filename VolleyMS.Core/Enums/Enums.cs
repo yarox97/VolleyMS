@@ -36,3 +36,19 @@ public enum Currency
     UAH,
     CZK
 }
+
+public enum DaysOfWeek
+{
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday
+}
+
+public enum NotificationType
+{
+
+}

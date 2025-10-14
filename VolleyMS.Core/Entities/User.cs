@@ -3,7 +3,7 @@ using VolleyMS.Core.Common;
 
 namespace VolleyMS.Core.Models
 {
-    public class User : AuditableFields
+    public class User : BaseEntity
     {
         private User(Guid id, string userName, string password, UserType userType, string name, string surname)
         {

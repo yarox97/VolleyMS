@@ -22,6 +22,8 @@ builder.Services.AddAuth(builder.Configuration);
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ClubRepository>();
+builder.Services.AddScoped<ClubService>();
 
 var app = builder.Build();
 app.UseAuthentication();

@@ -39,11 +39,6 @@ namespace VolleyMS.DataAccess.Repositories
         {
             var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
 
-            if (userEntity == null)
-            {
-                throw new Exception("User not found!");
-            }
-
             return User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user;
         }
     }

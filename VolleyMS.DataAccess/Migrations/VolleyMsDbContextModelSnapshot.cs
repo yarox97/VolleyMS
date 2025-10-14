@@ -37,6 +37,21 @@ namespace VolleyMS.DataAccess.Migrations
                     b.ToTable("ClubModelUserModel");
                 });
 
+            modelBuilder.Entity("NotificationModelUserModel", b =>
+                {
+                    b.Property<Guid>("ReceiversId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RecieverNotificationsModelsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ReceiversId", "RecieverNotificationsModelsId");
+
+                    b.HasIndex("RecieverNotificationsModelsId");
+
+                    b.ToTable("NotificationModelUserModel");
+                });
+
             modelBuilder.Entity("TaskModelUserModel", b =>
                 {
                     b.Property<Guid>("ReceiverTaskModelsId")
@@ -67,10 +82,17 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("JoinCode")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -99,6 +121,9 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
 
                     b.Property<int?>("Currency")
                         .HasColumnType("integer");
@@ -139,6 +164,9 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -178,6 +206,15 @@ namespace VolleyMS.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
 
@@ -189,6 +226,9 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SenderId");
@@ -196,6 +236,47 @@ namespace VolleyMS.DataAccess.Migrations
                     b.HasIndex("TaskId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("VolleyMS.DataAccess.Models.NotificationModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LinkedURL")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("isChecked")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("notificationType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("senderId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("senderId");
+
+                    b.ToTable("NotificationModel");
                 });
 
             modelBuilder.Entity("VolleyMS.DataAccess.Models.TaskModel", b =>
@@ -209,6 +290,9 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
@@ -261,6 +345,21 @@ namespace VolleyMS.DataAccess.Migrations
                     b.HasOne("VolleyMS.DataAccess.Entities.UserModel", null)
                         .WithMany()
                         .HasForeignKey("UserModelsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NotificationModelUserModel", b =>
+                {
+                    b.HasOne("VolleyMS.DataAccess.Entities.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("ReceiversId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VolleyMS.DataAccess.Models.NotificationModel", null)
+                        .WithMany()
+                        .HasForeignKey("RecieverNotificationsModelsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -318,6 +417,17 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Navigation("UserModel_sender");
                 });
 
+            modelBuilder.Entity("VolleyMS.DataAccess.Models.NotificationModel", b =>
+                {
+                    b.HasOne("VolleyMS.DataAccess.Entities.UserModel", "Sender")
+                        .WithMany("SenderNotificationModel")
+                        .HasForeignKey("senderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("VolleyMS.DataAccess.Models.TaskModel", b =>
                 {
                     b.HasOne("VolleyMS.DataAccess.Entities.ClubModel", "ClubModel")
@@ -347,6 +457,8 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Navigation("CommentModels");
 
                     b.Navigation("ContractModels");
+
+                    b.Navigation("SenderNotificationModel");
 
                     b.Navigation("SenderTaskModels");
                 });

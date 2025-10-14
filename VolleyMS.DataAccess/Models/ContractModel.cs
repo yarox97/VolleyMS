@@ -3,7 +3,7 @@ using VolleyMS.Core.Models;
 
 namespace VolleyMS.DataAccess.Entities
 {
-    public class ContractModel : AuditableFields
+    public class ContractModel : BaseEntity
     {
         public ContractModel()
         {

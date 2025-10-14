@@ -8,7 +8,7 @@ using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Models
 {
-    public class TaskModel : AuditableFields
+    public class TaskModel : BaseEntity
     {
         public TaskModel()
         {

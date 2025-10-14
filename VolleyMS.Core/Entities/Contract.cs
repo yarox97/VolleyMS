@@ -2,7 +2,7 @@
 
 namespace VolleyMS.Core.Models
 {
-    public class Contract : AuditableFields
+    public class Contract : BaseEntity
     {
         private Contract(Guid id, decimal? monthlySalary, Currency currency, DateTime beginsFrom, DateTime endsBy)
         {

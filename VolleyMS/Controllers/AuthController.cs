@@ -7,17 +7,16 @@ using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Contracts;
 
+
 namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserService _userService;
         private readonly AuthService _authService;
         public AuthController(UserService userService, AuthService authService)
         {
-            _userService = userService;
             _authService = authService;
         }
 

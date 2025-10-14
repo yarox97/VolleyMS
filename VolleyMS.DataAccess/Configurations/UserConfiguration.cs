@@ -42,6 +42,15 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasMany(u => u.CommentModels)
                 .WithOne(c => c.UserModel_sender)
                 .HasForeignKey(c => c.SenderId);
+
+            builder.HasMany(u => u.RecieverNotificationsModels)
+                .WithMany(n => n.Receivers);
+
+            builder.HasMany(u => u.SenderNotificationModel)
+                .WithOne(n => n.Sender)
+                .HasForeignKey(n => n.senderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
