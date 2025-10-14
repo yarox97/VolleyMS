@@ -5,7 +5,7 @@ using VolleyMS.DataAccess.Models;
 namespace VolleyMS.DataAccess.Entities
 
 {
-    public class UserModel : AuditableFields
+    public class UserModel : BaseEntity
     {
         public UserModel()
         {
@@ -14,6 +14,8 @@ namespace VolleyMS.DataAccess.Entities
             SenderTaskModels = new List<TaskModel>();
             ReceiverTaskModels = new List<TaskModel>();
             CommentModels = new List<CommentModel>();
+            RecieverNotificationsModels = new List<NotificationModel>();
+            SenderNotificationModel = new List<NotificationModel>();
         }
         public Guid Id { get; set; }
         public string UserName { get; set; } = string.Empty;
@@ -27,5 +29,7 @@ namespace VolleyMS.DataAccess.Entities
         public IList<TaskModel> SenderTaskModels { get; set; }
         public IList<TaskModel> ReceiverTaskModels { get; set; }
         public IList<CommentModel> CommentModels { get; set; }
+        public IList<NotificationModel> RecieverNotificationsModels { get; set; }
+        public IList<NotificationModel> SenderNotificationModel { get;  set; }
     }
 }

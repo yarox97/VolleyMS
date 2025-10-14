@@ -8,37 +8,54 @@ using VolleyMS.Core.Common;
 
 namespace VolleyMS.Core.Entities
 {
-    public class Task : AuditableFields
+    public class Task : BaseEntity
     {
-        private Task(Guid id, TaskType taskType, TaskStatus taskStatus, PenaltyType penaltyType, DateTime dueDate, string title, string description) 
+        private Task(Guid id, TaskType taskType, TaskStatus taskStatus,
+                                                       PenaltyType penaltyType, DateTime startDate,
+                                                       DateTime? endDate, List<DayOfWeek> dayOfWeek,
+                                                       TimeSpan startTime, TimeSpan endTime,
+                                                       string title, string description)
         {
             Id = id;
             TaskType = taskType;
             TaskStatus = taskStatus;
             TaskStatus = taskStatus;
             PenaltyType = penaltyType;
-            DueDate = dueDate;
+            StartDate = startDate;
+            EndDate = endDate;
+            DayOfWeek = dayOfWeek;
+            StartTime = startTime;
+            EndTime = endTime;
             Title = title;
             Description = description;
         }
         public Guid Id { get; }
         public TaskType TaskType { get; }
         public TaskStatus TaskStatus { get; }
-        public PenaltyType PenaltyType { get; }
-        public DateTime DueDate { get; }
+        public PenaltyType PenaltyType { get; } = PenaltyType.None;
+        public DateTime StartDate { get; }
+        public DateTime? EndDate { get; }
+        public List<DayOfWeek> DayOfWeek { get; }
+        public TimeSpan StartTime { get; }
+        public TimeSpan EndTime { get; }
+
         public string Title = string.Empty;
         public string Description = string.Empty;  
         
-        public static (Task task, string error) Create(Guid id, TaskType taskType, TaskStatus taskStatus, PenaltyType penaltyType, DateTime dueDate, string title, string description)
+        public static (Task task, string error) Create(Guid id, TaskType taskType, TaskStatus taskStatus, 
+                                                       PenaltyType penaltyType, DateTime startDate,
+                                                       DateTime? endDate, List<DayOfWeek> dayOfWeek,
+                                                       TimeSpan startTime, TimeSpan endTime,
+                                                       string title, string description)
         {
             string error = string.Empty;
-            Task task = new Task(id, taskType, taskStatus, penaltyType, dueDate, title, description);
+            Task task = new Task(id, taskType, taskStatus, penaltyType, startDate, endDate, dayOfWeek, startTime, endTime, title, description);
 
             if (string.IsNullOrEmpty(title))
             {
                 error = "Title cannot be empty!";
             }
-            if(dueDate <= task.CreatedAt)
+            if(endDate <= task.CreatedAt || startTime > endTime || startDate > endDate)
             {
                 error = "Task date is outside the bounds!";
             }

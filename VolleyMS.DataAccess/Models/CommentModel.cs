@@ -1,8 +1,9 @@
-﻿using VolleyMS.DataAccess.Entities;
+﻿using VolleyMS.Core.Common;
+using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Models
 {
-    public class CommentModel
+    public class CommentModel : BaseEntity
     {
         public CommentModel()
         {

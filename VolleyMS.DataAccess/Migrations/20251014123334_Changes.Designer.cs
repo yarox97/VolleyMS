@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VolleyMS.DataAccess;
@@ -11,9 +12,11 @@ using VolleyMS.DataAccess;
 namespace VolleyMS.DataAccess.Migrations
 {
     [DbContext(typeof(VolleyMsDbContext))]
-    partial class VolleyMsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251014123334_Changes")]
+    partial class Changes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,21 +38,6 @@ namespace VolleyMS.DataAccess.Migrations
                     b.HasIndex("UserModelsId");
 
                     b.ToTable("ClubModelUserModel");
-                });
-
-            modelBuilder.Entity("NotificationModelUserModel", b =>
-                {
-                    b.Property<Guid>("ReceiversId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("RecieverNotificationsModelsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ReceiversId", "RecieverNotificationsModelsId");
-
-                    b.HasIndex("RecieverNotificationsModelsId");
-
-                    b.ToTable("NotificationModelUserModel");
                 });
 
             modelBuilder.Entity("TaskModelUserModel", b =>
@@ -238,47 +226,6 @@ namespace VolleyMS.DataAccess.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("VolleyMS.DataAccess.Models.NotificationModel", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LinkedURL")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("isChecked")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("notificationType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("senderId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("senderId");
-
-                    b.ToTable("NotificationModel");
-                });
-
             modelBuilder.Entity("VolleyMS.DataAccess.Models.TaskModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -349,21 +296,6 @@ namespace VolleyMS.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("NotificationModelUserModel", b =>
-                {
-                    b.HasOne("VolleyMS.DataAccess.Entities.UserModel", null)
-                        .WithMany()
-                        .HasForeignKey("ReceiversId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("VolleyMS.DataAccess.Models.NotificationModel", null)
-                        .WithMany()
-                        .HasForeignKey("RecieverNotificationsModelsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TaskModelUserModel", b =>
                 {
                     b.HasOne("VolleyMS.DataAccess.Models.TaskModel", null)
@@ -417,17 +349,6 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Navigation("UserModel_sender");
                 });
 
-            modelBuilder.Entity("VolleyMS.DataAccess.Models.NotificationModel", b =>
-                {
-                    b.HasOne("VolleyMS.DataAccess.Entities.UserModel", "Sender")
-                        .WithMany("SenderNotificationModel")
-                        .HasForeignKey("senderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("VolleyMS.DataAccess.Models.TaskModel", b =>
                 {
                     b.HasOne("VolleyMS.DataAccess.Entities.ClubModel", "ClubModel")
@@ -457,8 +378,6 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Navigation("CommentModels");
 
                     b.Navigation("ContractModels");
-
-                    b.Navigation("SenderNotificationModel");
 
                     b.Navigation("SenderTaskModels");
                 });
