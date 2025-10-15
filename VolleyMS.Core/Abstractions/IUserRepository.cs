@@ -6,6 +6,6 @@ namespace VolleyMS.DataAccess.Repositories
     {
         public Task<bool> IsLoginTaken(string userName);
         public Task AddUser(User user);
-        public Task<User> GetByUserName(string userName);
+        public Task<User?> GetByUserName(string userName);
     }
 }

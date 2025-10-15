@@ -55,7 +55,18 @@ namespace VolleyMS.BusinessLogic.Services
 
         public async Task AddUser(string userName, string joinCode)
         {
-            if(!await _clubRepository.ContainsUser(await _clubRepository.GetClubByCode(joinCode), await _userRepository.GetByUserName(userName)))
+            var user = await _userRepository.GetByUserName(userName);
+            var club = await _clubRepository.GetClubByCode(joinCode);
+            if(club == null)
+            {
+                throw new Exception("Can't find a club using provided join code");
+            }
+            if(user == null)
+            {
+                throw new Exception("Can't add user to a club");
+            }
+
+            if (!await _clubRepository.ContainsUser(club, user))
             {
                 await _clubRepository.AddUser(await _userRepository.GetByUserName(userName), joinCode);
             }

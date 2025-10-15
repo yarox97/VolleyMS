@@ -22,6 +22,7 @@ namespace VolleyMS.DataAccess
         public DbSet<ContractModel> Contracts { get; set; }
         public DbSet<TaskModel> Tasks { get; set; }
         public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<NotificationModel> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +31,7 @@ namespace VolleyMS.DataAccess
             modelBuilder.ApplyConfiguration(new ContractConfiguration());
             modelBuilder.ApplyConfiguration(new TaskConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }
