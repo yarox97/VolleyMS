@@ -50,5 +50,7 @@ public enum DaysOfWeek
 
 public enum NotificationType
 {
-
+    Informative,
+    TaskLink,
+    ClubJoinRequest
 }

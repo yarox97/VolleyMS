@@ -6,7 +6,7 @@ using VolleyMS.DataAccess.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDataBase();
-
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -35,11 +35,11 @@ namespace VolleyMS.DataAccess.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User> GetByUserName(string userName)
+        public async Task<User?> GetByUserName(string userName)
         {
             var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
 
-            return User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user;
+            return userEntity is not null ? User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user : null;
         }
     }
 }

@@ -45,11 +45,11 @@ namespace VolleyMS.DataAccess.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Club> GetClubByCode(string joinCode)
+        public async Task<Club?> GetClubByCode(string joinCode)
         {
             var clubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.JoinCode == joinCode);
-            var club = Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL);
-            return club.club;
+             
+            return clubEntity is not null ? Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL).club : null;
         }
 
         public async Task<bool> ContainsUser(Club club, User user)
