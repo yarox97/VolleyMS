@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using VolleyMS.Core.Models;
@@ -38,6 +39,13 @@ namespace VolleyMS.DataAccess.Repositories
         public async Task<User?> GetByUserName(string userName)
         {
             var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
+
+            return userEntity is not null ? User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user : null;
+        }
+
+        public async Task<User?> GetById(Guid Id)
+        {
+            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.Id == Id);
 
             return userEntity is not null ? User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user : null;
         }

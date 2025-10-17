@@ -17,11 +17,11 @@ namespace VolleyMS.BusinessLogic.Authorisation
         {
             var claims = new List<Claim>
             {
-                new Claim("userName", user.UserName),
-                new Claim("firstName", user.Name),
-                new Claim("surName", user.Surname),
-                new Claim("UserType", user.UserType.ToString()),
-                new Claim("id", user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), 
+                new Claim(ClaimTypes.Name, user.UserName),                  
+                new Claim(ClaimTypes.GivenName, user.Name),                 
+                new Claim(ClaimTypes.Surname, user.Surname),               
+                new Claim(ClaimTypes.Role, user.UserType.ToString())        
             };
 
             var jwtToken = new JwtSecurityToken(

@@ -5,7 +5,7 @@ namespace VolleyMS.DataAccess.Repositories
 {
     public interface INotificationRepository
     {
-        public Task<Notification> Create(Notification notification);
+        public Task<Notification> Create(Notification notification, IList<Guid> receivers, Guid senderId);
         public Task Delete(Guid Id);
         public Task<IList<Notification>> GetUserNotifications(Guid userId);
         public Task Check(Guid NotificationId);
