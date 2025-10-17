@@ -258,7 +258,8 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -276,7 +277,7 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("senderId");
 
-                    b.ToTable("NotificationModel");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("VolleyMS.DataAccess.Models.TaskModel", b =>

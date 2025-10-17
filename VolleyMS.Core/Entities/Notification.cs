@@ -7,13 +7,13 @@ namespace VolleyMS.Core.Entities
         private Notification(Guid id, NotificationType notificationType, bool isChecked, string Text, string? LinkedURL)
         {
             Id = id;
-            this.notificationType = notificationType;
-            this.isChecked = isChecked;
+            this.NotificationType = notificationType;
+            this.IsChecked = isChecked;
             this.Text = Text;
         }
         public Guid Id { get; }
-        public NotificationType notificationType { get; }
-        public bool isChecked { get; } = false;
+        public NotificationType NotificationType { get; }
+        public bool IsChecked { get; } = false;
         public string Text { get; }
         public string? LinkedURL { get; } 
         

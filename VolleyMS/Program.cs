@@ -24,6 +24,8 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ClubRepository>();
 builder.Services.AddScoped<ClubService>();
+builder.Services.AddScoped<NotificationRepository>();
+builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
 app.UseAuthentication();
