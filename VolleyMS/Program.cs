@@ -19,6 +19,9 @@ builder.Services.Configure<AuthConfiguration>(builder.Configuration
                                                      .GetSection("AuthConfiguration"));
 builder.Services.AddAuth(builder.Configuration);
 
+builder.Logging.AddConsole();
+
+
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
@@ -28,6 +31,7 @@ builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 // Configure the HTTP request pipeline.
@@ -38,8 +42,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

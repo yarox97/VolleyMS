@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Contracts;
 using VolleyMS.Core.Models;
@@ -17,11 +18,25 @@ namespace VolleyMS.Controllers
             _clubService = clubService;
         }
 
+
         [HttpPost("Create")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromBody] CreateClubRequest CreateClubRequest)
         {
+            var creatorIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (creatorIdClaim == null)
+            {
+                return BadRequest("Claims not found, try re-loggin");
+            }
             var club = Club.Create(new Guid(), CreateClubRequest.Name, "", CreateClubRequest.Description, CreateClubRequest.AvatarURL, CreateClubRequest.BackGroundURL);
+
+            if (!Guid.TryParse(creatorIdClaim, out var creatorId))
+            {
+                return BadRequest("Invalid sender Id claims");
+            }
+            
+
+            club.club.CreatorId = creatorId;
             if (club.error == string.Empty)
             {
                 try

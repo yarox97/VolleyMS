@@ -32,10 +32,10 @@ namespace VolleyMS.BusinessLogic.Authorisation
                 });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("AdminOnly", policy => policy.RequireClaim("UserType", UserType.Admin.ToString()));
-                options.AddPolicy("AdminAndCoach", policy => policy.RequireClaim("UserType", UserType.Coach.ToString(), UserType.Admin.ToString()));
-                options.AddPolicy("CoachOnly", policy => policy.RequireClaim("UserType", UserType.Coach.ToString()));
-                options.AddPolicy("PlayerOnly", policy => policy.RequireClaim("UserType", UserType.Player.ToString()));
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("UserType", UserType.Admin.ToString()));
+                options.AddPolicy("AdminAndCoach", policy => policy.RequireRole("UserType", UserType.Coach.ToString(), UserType.Admin.ToString()));
+                options.AddPolicy("CoachOnly", policy => policy.RequireRole("UserType", UserType.Coach.ToString()));
+                options.AddPolicy("PlayerOnly", policy => policy.RequireRole("UserType", UserType.Player.ToString()));
             });
 
             return services;
