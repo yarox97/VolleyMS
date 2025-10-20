@@ -35,7 +35,7 @@ namespace VolleyMS.Controllers
             }
             
             var notifTuple = Notification.Create(
-                new Guid(), 
+                Guid.NewGuid(), 
                 notificationRequest.NotificationType, 
                 notificationRequest.IsChecked, 
                 notificationRequest.Text, 
@@ -50,7 +50,7 @@ namespace VolleyMS.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, ex.Message);
             }
         }
     }
