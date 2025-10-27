@@ -10,16 +10,16 @@ namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NotificationController : ControllerBase
+    public class notificationController : ControllerBase
     {
         private readonly NotificationService _notificationService;
 
-        public NotificationController(NotificationService notificationService)
+        public notificationController(NotificationService notificationService)
         {
             _notificationService = notificationService;
         }
 
-        [HttpPost("Create")]
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create([FromBody]NotificationRequest notificationRequest)
         {

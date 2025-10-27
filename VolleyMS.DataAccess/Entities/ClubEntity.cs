@@ -9,12 +9,12 @@ using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess.Entities
 {
-    public class ClubModel : BaseEntity
+    public class ClubEntity : BaseEntity
     {
-        public ClubModel()
+        public ClubEntity()
         {
-            UserModels = new List<UserModel>();
-            TaskModels = new List<TaskModel>();
+            Users = new List<UserEntity>();
+            Tasks = new List<TaskEntity>();
         }
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -23,7 +23,7 @@ namespace VolleyMS.DataAccess.Entities
         public string? AvatarURL { get; set; } = "..\\VolleyMS\\wwwroot\\Images\\DefaultAvarat.jpg"; // To make a dictionary avatar <-> path  
         public string? BackGroundURL { get; set;  } = "..\\VolleyMS\\wwwroot\\Images\\DefaultAvarat.jpg"; // Change to a real default bg pic from dict path
 
-        public IList<UserModel> UserModels { get; set; }
-        public IList<TaskModel> TaskModels { get;  set; }
+        public IList<UserEntity> Users { get; set; }
+        public IList<TaskEntity> Tasks { get;  set; }
     }
 }

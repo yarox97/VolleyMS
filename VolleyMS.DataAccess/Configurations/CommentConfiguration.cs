@@ -4,14 +4,14 @@ using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class CommentConfiguration : IEntityTypeConfiguration<CommentModel>
+    public class CommentConfiguration : IEntityTypeConfiguration<CommentEntity>
     {
-        public void Configure(EntityTypeBuilder<CommentModel> builder) 
+        public void Configure(EntityTypeBuilder<CommentEntity> builder) 
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasOne(c => c.UserModel_sender)
-                .WithMany(u => u.CommentModels)
+            builder.HasOne(c => c.Sender)
+                .WithMany(u => u.SentComments)
                 .HasForeignKey(c => c.SenderId);
 
             builder.Property(c => c.Text)

@@ -33,7 +33,7 @@ namespace VolleyMS.DataAccess.Repositories
 
             if (receiversEntities.Count < 1) throw new Exception("No recievers found!");
 
-            var NotificationModel = new NotificationModel 
+            var NotificationModel = new NotificationEntity 
             {
                 notificationType = notification.NotificationType,
                 Text = notification.Text,

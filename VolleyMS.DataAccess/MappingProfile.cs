@@ -16,12 +16,12 @@ namespace VolleyMS.DataAccess
     {
         public MappingProfile()
         {
-            CreateMap<User, UserModel>().ReverseMap();
-            CreateMap<Notification, NotificationModel>().ReverseMap();
-            CreateMap<Club, ClubModel>().ReverseMap();
-            CreateMap<Comment, CommentModel>().ReverseMap();
-            CreateMap<Contract, ContractModel>().ReverseMap();
-            CreateMap<Task, TaskModel>().ReverseMap();
+            CreateMap<User, UserEntity>().ReverseMap();
+            CreateMap<Notification, NotificationEntity>().ReverseMap();
+            CreateMap<Club, ClubEntity>().ReverseMap();
+            CreateMap<Comment, CommentEntity>().ReverseMap();
+            CreateMap<Contract, ContractEntity>().ReverseMap();
+            CreateMap<Task, TaskEntity>().ReverseMap();
         }
     }
 }

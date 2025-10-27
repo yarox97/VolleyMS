@@ -5,9 +5,9 @@ using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class TaskConfiguration : IEntityTypeConfiguration<TaskModel>
+    public class TaskConfiguration : IEntityTypeConfiguration<TaskEntity>
     {
-        public void Configure(EntityTypeBuilder<TaskModel> builder) 
+        public void Configure(EntityTypeBuilder<TaskEntity> builder) 
         {
             builder.HasKey(x => x.Id);
 
@@ -19,19 +19,19 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasMaxLength(50) 
                 .IsRequired();
 
-            builder.HasMany(t => t.CommentModels)
-                .WithOne(c => c.TaskModel)
+            builder.HasMany(t => t.Comments)
+                .WithOne(c => c.Task)
                 .HasForeignKey(c => c.TaskId);
             
-            builder.HasOne(t => t.UserModel_sender)
-                .WithMany(u => u.SenderTaskModels)
+            builder.HasOne(t => t.Sender)
+                .WithMany(u => u.SentTasks)
                 .HasForeignKey(t => t.SenderId);
 
-            builder.HasMany(t => t.UserModel_receivers)
-                .WithMany(u => u.ReceiverTaskModels);
+            builder.HasMany(t => t.Receivers)
+                .WithMany(u => u.ReceivedTasks);
 
-            builder.HasOne(t => t.ClubModel)
-                .WithMany(c => c.TaskModels)
+            builder.HasOne(t => t.Club)
+                .WithMany(c => c.Tasks)
                 .HasForeignKey(t => t.ClubId);
         }
     }

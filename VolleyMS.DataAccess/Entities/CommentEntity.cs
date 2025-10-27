@@ -3,19 +3,19 @@ using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Models
 {
-    public class CommentModel : BaseEntity
+    public class CommentEntity : BaseEntity
     {
-        public CommentModel()
+        public CommentEntity()
         {
-            TaskModel = new TaskModel();
-            UserModel_sender = new UserModel();
+            Task = new TaskEntity();
+            Sender = new UserEntity();
         }
         public Guid Id { get; set; }
         public string Text { get; set; } = string.Empty;
 
         public Guid TaskId { get; set; }
-        public TaskModel TaskModel;
+        public TaskEntity Task;
         public Guid SenderId { get; set; }
-        public UserModel UserModel_sender { get; set; }
+        public UserEntity Sender { get; set; }
     }
 }

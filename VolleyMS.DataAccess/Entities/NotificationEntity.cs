@@ -8,12 +8,12 @@ using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Models
 {
-    public class NotificationModel : BaseEntity
+    public class NotificationEntity : BaseEntity
     {
-        public NotificationModel()
+        public NotificationEntity()
         {
-            Receivers = new List<UserModel>();
-            Sender = new UserModel();
+            Receivers = new List<UserEntity>();
+            Sender = new UserEntity();
         }
         public Guid Id { get; set; }
         public NotificationType notificationType { get; set; }
@@ -22,7 +22,7 @@ namespace VolleyMS.DataAccess.Models
         public string? LinkedURL { get; set; }
         public Guid senderId { get; set; }
 
-        public IList<UserModel> Receivers { get; set; }
-        public UserModel Sender { get; set; }
+        public IList<UserEntity> Receivers { get; set; }
+        public UserEntity Sender { get; set; }
     }
 }

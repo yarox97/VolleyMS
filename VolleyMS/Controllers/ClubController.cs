@@ -10,16 +10,16 @@ namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClubController : ControllerBase
+    public class clubController : ControllerBase
     {
         private readonly ClubService _clubService;
-        public ClubController(ClubService clubService)
+        public clubController(ClubService clubService)
         {
             _clubService = clubService;
         }
 
 
-        [HttpPost("Create")]
+        [HttpPost()]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromBody] CreateClubRequest CreateClubRequest)
         {
@@ -35,7 +35,6 @@ namespace VolleyMS.Controllers
                 return BadRequest("Invalid sender Id claims");
             }
             
-
             club.club.CreatorId = creatorId;
             if (club.error == string.Empty)
             {
@@ -52,13 +51,13 @@ namespace VolleyMS.Controllers
             return BadRequest(club.error);
         }
 
-        [HttpPut("AddUser")]
+        [HttpPut("addUser")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddUser([FromBody] AddUserToClubRequest addUserToClubRequest)
         {
             try
             {
-                await _clubService.AddUser(addUserToClubRequest.UserName, addUserToClubRequest.JoinCode);
+                await _clubService.AddUser(addUserToClubRequest.UserId, addUserToClubRequest.JoinCode);
                 return Ok();
             }
             catch (Exception ex)
