@@ -24,7 +24,7 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task Create(Club club)
         {
-            var clubModel = new ClubModel
+            var clubModel = new ClubEntity
             {
                 Name = club.Name,
                 Description = club.Description,
@@ -54,15 +54,15 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task<bool> ContainsUser(Club club, User user)
         {
-            return await _context.Clubs.AnyAsync(c => c.UserModels.Any(u => u.Id == user.Id));
+            return await _context.Clubs.AnyAsync(c => c.Users.Any(u => u.Id == user.Id));
         }
 
         public async Task AddUser(User user, string joinCode)
         {
             var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
-            var ClubEntity = await _context.Clubs.Include(c => c.UserModels).FirstOrDefaultAsync(c => c.JoinCode == joinCode);
+            var ClubEntity = await _context.Clubs.Include(c => c.Users).FirstOrDefaultAsync(c => c.JoinCode == joinCode);
 
-            ClubEntity.UserModels.Add(userEntity);
+            ClubEntity.Users.Add(userEntity);
                 
             await _context.SaveChangesAsync();
         }

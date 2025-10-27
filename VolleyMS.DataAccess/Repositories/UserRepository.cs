@@ -24,7 +24,7 @@ namespace VolleyMS.DataAccess.Repositories
         }
         public async Task AddUser(User user)
         {
-            var userModel = new UserModel
+            var userModel = new UserEntity
             {
                 UserName = user.UserName,
                 Password = user.Password,

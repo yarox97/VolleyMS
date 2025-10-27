@@ -9,14 +9,14 @@ using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class ClubConfiguration : IEntityTypeConfiguration<ClubModel>
+    public class ClubConfiguration : IEntityTypeConfiguration<ClubEntity>
     {
-        public void Configure(EntityTypeBuilder<ClubModel> builder)
+        public void Configure(EntityTypeBuilder<ClubEntity> builder)
         {
             builder.HasKey(x => x.Id);
 
-            builder.HasMany(c => c.UserModels)
-                .WithMany(u => u.ClubModels);
+            builder.HasMany(c => c.Users)
+                .WithMany(u => u.Clubs);
         }
     }
 }

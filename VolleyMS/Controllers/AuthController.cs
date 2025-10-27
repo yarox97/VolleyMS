@@ -12,15 +12,15 @@ namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class authController : ControllerBase
     {
         private readonly AuthService _authService;
-        public AuthController(UserService userService, AuthService authService)
+        public authController(UserService userService, AuthService authService)
         {
             _authService = authService;
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Registration([FromBody] RegistrationRequest registerRequest)
         {
             try
@@ -34,7 +34,7 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Authorization([FromBody] Contracts.LoginRequest loginRequest)
         {
             try

@@ -9,9 +9,9 @@ using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class NotificationConfiguration : IEntityTypeConfiguration<NotificationModel>
+    public class NotificationConfiguration : IEntityTypeConfiguration<NotificationEntity>
     {
-        public void Configure(EntityTypeBuilder<NotificationModel> builder)
+        public void Configure(EntityTypeBuilder<NotificationEntity> builder)
         {
             builder.HasKey(x => x.Id);
 
@@ -20,11 +20,11 @@ namespace VolleyMS.DataAccess.Configurations
                 .IsRequired();
 
             builder.HasOne(n => n.Sender)
-                .WithMany(u => u.SenderNotificationModel)
+                .WithMany(u => u.SentNotifications)
                 .HasForeignKey(n => n.senderId);
 
             builder.HasMany(n => n.Receivers)
-           .WithMany(u => u.RecieverNotificationsModels);
+           .WithMany(u => u.ReceivedNotifications);
         }
     }
 }

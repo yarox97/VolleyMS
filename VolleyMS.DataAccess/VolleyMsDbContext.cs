@@ -17,12 +17,12 @@ namespace VolleyMS.DataAccess
         {
         }
 
-        public DbSet<ClubModel> Clubs { get; set; } 
-        public DbSet<UserModel> Users { get; set; }
-        public DbSet<ContractModel> Contracts { get; set; }
-        public DbSet<TaskModel> Tasks { get; set; }
-        public DbSet<CommentModel> Comments { get; set; }
-        public DbSet<NotificationModel> Notifications { get; set; }
+        public DbSet<ClubEntity> Clubs { get; set; } 
+        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<ContractEntity> Contracts { get; set; }
+        public DbSet<TaskEntity> Tasks { get; set; }
+        public DbSet<CommentEntity> Comments { get; set; }
+        public DbSet<NotificationEntity> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

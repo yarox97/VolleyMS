@@ -4,7 +4,7 @@ namespace VolleyMS.Contracts
 {
     public class AddUserToClubRequest
     {
-        public string UserName { get; set; } = string.Empty;
+        public Guid UserId { get; set; } 
         public string JoinCode { get; set; } = string.Empty;
     } 
 }

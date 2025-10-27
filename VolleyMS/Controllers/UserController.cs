@@ -7,10 +7,10 @@ namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class userController : ControllerBase
     {
         private readonly UserService _userService;
-        public UserController(UserService userService)
+        public userController(UserService userService)
         {
             _userService = userService;
         }

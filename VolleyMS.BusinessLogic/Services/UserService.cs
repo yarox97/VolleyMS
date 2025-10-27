@@ -14,8 +14,5 @@ public class UserService
         _userRepository = userRepository;
     }
 
-    public async Task<User> Get(string userName)
-    {
-        return await _userRepository.GetByUserName(userName);
-    }
+    public async Task<User> Get(string userName) => await _userRepository.GetByUserName(userName);
 }

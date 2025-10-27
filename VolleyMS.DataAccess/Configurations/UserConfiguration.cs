@@ -4,9 +4,9 @@ using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<UserModel>
+    public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
     {
-        public void Configure(EntityTypeBuilder<UserModel> builder)
+        public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
             builder.HasKey(x => x.Id);
 
@@ -25,28 +25,29 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasMaxLength(50)
                 .IsRequired();
 
-            builder.HasMany(u => u.ContractModels)
-                .WithOne(c => c.UserModel)
-                .HasForeignKey(c => c.UserId);
+            builder.HasMany(u => u.Contracts)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 
-            builder.HasMany(u => u.ClubModels)
-                .WithMany(c => c.UserModels);
+            builder.HasMany(u => u.Clubs)
+                .WithMany(c => c.Users);
 
-            builder.HasMany(u => u.ReceiverTaskModels)
-                .WithMany(t => t.UserModel_receivers);
+            builder.HasMany(u => u.ReceivedTasks)
+                .WithMany(t => t.Receivers);
 
-            builder.HasMany(u => u.SenderTaskModels)
-                .WithOne(t => t.UserModel_sender)
+            builder.HasMany(u => u.SentTasks)
+                .WithOne(t => t.Sender)
                 .HasForeignKey(t => t.SenderId);
 
-            builder.HasMany(u => u.CommentModels)
-                .WithOne(c => c.UserModel_sender)
+            builder.HasMany(u => u.SentComments)
+                .WithOne(c => c.Sender)
                 .HasForeignKey(c => c.SenderId);
 
-            builder.HasMany(u => u.RecieverNotificationsModels)
+            builder.HasMany(u => u.ReceivedNotifications)
                 .WithMany(n => n.Receivers);
 
-            builder.HasMany(u => u.SenderNotificationModel)
+            builder.HasMany(u => u.SentNotifications)
                 .WithOne(n => n.Sender)
                 .HasForeignKey(n => n.senderId)
                 .OnDelete(DeleteBehavior.Restrict);

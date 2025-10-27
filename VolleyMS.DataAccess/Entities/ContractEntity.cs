@@ -3,12 +3,12 @@ using VolleyMS.Core.Models;
 
 namespace VolleyMS.DataAccess.Entities
 {
-    public class ContractModel : BaseEntity
+    public class ContractEntity : BaseEntity
     {
-        public ContractModel()
+        public ContractEntity()
         {
-            UserModel = new UserModel();
-            ClubModel = new ClubModel();
+            User = new UserEntity();
+            Club = new ClubEntity();
         }
         public Guid Id { get; set; }
         public decimal? MontlySalary { get; set; }
@@ -17,8 +17,8 @@ namespace VolleyMS.DataAccess.Entities
         public DateTime EndsBy { get; set; }
 
         public Guid UserId { get; set; }
-        public UserModel UserModel { get; set; }
+        public UserEntity User { get; set; }
         public Guid TeamId { get; set; }
-        public ClubModel ClubModel { get; set; }
+        public ClubEntity Club { get; set; }
     }
 }

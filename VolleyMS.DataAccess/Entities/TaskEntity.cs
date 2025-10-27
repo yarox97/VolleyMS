@@ -8,14 +8,14 @@ using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Models
 {
-    public class TaskModel : BaseEntity
+    public class TaskEntity : BaseEntity
     {
-        public TaskModel()
+        public TaskEntity()
         {
-            CommentModels = new List<CommentModel>();
-            UserModel_sender = new UserModel();
-            UserModel_receivers = new List<UserModel>();
-            ClubModel = new ClubModel();
+            Comments = new List<CommentEntity>();
+            Sender = new UserEntity();
+            Receivers = new List<UserEntity>();
+            Club = new ClubEntity();
         }
         public Guid Id { get; set; }
         public TaskType TaskType { get; set; }
@@ -25,11 +25,11 @@ namespace VolleyMS.DataAccess.Models
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
-        public IList<CommentModel> CommentModels { get; set; }
+        public IList<CommentEntity> Comments { get; set; }
         public Guid SenderId { get; set; }
-        public UserModel UserModel_sender { get; set; }
-        public IList<UserModel> UserModel_receivers { get; set; }
+        public UserEntity Sender { get; set; }
+        public IList<UserEntity> Receivers { get; set; }
         public Guid ClubId { get; set; }
-        public ClubModel ClubModel { get; set; }
+        public ClubEntity Club { get; set; }
     }
 }
