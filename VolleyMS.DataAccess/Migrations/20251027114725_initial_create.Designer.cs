@@ -12,8 +12,8 @@ using VolleyMS.DataAccess;
 namespace VolleyMS.DataAccess.Migrations
 {
     [DbContext(typeof(VolleyMsDbContext))]
-    [Migration("20251027112019_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251027114725_initial_create")]
+    partial class initial_create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

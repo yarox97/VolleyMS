@@ -46,6 +46,8 @@ namespace VolleyMS.BusinessLogic.Authorisation
         {
 
             var user = await _userRepository.GetByUserName(userName);
+            if (user == null) { throw new Exception("User not found!"); }
+
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, password);
 
             if (result == PasswordVerificationResult.Success)

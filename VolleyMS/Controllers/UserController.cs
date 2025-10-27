@@ -15,7 +15,7 @@ namespace VolleyMS.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
+        [HttpGet("{userName}")]
         [Authorize(Policy = "AdminAndCoach")]
         public async Task<IActionResult> Get(string userName)
         {
