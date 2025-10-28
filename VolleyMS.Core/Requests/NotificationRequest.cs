@@ -1,4 +1,4 @@
-﻿namespace VolleyMS.Contracts
+﻿namespace VolleyMS.Core.Requests
 {
     public class NotificationRequest
     {

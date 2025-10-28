@@ -64,8 +64,6 @@ namespace VolleyMS.DataAccess.Repositories
             await _context.Notifications
                 .Where(n => n.Id == NorificationId)
                 .ExecuteDeleteAsync();
-
-            await _context.SaveChangesAsync();
         }
 
         public async Task<IList<Notification>> GetUserNotifications(Guid userId)
@@ -80,7 +78,7 @@ namespace VolleyMS.DataAccess.Repositories
         public async Task Check(Guid NotificationId)
         {
             var notif = await _context.Notifications.FindAsync(NotificationId);
-            if (notif == null) return;
+            if (notif == null) throw new Exception("Notification wasn't found!");
             
             notif.isChecked = true;
             await _context.SaveChangesAsync();

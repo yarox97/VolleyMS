@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
-using VolleyMS.Contracts;
+using VolleyMS.Core.Requests;
 using VolleyMS.Core.Models;
 
 namespace VolleyMS.Controllers
@@ -51,7 +51,7 @@ namespace VolleyMS.Controllers
             return BadRequest(club.error);
         }
 
-        [HttpPut("addUser")]
+        [HttpPatch("addUser")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddUser([FromBody] AddUserToClubRequest addUserToClubRequest)
         {
@@ -63,6 +63,21 @@ namespace VolleyMS.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _clubService.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }
