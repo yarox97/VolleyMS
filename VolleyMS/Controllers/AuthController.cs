@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.BusinessLogic.Services;
-using VolleyMS.Contracts;
+using VolleyMS.Core.Requests;
+
 
 
 namespace VolleyMS.Controllers
@@ -35,7 +36,7 @@ namespace VolleyMS.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Authorization([FromBody] Contracts.LoginRequest loginRequest)
+        public async Task<IActionResult> Authorization([FromBody] Core.Requests.LoginRequest loginRequest)
         {
             try
             {

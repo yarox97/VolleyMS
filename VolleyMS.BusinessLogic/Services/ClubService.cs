@@ -15,7 +15,7 @@ namespace VolleyMS.BusinessLogic.Services
     {
         private readonly ClubRepository _clubRepository;
         private readonly UserRepository _userRepository;
-        public ClubService(ClubRepository clubRepository, UserRepository userRepository) 
+        public ClubService(ClubRepository clubRepository, UserRepository userRepository)
         {
             _clubRepository = clubRepository;
             _userRepository = userRepository;
@@ -33,7 +33,7 @@ namespace VolleyMS.BusinessLogic.Services
                                         .Select(_ => salt[random.Next(salt.Length)])
                                         .ToArray());
 
-            } while(await _clubRepository.IfJoinCodeTaken(joinCode));
+            } while (await _clubRepository.IfJoinCodeTaken(joinCode));
 
             return joinCode;
         }
@@ -42,7 +42,7 @@ namespace VolleyMS.BusinessLogic.Services
         {
             string joinCode = await GenerateJoinCode();
             var clubTuple = Club.Create(club.Id, club.Name, joinCode, club.Description, club.AvatarURL, club.BackGroundURL);
-            
+
             if (clubTuple.error == string.Empty)
             {
                 await _clubRepository.Create(clubTuple.club);
@@ -58,7 +58,7 @@ namespace VolleyMS.BusinessLogic.Services
             var user = await _userRepository.GetById(Id);
             var club = await _clubRepository.GetClubByCode(joinCode);
             _ = club ?? throw new Exception("Can't find a club using provided join code");
-            _ = user ?? throw new Exception("Can't add user to a club"); 
+            _ = user ?? throw new Exception("Can't add user to a club");
 
             if (!await _clubRepository.ContainsUser(club, user))
             {
@@ -67,6 +67,18 @@ namespace VolleyMS.BusinessLogic.Services
             else
             {
                 throw new Exception("User is already a member of the club");
+            }
+        }
+
+        public async Task Delete(Guid clubId)
+        {
+            try
+            {
+                await _clubRepository.Delete(clubId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error: {ex.Message}");
             }
         }
     }

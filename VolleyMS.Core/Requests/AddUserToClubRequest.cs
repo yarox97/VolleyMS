@@ -1,6 +1,6 @@
 ﻿using VolleyMS.Core.Models;
 
-namespace VolleyMS.Contracts
+namespace VolleyMS.Core.Requests
 {
     public class AddUserToClubRequest
     {

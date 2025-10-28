@@ -49,5 +49,21 @@ namespace VolleyMS.DataAccess.Repositories
 
             return userEntity is not null ? User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user : null;
         }
+
+        public async Task Modify(string userName, User newUser)
+        {
+            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (userEntity != null)
+            {
+                userEntity.Surname = newUser.Surname;
+                userEntity.Password = newUser.Password;
+                userEntity.Name = newUser.Name;
+                userEntity.userType = newUser.UserType;
+                userEntity.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                return;
+            }
+            throw new Exception("User you want to modify wasn't found!");
+        }
     }
 }

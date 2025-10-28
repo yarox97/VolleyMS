@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,5 +28,16 @@ namespace VolleyMS.BusinessLogic.Services
 
             return await _notificationRepository.Create(notification, receivers, senderId);
         }
+
+        public async Task<IList<Notification>> GetNotifications(Guid userId)
+        {
+            var notifications = await _notificationRepository.GetUserNotifications(userId);
+            return notifications == null ? new List<Notification>() : notifications;  
+        }
+
+        public async Task Check(Guid notifId)
+        {
+            await _notificationRepository.Check(notifId);
+        }  
     }
 }
