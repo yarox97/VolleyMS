@@ -51,7 +51,22 @@ namespace VolleyMS.Controllers
             return BadRequest(club.error);
         }
 
-        [HttpPatch("addUser")]
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _clubService.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPatch("{clubId}/members")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AddUser([FromBody] AddUserToClubRequest addUserToClubRequest)
         {
@@ -66,18 +81,18 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{clubId}/members/{userId}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteMember(Guid clubId, Guid userId)
         {
             try
             {
-                await _clubService.Delete(id);
+                await _clubService.DeleteMember(clubId, userId);
                 return Ok();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

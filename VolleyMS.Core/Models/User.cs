@@ -39,7 +39,7 @@ namespace VolleyMS.Core.Models
             {
                 error = "Password is required";
             }
-            if (userType != UserType.Player && userType != UserType.Admin && userType != UserType.Coach)
+            if (userType != UserType.Player && userType != UserType.Admin)
             {
                 error = "Invalid user type";
             }

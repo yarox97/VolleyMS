@@ -62,7 +62,7 @@ namespace VolleyMS.BusinessLogic.Services
 
             if (!await _clubRepository.ContainsUser(club, user))
             {
-                await _clubRepository.AddUser(user, joinCode); // 100% not null, i check its value before.
+                await _clubRepository.AddUser(user, joinCode); 
             }
             else
             {
@@ -80,6 +80,11 @@ namespace VolleyMS.BusinessLogic.Services
             {
                 throw new Exception($"Error: {ex.Message}");
             }
+        }
+
+        public async Task DeleteMember(Guid clubId, Guid userId)
+        {
+            await _clubRepository.DeleteUser(clubId, userId);
         }
     }
 }
