@@ -1,7 +1,6 @@
 ﻿public enum UserType
 {
     Admin,
-    Coach,
     Player
 }
 
@@ -52,5 +51,10 @@ public enum NotificationType
 {
     Informative,
     TaskLink,
-    ClubJoinRequest
+    ClubJoinRequest,
+    ClubJoinApproved,
+    ClubJoinReject,
+    System,
+    MessageReceived,
+    EventReminder
 }
