@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VolleyMS.Core.Entities;
 using VolleyMS.Core.Models;
 using VolleyMS.DataAccess.Repositories;
+using Task = System.Threading.Tasks.Task;
 
 namespace VolleyMS.BusinessLogic.Services
 {
@@ -15,10 +17,12 @@ namespace VolleyMS.BusinessLogic.Services
     {
         private readonly ClubRepository _clubRepository;
         private readonly UserRepository _userRepository;
-        public ClubService(ClubRepository clubRepository, UserRepository userRepository)
+        private readonly NotificationRepository _notificationRepository;
+        public ClubService(ClubRepository clubRepository, UserRepository userRepository, NotificationRepository notificationRepository)
         {
             _clubRepository = clubRepository;
             _userRepository = userRepository;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<string> GenerateJoinCode()
@@ -52,24 +56,6 @@ namespace VolleyMS.BusinessLogic.Services
                 throw new Exception(clubTuple.error);
             }
         }
-
-        public async Task AddUser(Guid Id, string joinCode)
-        {
-            var user = await _userRepository.GetById(Id);
-            var club = await _clubRepository.GetClubByCode(joinCode);
-            _ = club ?? throw new Exception("Can't find a club using provided join code");
-            _ = user ?? throw new Exception("Can't add user to a club");
-
-            if (!await _clubRepository.ContainsUser(club, user))
-            {
-                await _clubRepository.AddUser(user, joinCode); 
-            }
-            else
-            {
-                throw new Exception("User is already a member of the club");
-            }
-        }
-
         public async Task Delete(Guid clubId)
         {
             try
@@ -81,10 +67,28 @@ namespace VolleyMS.BusinessLogic.Services
                 throw new Exception($"Error: {ex.Message}");
             }
         }
+        public async Task AddMember(Guid UserId, Guid ClubId)
+        {
+            var user = await _userRepository.GetById(UserId);
+            var club = await _clubRepository.GetById(ClubId);
+            _ = club ?? throw new Exception("Can't find a club using provided join code");
+            _ = user ?? throw new Exception("Can't add user to a club");
+
+            if (!await _clubRepository.ContainsUser(club, user))
+            {
+                await _clubRepository.AddUser(user, club);
+                //Create notification to a user who sent a request
+            }
+            else
+            {
+                throw new Exception("User is already a member of the club");
+            }
+        }
 
         public async Task DeleteMember(Guid clubId, Guid userId)
         {
             await _clubRepository.DeleteUser(clubId, userId);
+            //Create notification to user who was deleted from team
         }
     }
 }

@@ -14,9 +14,6 @@ namespace VolleyMS.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<ClubEntity> builder)
         {
             builder.HasKey(x => x.Id);
-
-            builder.HasMany(c => c.Users)
-                .WithMany(u => u.Clubs);
         }
     }
 }

@@ -52,18 +52,28 @@ namespace VolleyMS.DataAccess.Repositories
             return clubEntity is not null ? Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL).club : null;
         }
 
+        public async Task<Club?> GetById(Guid Id)
+        {
+            var clubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == Id);
+
+            return clubEntity is not null ? Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL).club : null;
+        }
+
         public async Task<bool> ContainsUser(Club club, User user)
         {
             return await _context.Clubs.AnyAsync(c => c.Users.Any(u => u.Id == user.Id));
         }
 
-        public async Task AddUser(User user, string joinCode)
+        public async Task AddUser(User user, Club club)
         {
             var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
-            var ClubEntity = await _context.Clubs.Include(c => c.Users).FirstOrDefaultAsync(c => c.JoinCode == joinCode);
+            var ClubEntity = await _context.Clubs.Include(c => c.Users).FirstOrDefaultAsync(c => c.Id == club.Id);
 
-            ClubEntity.Users.Add(userEntity);
-                
+            if (userEntity is not null && ClubEntity is not null)
+            {
+                ClubEntity.Users.Add(userEntity);
+            }
+            
             await _context.SaveChangesAsync();
         }
 

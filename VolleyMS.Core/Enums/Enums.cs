@@ -47,7 +47,7 @@ public enum DaysOfWeek
     Sunday
 }
 
-public enum NotificationType
+public enum NotificationCategory
 {
     Informative,
     TaskLink,
@@ -57,4 +57,12 @@ public enum NotificationType
     System,
     MessageReceived,
     EventReminder
+}
+
+public enum ClubMemberRole
+{
+    President,
+    Coach,
+    Staff,
+    Player,
 }

@@ -19,6 +19,7 @@ namespace VolleyMS.DataAccess
 
         public DbSet<ClubEntity> Clubs { get; set; } 
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<User_ClubsEntity> UserClubs { get; set; }
         public DbSet<ContractEntity> Contracts { get; set; }
         public DbSet<TaskEntity> Tasks { get; set; }
         public DbSet<CommentEntity> Comments { get; set; }
@@ -32,6 +33,7 @@ namespace VolleyMS.DataAccess
             modelBuilder.ApplyConfiguration(new TaskConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+            modelBuilder.ApplyConfiguration(new User_ClubConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }
