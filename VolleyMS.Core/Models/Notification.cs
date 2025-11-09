@@ -1,4 +1,5 @@
 ﻿using VolleyMS.Core.Common;
+using VolleyMS.Core.Models;
 
 namespace VolleyMS.Core.Entities
 {

@@ -5,6 +5,6 @@ namespace VolleyMS.Core.Requests
     public class AddUserToClubRequest
     {
         public Guid UserId { get; set; } 
-        public string JoinCode { get; set; } = string.Empty;
+        public Guid ClubId { get; set; }
     } 
 }

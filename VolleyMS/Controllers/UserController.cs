@@ -24,8 +24,7 @@ namespace VolleyMS.Controllers
         {
             try
             {
-                var user = await _userService.Get(userName);
-                return Ok(user);
+                return Ok(await _userService.Get(userName));
             }
             catch (Exception ex)
             {

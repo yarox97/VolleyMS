@@ -9,8 +9,8 @@ namespace VolleyMS.DataAccess.Entities
     {
         public UserEntity()
         {
+            UserClubs = new List<User_ClubsEntity>();
             Contracts = new List<ContractEntity>();
-            Clubs = new List<ClubEntity>();
             SentTasks = new List<TaskEntity>();
             ReceivedTasks = new List<TaskEntity>();
             SentComments = new List<CommentEntity>();
@@ -24,8 +24,8 @@ namespace VolleyMS.DataAccess.Entities
         public string Name { get; set; } = string.Empty;
         public string Surname { get; set; } = string.Empty;
 
+        public IList<User_ClubsEntity> UserClubs { get; set; }
         public IList<ContractEntity> Contracts { get; set; }
-        public IList<ClubEntity> Clubs { get; set; }
         public IList<TaskEntity> SentTasks { get; set; }
         public IList<TaskEntity> ReceivedTasks { get; set; }
         public IList<CommentEntity> SentComments { get; set; }

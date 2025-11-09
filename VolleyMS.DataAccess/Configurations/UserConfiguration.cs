@@ -30,9 +30,6 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
 
-            builder.HasMany(u => u.Clubs)
-                .WithMany(c => c.Users);
-
             builder.HasMany(u => u.ReceivedTasks)
                 .WithMany(t => t.Receivers);
 

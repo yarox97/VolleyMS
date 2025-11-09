@@ -68,11 +68,11 @@ namespace VolleyMS.Controllers
 
         [HttpPatch("{clubId}/members")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> AddUser([FromBody] AddUserToClubRequest addUserToClubRequest)
+        public async Task<IActionResult> AddMember([FromBody] AddUserToClubRequest addUserToClubRequest)
         {
             try
             {
-                await _clubService.AddUser(addUserToClubRequest.UserId, addUserToClubRequest.JoinCode);
+                await _clubService.AddMember(addUserToClubRequest.UserId, addUserToClubRequest.ClubId);
                 return Ok();
             }
             catch (Exception ex)
