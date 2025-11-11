@@ -61,19 +61,29 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task<bool> ContainsUser(Club club, User user)
         {
-            return await _context.Clubs.AnyAsync(c => c.Users.Any(u => u.Id == user.Id));
+            return await _context.UserClubs
+                .AnyAsync(uc => uc.Club.Id == club.Id && uc.User.Id == user.Id);
         }
 
         public async Task AddUser(User user, Club club)
         {
-            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
-            var ClubEntity = await _context.Clubs.Include(c => c.Users).FirstOrDefaultAsync(c => c.Id == club.Id);
+            var UserEntity = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+            var ClubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == club.Id);
 
-            if (userEntity is not null && ClubEntity is not null)
+            if (UserEntity is not null && ClubEntity is not null)
             {
-                ClubEntity.Users.Add(userEntity);
+                var User_ClubEntity = new User_ClubsEntity 
+                { 
+                    Club = ClubEntity, 
+                    User = UserEntity, 
+                    ClubMemberRole = new List<ClubMemberRole>() { ClubMemberRole.Player } 
+                };
+
+                if(!await ContainsUser(club, user))
+                {
+                    _context.UserClubs.Add(User_ClubEntity);
+                }
             }
-            
             await _context.SaveChangesAsync();
         }
 
