@@ -5,6 +5,7 @@ using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Core.Requests;
 using VolleyMS.Core.Entities;
+using VolleyMS.Core.Models;
 
 namespace VolleyMS.Controllers
 {
@@ -34,23 +35,13 @@ namespace VolleyMS.Controllers
                 return BadRequest("Invalid sender Id claims");
             }
 
-            var notifTuple = Notification.Create(
-                Guid.NewGuid(),
-                notificationRequest.NotificationType,
-                notificationRequest.IsChecked,
-                notificationRequest.Text,
-                notificationRequest.LinkedURL);
             try
             {
-                return Ok(await _notificationService.SendNotification(
-                    notifTuple.notification,
-                    notifTuple.error,
-                    senderId,
-                    notificationRequest.Receivers));
+                return Ok(await _notificationService.SendNotification(notificationRequest, senderId));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(400, ex.Message);
             }
         }
 

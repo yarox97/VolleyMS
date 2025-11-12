@@ -23,7 +23,7 @@ namespace VolleyMS.DataAccess.Repositories
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Notification> Create(Notification notification, IList<Guid> receivers, Guid senderId)
+        public async Task<Guid> Create(Notification notification, IList<Guid> receivers, Guid senderId)
         {
             var senderEntity = await _context.Users.FindAsync(senderId) ?? throw new Exception("Sender not found!");
 
@@ -35,7 +35,12 @@ namespace VolleyMS.DataAccess.Repositories
 
             var NotificationModel = new NotificationEntity 
             {
-                notificationType = notification.NotificationType,
+                notificationType = new NotificationTypeEntity 
+                {
+                    Id = notification.NotificationType.Id,
+                    notificationCategory = notification.NotificationType.notificationCategory,
+                    requiredClubMemberRole = notification.NotificationType.requiredClubMemberRole
+                },
                 Text = notification.Text,
                 isChecked = notification.IsChecked,
                 LinkedURL = notification.LinkedURL,
@@ -56,7 +61,7 @@ namespace VolleyMS.DataAccess.Repositories
                 Console.WriteLine(ex.InnerException?.Message ?? ex.Message);
                 throw;
             }
-            return _mapper.Map<Notification>(NotificationModel);
+            return notification.Id;
         }
 
         public async Task Delete(Guid NorificationId)

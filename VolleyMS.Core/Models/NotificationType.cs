@@ -20,16 +20,20 @@ namespace VolleyMS.Core.Models
         public NotificationCategory notificationCategory = NotificationCategory.Informative;
         public IList<ClubMemberRole> requiredClubMemberRole;
 
-        public (NotificationType, string) Create(Guid Id, NotificationCategory notificationCategory, IList<ClubMemberRole> requiredClubMemberRole)
+        public static (NotificationType notificationType, string error) Create(Guid Id, NotificationCategory notificationCategory, IList<ClubMemberRole> requiredClubMemberRole)
         {
             string error = string.Empty;
             if (!Enum.IsDefined(typeof(NotificationCategory), notificationCategory))
             {
                 error = "Invalid category";
             }
-            if (!Enum.IsDefined(typeof(ClubMemberRole), requiredClubMemberRole))
+            foreach (var role in requiredClubMemberRole)
             {
-                error = "Invalid required role";
+                if (!Enum.IsDefined(typeof(ClubMemberRole), role))
+                {
+                    error = "Invalid required role";
+                    break; 
+                }
             }
 
             return (new NotificationType(Id, notificationCategory, requiredClubMemberRole), error);
