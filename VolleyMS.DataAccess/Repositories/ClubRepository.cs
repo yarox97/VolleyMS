@@ -89,11 +89,8 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task DeleteUser(Guid clubId, Guid userId)
         {
-            await _context
-                .Users
-                .Where(u => u.Id == userId)
-                .Where(u => u.Clubs
-                .Any(c => c.Id == clubId))
+            await _context.UserClubs
+                .Where(uc => uc.User.Id == userId && uc.Club.Id == clubId)
                 .ExecuteDeleteAsync();
         }
     }

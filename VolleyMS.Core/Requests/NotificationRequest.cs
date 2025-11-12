@@ -4,7 +4,8 @@ namespace VolleyMS.Core.Requests
 {
     public class NotificationRequest
     {
-        public required NotificationType NotificationType { get; set; }
+        public NotificationCategory NotificationCategory { get; set; }
+        public IList<ClubMemberRole> RequiredClubMemberRole { get; set; } = new List<ClubMemberRole>();
         public bool IsChecked { get; set; } = false;
         public string Text { get; set; } = string.Empty;
         public string? LinkedURL;
