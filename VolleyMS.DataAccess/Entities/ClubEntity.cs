@@ -16,7 +16,7 @@ namespace VolleyMS.DataAccess.Entities
             Tasks = new List<TaskEntity>();
             UserClubs = new List<User_ClubsEntity>();
         }
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = string.Empty;
         public string JoinCode { get; set; } = string.Empty;
         public string? Description { get; set; }

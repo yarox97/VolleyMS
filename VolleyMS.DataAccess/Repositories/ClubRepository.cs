@@ -22,15 +22,17 @@ namespace VolleyMS.DataAccess.Repositories
             return await _context.Clubs.AnyAsync(c => c.JoinCode == joinCode);
         }
 
-        public async Task Create(Club club)
+        public async Task Create(Club club, Guid creatorId)
         {
             var clubModel = new ClubEntity
             {
+                Id = club.Id,
                 Name = club.Name,
                 Description = club.Description,
                 JoinCode = club.JoinCode,
                 AvatarURL = club.AvatarURL,
-                BackGroundURL = club.BackGroundURL
+                BackGroundURL = club.BackGroundURL,
+                CreatorId = creatorId
             };
             await _context.Clubs.AddAsync(clubModel);
             await _context.SaveChangesAsync();
@@ -57,6 +59,17 @@ namespace VolleyMS.DataAccess.Repositories
             var clubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == Id);
 
             return clubEntity is not null ? Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL).club : null;
+        }
+
+        public async Task<List<Guid>> GetUsersIdsByRole(Guid clubId, params ClubMemberRole[] clubMemberRoles)
+        {
+            var userIds = await _context.UserClubs
+                .Where(uc => uc.Club.Id == clubId
+                             && uc.ClubMemberRole.Any(role => clubMemberRoles.Contains(role)))
+                .Select(uc => uc.User.Id)
+                .ToListAsync();
+
+            return userIds;
         }
 
         public async Task<bool> ContainsUser(Club club, User user)

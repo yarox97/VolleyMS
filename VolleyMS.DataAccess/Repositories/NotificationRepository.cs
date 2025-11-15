@@ -77,7 +77,24 @@ namespace VolleyMS.DataAccess.Repositories
                 .Where(n => n.Receivers.Any(r => r.Id == userId))
                 .ToListAsync();
 
-            return  _mapper.Map<IList<Notification>>(notifEntities);
+            var notifications = new List<Notification>();
+            foreach (var notifEntity in notifEntities)
+            {
+                var notificationType = NotificationType.Create(
+                    notifEntity.notificationType.Id,
+                    notifEntity.notificationType.notificationCategory,
+                    notifEntity.notificationType.requiredClubMemberRole).notificationType;
+
+                var notification = Notification.Create(
+                    notifEntity.Id, 
+                    notificationType, 
+                    notifEntity.isChecked, 
+                    notifEntity.Text, 
+                    notifEntity.LinkedURL).notification;
+
+                notifications.Add(notification);
+            }
+            return  notifications;
         }
 
         public async Task Check(Guid NotificationId)
@@ -86,6 +103,7 @@ namespace VolleyMS.DataAccess.Repositories
             if (notif == null) throw new Exception("Notification wasn't found!");
             
             notif.isChecked = true;
+            notif.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
         }
 

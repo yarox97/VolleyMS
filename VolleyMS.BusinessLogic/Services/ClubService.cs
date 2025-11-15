@@ -1,13 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Entities;
-using VolleyMS.Core.Models;
+﻿using VolleyMS.Core.Models;
+using VolleyMS.Core.Requests;
 using VolleyMS.DataAccess.Repositories;
 using Task = System.Threading.Tasks.Task;
 
@@ -42,14 +34,22 @@ namespace VolleyMS.BusinessLogic.Services
             return joinCode;
         }
 
-        public async Task Create(Club club)
+        public async Task<Guid> Create(CreateClubRequest createClubRequest)
         {
             string joinCode = await GenerateJoinCode();
-            var clubTuple = Club.Create(club.Id, club.Name, joinCode, club.Description, club.AvatarURL, club.BackGroundURL);
+            var clubTuple = Club.Create(
+                Guid.NewGuid(), 
+                createClubRequest.Name, 
+                joinCode,
+                createClubRequest.Description,
+                createClubRequest.AvatarURL,
+                createClubRequest.BackGroundURL
+                );
 
             if (clubTuple.error == string.Empty)
             {
-                await _clubRepository.Create(clubTuple.club);
+                await _clubRepository.Create(clubTuple.club, createClubRequest.CreatorId);
+                return clubTuple.club.Id;
             }
             else
             {
@@ -67,6 +67,12 @@ namespace VolleyMS.BusinessLogic.Services
                 throw new Exception($"Error: {ex.Message}");
             }
         }
+
+        public async Task<Club?> GetClubByJoinCode(string joinCode)
+        {
+            return await _clubRepository.GetClubByCode(joinCode);
+        }
+
         public async Task AddMember(Guid UserId, Guid ClubId)
         {
             var user = await _userRepository.GetById(UserId);
@@ -89,6 +95,11 @@ namespace VolleyMS.BusinessLogic.Services
         {
             await _clubRepository.DeleteUser(clubId, userId);
             //Create notification to user who was deleted from team
+        }
+
+        public async Task<List<Guid>> GetUsersIdsByRole(Guid clubId, params ClubMemberRole[] clubMemberRole)
+        {
+            return await _clubRepository.GetUsersIdsByRole(clubId, clubMemberRole);
         }
     }
 }
