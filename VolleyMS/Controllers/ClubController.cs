@@ -28,27 +28,23 @@ namespace VolleyMS.Controllers
             {
                 return BadRequest("Claims not found, try re-loggin");
             }
-            var club = Club.Create(new Guid(), CreateClubRequest.Name, "", CreateClubRequest.Description, CreateClubRequest.AvatarURL, CreateClubRequest.BackGroundURL);
 
             if (!Guid.TryParse(creatorIdClaim, out var creatorId))
             {
                 return BadRequest("Invalid sender Id claims");
             }
-            
-            club.club.CreatorId = creatorId;
-            if (club.error == string.Empty)
+
+            try
             {
-                try
-                {
-                    await _clubService.Create(club.club);
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                CreateClubRequest.CreatorId = creatorId;
+                var clubId = await _clubService.Create(CreateClubRequest);
+                await _clubService.AddMember(creatorId, clubId);
+                return Ok();
             }
-            return BadRequest(club.error);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]

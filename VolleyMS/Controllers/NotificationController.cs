@@ -62,13 +62,13 @@ namespace VolleyMS.Controllers
             return Ok(await _notificationService.GetNotifications(userId));
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{taskId}")]
         [Authorize]
-        public async Task<IActionResult> Check(Guid id)
+        public async Task<IActionResult> Check(Guid taskId)
         {
             try 
             { 
-                await _notificationService.Check(id); 
+                await _notificationService.Check(taskId); 
                 return NoContent();
             }
             catch (Exception ex)
