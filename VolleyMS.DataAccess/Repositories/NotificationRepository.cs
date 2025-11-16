@@ -1,10 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Entities;
 using VolleyMS.Core.Models;
 using VolleyMS.DataAccess.Entities;
@@ -17,11 +11,9 @@ namespace VolleyMS.DataAccess.Repositories
     public class NotificationRepository : INotificationRepository
     {
         private readonly VolleyMsDbContext _context;
-        private readonly IMapper _mapper;
-        public NotificationRepository(VolleyMsDbContext context, IMapper mapper)
+        public NotificationRepository(VolleyMsDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
         public async Task<Guid> Create(Notification notification, IList<Guid> receivers, Guid senderId)
         {
