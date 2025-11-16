@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Core.Requests;
-using VolleyMS.Core.Models;
 
 namespace VolleyMS.Controllers
 {
@@ -13,11 +11,25 @@ namespace VolleyMS.Controllers
     public class clubController : ControllerBase
     {
         private readonly ClubService _clubService;
-        public clubController(ClubService clubService)
+        private readonly NotificationService _notificationService;
+        public clubController(ClubService clubService, NotificationService notificationService)
         {
             _clubService = clubService;
+            _notificationService = notificationService;
         }
 
+        [HttpGet("{clubId}")]
+        public async Task<IActionResult> GetClub(Guid clubId)
+        {
+            try
+            {
+                return Ok(await _clubService.GetById(clubId));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost()]
         [Authorize(Policy = "AdminOnly")]
@@ -38,7 +50,7 @@ namespace VolleyMS.Controllers
             {
                 CreateClubRequest.CreatorId = creatorId;
                 var clubId = await _clubService.Create(CreateClubRequest);
-                await _clubService.AddMember(creatorId, clubId);
+                await _clubService.AddMember(creatorId, clubId, creatorId);
                 return Ok();
             }
             catch (Exception ex)
@@ -47,28 +59,39 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{clubId}")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid clubId)
         {
             try
             {
-                await _clubService.Delete(id);
+                await _clubService.Delete(clubId);
                 return Ok();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpPatch("{clubId}/members")]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> AddMember([FromBody] AddUserToClubRequest addUserToClubRequest)
+        public async Task<IActionResult> AcceptUserJoinRequest([FromBody] AddUserToClubRequest addUserToClubRequest)
         {
+            var responseUserIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (responseUserIdClaim == null)
+            {
+                return BadRequest("Claims not found, try re-loggin");
+            }
+
+            if (!Guid.TryParse(responseUserIdClaim, out var responseUserId))
+            {
+                return BadRequest("Invalid sender Id claims");
+            }
+
             try
             {
-                await _clubService.AddMember(addUserToClubRequest.UserId, addUserToClubRequest.ClubId);
+                await _clubService.AddMember(addUserToClubRequest.UserId, addUserToClubRequest.ClubId, responseUserId);
                 return Ok();
             }
             catch (Exception ex)
@@ -81,9 +104,21 @@ namespace VolleyMS.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteMember(Guid clubId, Guid userId)
         {
+            var responseUserIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (responseUserIdClaim == null)
+            {
+                return BadRequest("Claims not found, try re-loggin");
+            }
+
+            if (!Guid.TryParse(responseUserIdClaim, out var responseUserId))
+            {
+                return BadRequest("Invalid sender Id claims");
+            }
+
             try
             {
-                await _clubService.DeleteMember(clubId, userId);
+                // Delete member from the club
+                await _clubService.DeleteMember(clubId, userId, responseUserId);
                 return Ok();
             }
             catch (Exception ex)

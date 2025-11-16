@@ -20,12 +20,8 @@ namespace VolleyMS.BusinessLogic.Authorisation
         }
         public async Task Register(string userName, string password, string name, string surname)
         {
-            var IsLoginTaken = await _userRepository.IsLoginTaken(userName);
-
-            if (IsLoginTaken)
-            {
-                throw new Exception("Username is taken!");
-            }
+            if (await _userRepository.IsLoginTaken(userName))
+                throw new Exception($"Username {userName} is taken!");
 
             var userTuple = User.Create(Guid.NewGuid(), userName, password, UserType.Player, name, surname);
 
@@ -46,7 +42,8 @@ namespace VolleyMS.BusinessLogic.Authorisation
         {
 
             var user = await _userRepository.GetByUserName(userName);
-            if (user == null) { throw new Exception("User not found!"); }
+            if (user == null) 
+                throw new Exception("User not found!"); 
 
             var result = new PasswordHasher<User>().VerifyHashedPassword(user, user.Password, password);
 

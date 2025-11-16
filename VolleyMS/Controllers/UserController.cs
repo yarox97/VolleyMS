@@ -1,6 +1,4 @@
-﻿using AutoMapper.Execution;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
@@ -77,7 +75,7 @@ namespace VolleyMS.Controllers
             try
             {
                 var club = await _clubService.GetClubByJoinCode(joinCode);
-                var usersByRoleTmp = await _clubService.GetUsersIdsByRole(club.Id, ClubMemberRole.President);
+                var usersByRoleTmp = await _clubService.GetUsersIdsByRole(club.Id, ClubMemberRole.President, ClubMemberRole.Player);
                 if (usersByRoleTmp == null)
                 {
                     return BadRequest();
@@ -88,6 +86,7 @@ namespace VolleyMS.Controllers
                     NotificationCategory = NotificationCategory.ClubJoinRequest,
                     Receivers = targetUsersByRole,
                     Text = $"{user.Name} {user.Surname} requested to join your club {club.Name}",
+                    LinkedURL = $"/user/{user.UserName}"
                 }, user.Id);
 
                 return Ok("Request to join club was sent");

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.Core.Models;
-using VolleyMS.DataAccess;
 using VolleyMS.DataAccess.Repositories;
 using VolleyMS.Core.Requests;
 
@@ -16,6 +14,7 @@ public class UserService
     }
 
     public async Task<User?> Get(string userName) => await _userRepository.GetByUserName(userName);
+    public async Task<User?> GetById(Guid userId) => await _userRepository.GetById(userId);
 
     public async Task Modify(string userName, UserModificationRequest userModificationRequest)
     {
