@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
+using VolleyMS.Contracts.DTOs;
+using VolleyMS.Core.Entities;
 using VolleyMS.Core.Requests;
 
 
@@ -12,13 +14,14 @@ namespace VolleyMS.Controllers
     public class userController : ControllerBase
     {
         private readonly UserService _userService;
-        private readonly ClubService _clubService;
         private readonly NotificationService _notificationService;
-        public userController(UserService userService, ClubService clubService, NotificationService notificationService)
+        private readonly JoinClubService _joinClubService;
+
+        public userController(UserService userService, NotificationService notificationService, JoinClubService joinClubService)
         {
             _userService = userService;
-            _clubService = clubService;
             _notificationService = notificationService;
+            _joinClubService = joinClubService;
         }
 
         [HttpGet("{userName}")]
@@ -27,7 +30,15 @@ namespace VolleyMS.Controllers
         {
             try
             {
-                return Ok(await _userService.Get(userName));
+                var user = await _userService.Get(userName);
+                var response = new UserDto()
+                {
+                    Id = user.Id,
+                    FirstName = user.Name,
+                    LastName = user.Surname,
+                    UserName = user.UserName
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -35,7 +46,7 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpPatch("{userName}")]
+        [HttpPut("{userName}")]
         [Authorize]
         public async Task<IActionResult> Modify(string userName, [FromBody] UserModificationRequest userModificationRequest)
         {
@@ -60,40 +71,78 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpPost("/clubs")]
+        [HttpPost("{userName}/clubs/join")]
         [Authorize]
-        public async Task<IActionResult> RequestToJoinClub(string joinCode)
+        public async Task<IActionResult> RequestToJoinClub([FromRoute] string userName, [FromBody] JoinClubRequest joinClubRequest)
         {
+            var userNameClaim = User.FindFirstValue(ClaimTypes.Name);
+            if (userNameClaim == null)
+            {
+                return Unauthorized("Claims not found, try re-logging");
+            }
 
+            if(userNameClaim != userName)
+            {
+                return Forbid("Can't send join request on behalf of other users!");
+            }
+
+            try
+            {
+                await _joinClubService.RequestToJoinClubAsync(joinClubRequest.JoinCode, userName);
+                return Ok("Request to join club was sent");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpGet("{userName}/notifications")]
+        [Authorize]
+        public async Task<ActionResult<IList<Notification>>> GetNotifications(string userName)
+        {
             var userNameClaim = User.FindFirstValue(ClaimTypes.Name);
             if (userNameClaim == null)
             {
                 return StatusCode(401, "Claims not found, try re-loggin");
             }
-            var user = await _userService.Get(userNameClaim);
 
+            if (userNameClaim != userName)
+            {
+                return StatusCode(403, "Can't check other user's notifications!");
+            }
+
+            var userNotifications = await _notificationService.GetNotifications(userName);
+            var response = new List<NotificationDto>();
+
+            foreach (var userNotification in userNotifications)
+            {
+                response.Add(new NotificationDto()
+                {
+                    Text = userNotification.Text,
+                    notificationCategory = userNotification.NotificationType.notificationCategory,
+                    LinkedUrl = userNotification.LinkedURL,
+                    SenderId = userNotification.CreatorId,
+                    IsChecked = userNotification.IsChecked
+                });
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPut("{userName}/notifications/{notificationId}")]
+        [Authorize]
+        public async Task<IActionResult> Check(Guid notificationId)
+        {
             try
             {
-                var club = await _clubService.GetClubByJoinCode(joinCode);
-                var usersByRoleTmp = await _clubService.GetUsersIdsByRole(club.Id, ClubMemberRole.President, ClubMemberRole.Player);
-                if (usersByRoleTmp == null)
-                {
-                    return BadRequest();
-                }
-                var targetUsersByRole = (IList<Guid>)usersByRoleTmp;
-                await _notificationService.SendNotification(new NotificationRequest()
-                {
-                    NotificationCategory = NotificationCategory.ClubJoinRequest,
-                    Receivers = targetUsersByRole,
-                    Text = $"{user.Name} {user.Surname} requested to join your club {club.Name}",
-                    LinkedURL = $"/user/{user.UserName}"
-                }, user.Id);
-
-                return Ok("Request to join club was sent");
+                await _notificationService.Check(notificationId);
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return StatusCode(400, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

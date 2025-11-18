@@ -14,7 +14,7 @@ namespace VolleyMS.DataAccess.Entities
         }
 
         public Guid Id { get; set; }
-        public NotificationCategory notificationCategory { get; set; } = NotificationCategory.Informative;
+        public NotificationCategory notificationCategory { get; set; }
         public IList<ClubMemberRole> requiredClubMemberRole { get; set; }
     }
 }

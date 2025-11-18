@@ -6,5 +6,6 @@ namespace VolleyMS.Core.Requests
     {
         public Guid UserId { get; set; } 
         public Guid ClubId { get; set; }
+        public ClubMemberRole clubMemberRole { get; set; }
     } 
 }

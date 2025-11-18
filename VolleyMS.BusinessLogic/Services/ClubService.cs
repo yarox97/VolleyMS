@@ -8,13 +8,11 @@ namespace VolleyMS.BusinessLogic.Services
     public class ClubService
     {
         private readonly ClubRepository _clubRepository;
-        private readonly UserService _userService;
         private readonly NotificationService _notificationService;
 
-        public ClubService(ClubRepository clubRepository, UserService userService, NotificationService notificationService)
+        public ClubService(ClubRepository clubRepository, NotificationService notificationService)
         {
             _clubRepository = clubRepository;
-            _userService = userService;
             _notificationService = notificationService;
         }
 
@@ -76,32 +74,14 @@ namespace VolleyMS.BusinessLogic.Services
 
         public async Task<Club?> GetById(Guid clubId)
         {
-            return await _clubRepository.GetById(clubId);
+            return await _clubRepository.GetById(clubId) ?? throw new Exception("No club was found!");
         }
 
-        public async Task AddMember(Guid userId, Guid clubId, Guid responseUserId)
+        public async Task AddMember(Guid clubId, Guid userId, ClubMemberRole clubMemberRole)
         {
-            var user = await _userService.GetById(userId);
-            var club = await _clubRepository.GetById(clubId);
-            _ = club ?? throw new Exception("Can't find a club");
-            _ = user ?? throw new Exception("Can't add user to a club");
+            await _clubRepository.AddUser(userId, clubId, clubMemberRole);
 
-            if (!await _clubRepository.ContainsUser(club, user))
-            {
-                await _clubRepository.AddUser(user, club);
-
-                // Send notification to a user whose request was approved
-                await _notificationService.SendNotification(new NotificationRequest()
-                {
-                    NotificationCategory = NotificationCategory.ClubJoinApproved,
-                    Receivers = new List<Guid> { userId },
-                    Text = $"Your request to join club {club.Name} was approved.",
-                }, responseUserId);
-            }
-            else
-            {
-                throw new Exception("User is already a member of the club");
-            }
+            //Send notification to added member
         }
 
         public async Task DeleteMember(Guid clubId, Guid userId, Guid responseUserId)
@@ -110,7 +90,7 @@ namespace VolleyMS.BusinessLogic.Services
 
             //Create notification to user who was deleted from team
             var club = await _clubRepository.GetById(clubId);
-            _ = club ?? throw new Exception("Can't find a club using provided join code");
+            _ = club ?? throw new Exception("Can't find a club");
             await _notificationService.SendNotification(new NotificationRequest()
             {
                 NotificationCategory = NotificationCategory.Informative,
@@ -119,9 +99,19 @@ namespace VolleyMS.BusinessLogic.Services
             }, responseUserId);
         }
 
+        public async Task<IList<User>> GetAllUsers(Guid clubId)
+        {
+            return await _clubRepository.GetAllUsers(clubId);
+        }
+
         public async Task<List<Guid>> GetUsersIdsByRole(Guid clubId, params ClubMemberRole[] clubMemberRole)
         {
             return await _clubRepository.GetUsersIdsByRole(clubId, clubMemberRole);
+        }
+
+        public async Task<bool> ContainsUser(Guid clubId, Guid userId)
+        {
+            return await _clubRepository.ContainsUser(clubId, userId);
         }
     }
 }

@@ -78,6 +78,25 @@ namespace VolleyMS.DataAccess.Repositories
             return clubTuple.club;
         }
 
+        public async Task<IList<User>> GetAllUsers(Guid clubId)
+        {
+            var userEntities = await _context.UserClubs
+                .Select(uc => uc.User).Include(uc => uc.UserClubs)
+                .Where(uc => uc.UserClubs.Any(c => c.Club.Id == clubId))
+                .ToListAsync();
+
+            var users = new List<User>();
+            foreach (var userEntity in userEntities)
+            {
+                var userTuple = User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname);
+                if (string.IsNullOrEmpty(userTuple.error))
+                {
+                    users.Add(userTuple.user);
+                }
+            }
+            return users;
+        }
+
         public async Task<List<Guid>> GetUsersIdsByRole(Guid clubId, params ClubMemberRole[] clubMemberRoles)
         {
             var userIds = await _context.UserClubs
@@ -89,33 +108,30 @@ namespace VolleyMS.DataAccess.Repositories
             return userIds;
         }
 
-        public async Task<bool> ContainsUser(Club club, User user)
+        public async Task<bool> ContainsUser(Guid clubId, Guid userId)
         {
             return await _context.UserClubs
-                .AnyAsync(uc => uc.Club.Id == club.Id && uc.User.Id == user.Id);
+                .AnyAsync(uc => uc.Club.Id == clubId && uc.User.Id == userId);
         }
 
-        public async Task AddUser(User user, Club club)
+        public async Task AddUser(Guid userId, Guid clubId, ClubMemberRole clubMemberRole)
         {
-            var UserEntity = await _context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-            var ClubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == club.Id);
-
-            if (UserEntity is not null && ClubEntity is not null)
+            if (!await ContainsUser(clubId, userId))
             {
-                var User_ClubEntity = new User_ClubsEntity
+                var userClub = new User_ClubsEntity
                 {
-                    Club = ClubEntity,
-                    User = UserEntity,
-                    ClubMemberRole = new List<ClubMemberRole>() { ClubMemberRole.Player },
+                    UserId = userId,
+                    ClubId = clubId,
+                    ClubMemberRole = new List<ClubMemberRole> { clubMemberRole }
                 };
 
-                if(!await ContainsUser(club, user))
-                {
-                    _context.UserClubs.Add(User_ClubEntity);
-                    ClubEntity.UpdatedAt = DateTime.UtcNow; 
-                }
+                _context.UserClubs.Add(userClub);
+
+                var club = await GetById(clubId);
+                club.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteUser(Guid clubId, Guid userId)

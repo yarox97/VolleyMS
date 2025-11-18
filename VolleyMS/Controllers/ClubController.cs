@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
+using VolleyMS.Contracts.DTOs;
 using VolleyMS.Core.Requests;
 
 namespace VolleyMS.Controllers
@@ -23,7 +24,18 @@ namespace VolleyMS.Controllers
         {
             try
             {
-                return Ok(await _clubService.GetById(clubId));
+                var club = await _clubService.GetById(clubId);
+                var response = new ClubDto()
+                {
+                    Id = club.Id,
+                    Name = club.Name,
+                    Description = club.Description,
+                    AvatarURL = club.AvatarURL,
+                    BackGroundURL = club.BackGroundURL,
+                    CreatedAt = club.CreatedAt,
+                    JoinCode = club.JoinCode
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -50,7 +62,7 @@ namespace VolleyMS.Controllers
             {
                 CreateClubRequest.CreatorId = creatorId;
                 var clubId = await _clubService.Create(CreateClubRequest);
-                await _clubService.AddMember(creatorId, clubId, creatorId);
+                await _clubService.AddMember(clubId, creatorId, ClubMemberRole.President);
                 return Ok();
             }
             catch (Exception ex)
@@ -74,7 +86,7 @@ namespace VolleyMS.Controllers
             }
         }
 
-        [HttpPatch("{clubId}/members")]
+        [HttpPut("{clubId}/members")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> AcceptUserJoinRequest([FromBody] AddUserToClubRequest addUserToClubRequest)
         {
@@ -91,8 +103,23 @@ namespace VolleyMS.Controllers
 
             try
             {
-                await _clubService.AddMember(addUserToClubRequest.UserId, addUserToClubRequest.ClubId, responseUserId);
+                await _clubService.AddMember(addUserToClubRequest.ClubId, addUserToClubRequest.UserId, addUserToClubRequest.clubMemberRole);
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{clubId}/members/")]
+        [Authorize]
+        public async Task<IActionResult> GetClubMembers(Guid clubId)
+        {
+            try
+            {
+                var members =  await _clubService.GetAllUsers(clubId);
+                return Ok(members);
             }
             catch (Exception ex)
             {
