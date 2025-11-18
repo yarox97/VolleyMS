@@ -6,6 +6,7 @@ using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Core.Requests;
 using VolleyMS.Core.Entities;
 using VolleyMS.Core.Models;
+using VolleyMS.Contracts.DTOs;
 
 namespace VolleyMS.Controllers
 {
@@ -44,38 +45,5 @@ namespace VolleyMS.Controllers
                 return StatusCode(400, ex.Message);
             }
         }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IList<Notification>>> Get()
-        {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-            {
-                return StatusCode(500, "Claims not found, try re-loggin");
-            }
-            if (!Guid.TryParse(userIdClaim, out var userId))
-            {
-                return StatusCode(500, "Invalid sender Id claims");
-            }
-
-            return Ok(await _notificationService.GetNotifications(userId));
-        }
-
-        [HttpPatch("{taskId}")]
-        [Authorize]
-        public async Task<IActionResult> Check(Guid taskId)
-        {
-            try 
-            { 
-                await _notificationService.Check(taskId); 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
     }
 }

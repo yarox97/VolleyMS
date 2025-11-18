@@ -50,9 +50,9 @@ namespace VolleyMS.BusinessLogic.Services
             return notifIds;
         }
 
-        public async Task<IList<Notification>> GetNotifications(Guid userId)
+        public async Task<IList<Notification>> GetNotifications(string userName)
         {
-            var notifications = await _notificationRepository.GetUserNotifications(userId);
+            var notifications = await _notificationRepository.GetUserNotifications(userName);
             return notifications == null ? new List<Notification>() : notifications;  
         }
 

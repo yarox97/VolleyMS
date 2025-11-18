@@ -39,7 +39,8 @@ namespace VolleyMS.DataAccess.Repositories
                 senderId = senderId,
                 Sender = senderEntity,
                 Receivers = receiversEntities,
-                CreatorId = senderId
+                CreatorId = senderId,
+                CreatedAt = DateTime.UtcNow
             };
 
             await _context.Notifications.AddAsync(NotificationModel);
@@ -63,10 +64,11 @@ namespace VolleyMS.DataAccess.Repositories
                 .ExecuteDeleteAsync();
         }
 
-        public async Task<IList<Notification>> GetUserNotifications(Guid userId)
+        public async Task<IList<Notification>> GetUserNotifications(string userName)
         {
             var notifEntities = await _context.Notifications
-                .Where(n => n.Receivers.Any(r => r.Id == userId))
+                .Include(n => n.notificationType)
+                .Where(n => n.Receivers.Any(r => r.UserName == userName))
                 .ToListAsync();
 
             var notifications = new List<Notification>();
@@ -84,6 +86,7 @@ namespace VolleyMS.DataAccess.Repositories
                     notifEntity.Text, 
                     notifEntity.LinkedURL).notification;
 
+                notification.CreatorId = notifEntity.senderId;
                 notifications.Add(notification);
             }
             return  notifications;

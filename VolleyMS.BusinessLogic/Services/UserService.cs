@@ -8,9 +8,12 @@ namespace VolleyMS.BusinessLogic.Services;
 public class UserService
 {
     private readonly UserRepository _userRepository;
-    public UserService(UserRepository userRepository)
+    private readonly NotificationService _notificationService;
+
+    public UserService(UserRepository userRepository, NotificationService notificationService)
     {
         _userRepository = userRepository;
+        _notificationService = notificationService;
     }
 
     public async Task<User?> Get(string userName) => await _userRepository.GetByUserName(userName);

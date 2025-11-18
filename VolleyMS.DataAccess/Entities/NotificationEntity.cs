@@ -19,7 +19,7 @@ namespace VolleyMS.DataAccess.Models
         }
         public Guid Id { get; set; }
         public bool isChecked { get; set; } = false;
-        public string Text { get; set;  } = string.Empty;
+        public string Text { get; set;  }
         public string? LinkedURL { get; set; }
         public Guid senderId { get; set; }
 

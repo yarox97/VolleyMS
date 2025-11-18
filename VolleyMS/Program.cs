@@ -35,6 +35,7 @@ builder.Services.AddScoped<ClubRepository>();
 builder.Services.AddScoped<ClubService>();
 builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<JoinClubService>();
 //builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

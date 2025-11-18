@@ -9,16 +9,18 @@ namespace VolleyMS.Core.Models
 {
     public class NotificationType
     {
-        private NotificationType(Guid Id, NotificationCategory notificationCategory, IList<ClubMemberRole> requiredClubMemberRole)
+        private NotificationType(Guid Id, 
+            NotificationCategory notificationCategory, 
+            IList<ClubMemberRole> requiredClubMemberRole)
         {
             this.Id = Id;
             this.notificationCategory = notificationCategory;
             this.requiredClubMemberRole = requiredClubMemberRole;
         }
 
-        public Guid Id;
-        public NotificationCategory notificationCategory = NotificationCategory.Informative;
-        public IList<ClubMemberRole> requiredClubMemberRole;
+        public Guid Id { get; }
+        public NotificationCategory notificationCategory { get; } = NotificationCategory.Informative;
+        public IList<ClubMemberRole> requiredClubMemberRole { get; }
 
         public static (NotificationType notificationType, string error) Create(Guid Id, NotificationCategory notificationCategory, IList<ClubMemberRole> requiredClubMemberRole)
         {
