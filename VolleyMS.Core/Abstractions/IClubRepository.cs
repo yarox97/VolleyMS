@@ -8,6 +8,6 @@ namespace VolleyMS.DataAccess.Repositories
         //public Task Update(Club club);
         public Task Delete(Guid clubId);
         //public Task AddUser(User user, string joinCode);
-        public Task<Club?> GetClubByCode(string joinCode);
+        public Task<Club?> Get(string joinCode);
     }
 }

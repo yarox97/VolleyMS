@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VolleyMS.DataAccess.Entities;
-using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {

@@ -1,25 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace VolleyMS.DataAccess
+namespace VolleyMS.Extensions
 {
-    public static class Extensions
+    public static class SwaggerExtension
     {
-        public static void AddDataBase(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddDbContext<VolleyMsDbContext>(o =>
-            {
-                o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb;Username=postgres;password=GabeNewwel228");
-            });
-        }
-
         public static void AddSwaggerAuth(this IServiceCollection serviceCollection, Action<SwaggerGenOptions> setupAction = null)
         {
             serviceCollection.AddSwaggerGen(c =>

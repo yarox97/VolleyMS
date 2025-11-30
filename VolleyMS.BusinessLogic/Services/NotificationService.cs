@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Entities;
+﻿using VolleyMS.BusinessLogic.NotificationPayloads;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Requests;
+using VolleyMS.DataAccess.Mappers;
 using VolleyMS.DataAccess.Repositories;
 using Task = System.Threading.Tasks.Task;
 
@@ -21,44 +15,54 @@ namespace VolleyMS.BusinessLogic.Services
             _notificationRepository = notificationRepository;
         }
 
-        public async Task<IList<Guid>> SendNotification(NotificationRequest notificationRequest, Guid senderId)
+        private Notification HandleCategorizedNotification(NotificationRequest notificationRequest, Guid? senderId)
         {
-            List<Guid> notifIds = new List<Guid>();
+            var payload = PayLoadFactory.CreatePayLoad(notificationRequest, senderId);
 
-            for(int i = 0; i < notificationRequest.Receivers.Count(); ++i) 
+            var notification = Notification.Create(
+                notificationRequest.RequiredClubMemberRole,
+                notificationRequest.NotificationCategory,
+                notificationRequest.Text,
+                notificationRequest.LinkedURL,
+                payload);
+
+            return notification;
+        }
+
+        public async Task<Guid> SendNotification(NotificationRequest NotificationRequest, Guid SenderId)
+        {
+            var CategorizedNotification = HandleCategorizedNotification(NotificationRequest, SenderId);
+
+            await _notificationRepository.Create(CategorizedNotification, NotificationRequest.Receivers, SenderId);
+
+            return CategorizedNotification.Id;
+        }
+
+        public async Task<IList<UserNotificationResult>> Get(Guid UserId)
+        {
+            var Notifications = await _notificationRepository.GetUserNotifications(UserId);
+            var UserNotificationResult = new List<UserNotificationResult>();
+            foreach (var Notification in Notifications)
             {
-                var notifTypeTuple = NotificationType.Create(
-                    Guid.NewGuid(),
-                    notificationRequest.NotificationCategory,
-                    notificationRequest.RequiredClubMemberRole);
-
-                if (notifTypeTuple.error != string.Empty)
-                    throw new Exception(notifTypeTuple.error);
-
-                var notifTuple = Notification.Create(
-                    Guid.NewGuid(),
-                    notifTypeTuple.notificationType,
-                    notificationRequest.IsChecked,
-                    notificationRequest.Text,
-                    notificationRequest.LinkedURL);
-
-                if (notifTuple.error != string.Empty)
-                    throw new Exception(notifTypeTuple.error);
-
-                notifIds.Add(await _notificationRepository.Create(notifTuple.notification, new List<Guid> { notificationRequest.Receivers[i] }, senderId));
+                var DomainNotification = NotificationMapper.ToDomain(Notification.Notification);
+                UserNotificationResult.Add(new UserNotificationResult(DomainNotification, Notification.IsChecked));
             }
-            return notifIds;
+            return UserNotificationResult;
         }
 
-        public async Task<IList<Notification>> GetNotifications(string userName)
+        public async Task Check(Guid NotificationId, string userName)
         {
-            var notifications = await _notificationRepository.GetUserNotifications(userName);
-            return notifications == null ? new List<Notification>() : notifications;  
+            await _notificationRepository.Check(NotificationId, userName);
         }
 
-        public async Task Check(Guid notifId)
+        public async Task<Guid> DeleteUserNotification(Guid notificationId, Guid userId)
         {
-            await _notificationRepository.Check(notifId);
-        }  
+            return await _notificationRepository.DeleteUserNotification(notificationId, userId);
+        }
+
+        public async Task<Guid> DeleteUsersNotifications(Guid notificationId)
+        {
+            return await _notificationRepository.DeleteCascade(notificationId);
+        }
     }
 }

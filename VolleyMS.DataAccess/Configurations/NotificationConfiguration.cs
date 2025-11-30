@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.DataAccess.Models;
+using VolleyMS.DataAccess.Entities;
 
 namespace VolleyMS.DataAccess.Configurations
 {
@@ -21,10 +16,12 @@ namespace VolleyMS.DataAccess.Configurations
 
             builder.HasOne(n => n.Sender)
                 .WithMany(u => u.SentNotifications)
-                .HasForeignKey(n => n.senderId);
+                .HasForeignKey(n => n.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(n => n.Receivers)
-           .WithMany(u => u.ReceivedNotifications);
+            builder.HasMany(n => n.UserNotifications)
+                .WithOne(un => un.Notification)
+                .HasForeignKey(un => un.NotificationId);
         }
     }
 }

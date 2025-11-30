@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Common;
-using VolleyMS.Core.Models;
-using VolleyMS.DataAccess.Entities;
+﻿using VolleyMS.Core.Common;
 
-namespace VolleyMS.DataAccess.Models
+namespace VolleyMS.DataAccess.Entities
 {
     public class NotificationEntity : BaseEntity
     {
-        public NotificationEntity()
+        public NotificationEntity() 
+            : base(Guid.NewGuid())
         {
-            Receivers = new List<UserEntity>();
-            Sender = new UserEntity();
-            notificationType = new NotificationTypeEntity();
         }
-        public Guid Id { get; set; }
-        public bool isChecked { get; set; } = false;
         public string Text { get; set;  }
         public string? LinkedURL { get; set; }
-        public Guid senderId { get; set; }
-
-        public NotificationTypeEntity notificationType { get; set; }
-        public IList<UserEntity> Receivers { get; set; }
-        public UserEntity Sender { get; set; }
+        public string? Payload { get; set; }
+        public Guid? SenderId { get; set; }
+        public UserEntity? Sender { get; set; }
+        public NotificationCategory Category { get; set; }
+        public IList<ClubMemberRole> RequiredClubMemberRoles { get; set; }
+        public ICollection<UserNotificationsEntity> UserNotifications { get; set; }
     }
 }

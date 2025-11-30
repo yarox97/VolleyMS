@@ -1,21 +1,25 @@
 ﻿using System.Runtime.CompilerServices;
 using VolleyMS.Core.Common;
+using VolleyMS.Core.Exceptions;
 
 namespace VolleyMS.Core.Models
 {
     public class User : BaseEntity
     {
-        private User(Guid id, string userName, string password, UserType userType, string name, string surname)
+        private User(Guid id, 
+            string userName, 
+            string password, 
+            UserType userType, 
+            string name, 
+            string surname)
+            : base(id)
         {
-            Id = id;
             UserName = userName;
             Password = password;
             UserType = userType;
             Name = name;
             Surname = surname;
         }
-
-        public Guid Id { get; }
         public string UserName { get; } = string.Empty;
         public string Password { get; private set; } = string.Empty;
         public UserType UserType { get; } = UserType.Player;
@@ -27,29 +31,36 @@ namespace VolleyMS.Core.Models
             Password = hashedPassword;
         }
 
-        public static (User user, string error) Create(Guid id, string userName, string password, 
-                                                      UserType userType, string name, string surname)
+        public static User Create(Guid id, 
+            string userName, 
+            string password, 
+            UserType userType, 
+            string name, 
+            string surname)
         {
-            var error = string.Empty;
             if (string.IsNullOrEmpty(userName))
             {
-                error = "User name is required";
+                throw new EmptyFieldDomainException("Username cannot be null or empty");
             }
             if (string.IsNullOrEmpty(password))
             {
-                error = "Password is required";
+                throw new EmptyFieldDomainException("Password cannot be null or empty");
             }
             if (userType != UserType.Player && userType != UserType.Admin)
             {
-                error = "Invalid user type";
+                throw new InvalidUserTypeDomainException("Invalid user type");
             }
-            if(string.IsNullOrEmpty(surname) || string.IsNullOrEmpty(name))
+            if(string.IsNullOrEmpty(surname))
             {
-                error = "Invalid name or surname";
+                throw new EmptyFieldDomainException("Surname cannot be null or empty");
+            }
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new EmptyFieldDomainException("Name cannot be null or empty");
             }
             
             var user = new User(id, userName, password, userType, name, surname);
-            return (user, error);
+            return user;
         }
     }
 }

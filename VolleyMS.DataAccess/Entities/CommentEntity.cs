@@ -1,18 +1,13 @@
 ﻿using VolleyMS.Core.Common;
-using VolleyMS.DataAccess.Entities;
 
-namespace VolleyMS.DataAccess.Models
+namespace VolleyMS.DataAccess.Entities
 {
     public class CommentEntity : BaseEntity
     {
-        public CommentEntity()
+        public CommentEntity() : base(Guid.NewGuid())
         {
-            Task = new TaskEntity();
-            Sender = new UserEntity();
         }
-        public Guid Id { get; set; }
         public string Text { get; set; }
-
         public Guid TaskId { get; set; }
         public TaskEntity Task;
         public Guid SenderId { get; set; }

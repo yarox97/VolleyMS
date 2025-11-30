@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VolleyMS.Core.Entities;
+using VolleyMS.Core.Exceptions;
 using VolleyMS.Core.Models;
 using VolleyMS.DataAccess.Entities;
-using VolleyMS.DataAccess.Models;
+using VolleyMS.DataAccess.Mappers;
 using Task = System.Threading.Tasks.Task;
 
 
@@ -15,92 +15,95 @@ namespace VolleyMS.DataAccess.Repositories
         {
             _context = context;
         }
-        public async Task<Guid> Create(Notification notification, IList<Guid> receivers, Guid senderId)
+        public async Task<Guid> Create(Notification notification, IList<Guid> receivers, Guid? senderId)
         {
-            var senderEntity = await _context.Users.FindAsync(senderId) ?? throw new Exception("Sender not found!");
+            if (notification == null)
+            {
+                throw new Exception("Notification is empty!"); // TO CHANGE EXCEPTION TYPE
+            }
 
+            // get sender entity
+            var senderEntity = await _context.Users.FirstOrDefaultAsync(u => u.Id == senderId); //?? throw new UserNotFoundDomainException("Sender not found!"); // TO CHANGE EXCEPTION TYPE
+
+            // get receiver entities
             var receiversEntities = await _context.Users
                .Where(u => receivers.Contains(u.Id))
                .ToListAsync();
 
-            if (receiversEntities.Count < 1) throw new Exception("No recievers found!");
+            if (receiversEntities.Count < 1) throw new UserNotFoundDomainException("No recievers found!"); // TO CHANGE EXCEPTION TYPE
 
-            var NotificationModel = new NotificationEntity 
-            {
-                notificationType = new NotificationTypeEntity 
+            // create notification entity
+            var NotificationEntity = NotificationMapper.ToEntity(notification, senderId);
+
+            // Create notification for each receiver
+            NotificationEntity.UserNotifications = receiversEntities
+                .Select(r => new UserNotificationsEntity
                 {
-                    Id = notification.NotificationType.Id,
-                    notificationCategory = notification.NotificationType.notificationCategory,
-                    requiredClubMemberRole = notification.NotificationType.requiredClubMemberRole
-                },
-                Text = notification.Text,
-                isChecked = notification.IsChecked,
-                LinkedURL = notification.LinkedURL,
-                senderId = senderId,
-                Sender = senderEntity,
-                Receivers = receiversEntities,
-                CreatorId = senderId,
-                CreatedAt = DateTime.UtcNow
-            };
+                    NotificationId = NotificationEntity.Id,
+                    UserId = r.Id,
+                    IsChecked = false
+                })
+                .ToList();
 
-            await _context.Notifications.AddAsync(NotificationModel);
+            await _context.Notifications.AddAsync(NotificationEntity);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.InnerException?.Message ?? ex.Message);
-                throw;
-            }
             return notification.Id;
         }
 
-        public async Task Delete(Guid NorificationId)
+        public async Task<Guid> DeleteUserNotification(Guid notificationId, Guid userId)
+        {
+            await _context.UserNotifications
+                .Where(un => un.NotificationId == notificationId && un.UserId == userId)
+                .ExecuteDeleteAsync();
+
+            await _context.SaveChangesAsync();
+            return notificationId;
+        }
+
+        public async Task<Guid> DeleteCascade(Guid notificationId)
         {
             await _context.Notifications
-                .Where(n => n.Id == NorificationId)
+                .Where(n => n.Id == notificationId)
                 .ExecuteDeleteAsync();
+
+            await _context.SaveChangesAsync();
+            return notificationId;
         }
 
-        public async Task<IList<Notification>> GetUserNotifications(string userName)
+        public async Task<IList<UserNotificationsEntity>> GetUserNotifications(Guid userId)
         {
-            var notifEntities = await _context.Notifications
-                .Include(n => n.notificationType)
-                .Where(n => n.Receivers.Any(r => r.UserName == userName))
+            var NotificationEntities = await _context.UserNotifications
+                .Include(un => un.Notification)
+                .Where(un => un.UserId == userId)
                 .ToListAsync();
 
-            var notifications = new List<Notification>();
-            foreach (var notifEntity in notifEntities)
+            List<UserNotificationsEntity> Notifications = new List<UserNotificationsEntity>();
+
+            if(NotificationEntities == null || NotificationEntities.Count < 1)
+                return Notifications;
+
+            foreach (var NotificationEntity in NotificationEntities)
             {
-                var notificationType = NotificationType.Create(
-                    notifEntity.notificationType.Id,
-                    notifEntity.notificationType.notificationCategory,
-                    notifEntity.notificationType.requiredClubMemberRole).notificationType;
-
-                var notification = Notification.Create(
-                    notifEntity.Id, 
-                    notificationType, 
-                    notifEntity.isChecked, 
-                    notifEntity.Text, 
-                    notifEntity.LinkedURL).notification;
-
-                notification.CreatorId = notifEntity.senderId;
-                notifications.Add(notification);
+                Notifications.Add(NotificationEntity);
             }
-            return  notifications;
+
+            return Notifications;
         }
 
-        public async Task Check(Guid NotificationId)
+        public async Task Check(Guid NotificationId, string userName)
         {
-            var notif = await _context.Notifications.FindAsync(NotificationId);
-            if (notif == null) throw new Exception("Notification wasn't found!");
+            var NotificationEntity = await _context.UserNotifications
+                .FirstOrDefaultAsync(un => un.NotificationId == NotificationId && un.User.UserName == userName);
             
-            notif.isChecked = true;
-            notif.UpdatedAt = DateTime.UtcNow;
+            if (NotificationEntity == null) 
+                throw new Exception("Notification wasn't found!");
+
+            NotificationEntity.IsChecked = true;
+            NotificationEntity.UpdatedAt = DateTime.UtcNow; // TODO domain event for update
             await _context.SaveChangesAsync();
         }
 
+        
     }
 }

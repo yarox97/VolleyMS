@@ -10,25 +10,16 @@ namespace VolleyMS.DataAccess.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(u => u.UserName)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            builder.Property(u => u.Password)
-                .IsRequired();
-
-            builder.Property(u => u.Name)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            builder.Property(u => u.Surname)
-                .HasMaxLength(50)
-                .IsRequired();
+            builder.Property(u => u.UserName).HasMaxLength(50).IsRequired();
+            builder.Property(u => u.Password).IsRequired();
+            builder.Property(u => u.Name).HasMaxLength(50).IsRequired();
+            builder.Property(u => u.Surname).HasMaxLength(50).IsRequired();
 
             builder.HasMany(u => u.Contracts)
                 .WithOne(c => c.User)
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(deleteBehavior: DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.HasMany(u => u.ReceivedTasks)
                 .WithMany(t => t.Receivers);
@@ -42,13 +33,14 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasForeignKey(c => c.SenderId);
 
             builder.HasMany(u => u.ReceivedNotifications)
-                .WithMany(n => n.Receivers);
+                .WithOne(un => un.User)
+                .HasForeignKey(un => un.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.SentNotifications)
                 .WithOne(n => n.Sender)
-                .HasForeignKey(n => n.senderId)
+                .HasForeignKey(n => n.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

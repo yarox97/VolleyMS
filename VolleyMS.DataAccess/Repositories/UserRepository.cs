@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Models;
-using VolleyMS.DataAccess.Entities;
+using VolleyMS.DataAccess.Mappers;
 
 namespace VolleyMS.DataAccess.Repositories
 {
@@ -13,34 +13,31 @@ namespace VolleyMS.DataAccess.Repositories
         }
         public async Task<bool> IsLoginTaken(string userName)
         {
-            return await _context.Users.AnyAsync(u => u.UserName.ToLower() == userName.ToLower());                           
+            return await _context.Users
+                .AnyAsync(u => u.UserName.ToLower() == userName.ToLower());                           
         }
         public async Task AddUser(User user)
         {
-            var userModel = new UserEntity
+            var userEntity = UserMapper.ToEntity(user);
+            if(userEntity == null)
             {
-                UserName = user.UserName,
-                Password = user.Password,
-                userType = user.UserType,
-                Name = user.Name,
-                Surname = user.Surname
-            };
-            await _context.Users.AddAsync(userModel);
+                throw new ArgumentNullException(nameof(userEntity), "User entity cannot be null");
+            }
+
+            await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User?> GetByUserName(string userName)
+        public async Task<User?> Get(string userName)
         {
-            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
-
-            return userEntity is not null ? User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user : null;
+            var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            return userEntity is not null ? UserMapper.ToDomain(userEntity) : null;
         }
 
-        public async Task<User?> GetById(Guid Id)
+        public async Task<User?> Get(Guid Id)
         {
             var userEntity = await _context.Users.FirstOrDefaultAsync(u => u.Id == Id);
-
-            return userEntity is not null ? User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname).user : null;
+            return userEntity is not null ? UserMapper.ToDomain(userEntity) : null;
         }
 
         public async Task Modify(string userName, User newUser)
@@ -51,8 +48,8 @@ namespace VolleyMS.DataAccess.Repositories
                 userEntity.Surname = newUser.Surname;
                 userEntity.Password = newUser.Password;
                 userEntity.Name = newUser.Name;
-                userEntity.userType = newUser.UserType;
-                userEntity.UpdatedAt = DateTime.UtcNow;
+                userEntity.UserType = newUser.UserType;
+                userEntity.UpdatedAt = DateTime.UtcNow; // To make domain event for updateAt
                 await _context.SaveChangesAsync();
                 return;
             }
