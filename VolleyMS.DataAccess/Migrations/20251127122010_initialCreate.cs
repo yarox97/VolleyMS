@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace VolleyMS.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class initial_create : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,30 +52,6 @@ namespace VolleyMS.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClubEntityUserEntity",
-                columns: table => new
-                {
-                    ClubsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UsersId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClubEntityUserEntity", x => new { x.ClubsId, x.UsersId });
-                    table.ForeignKey(
-                        name: "FK_ClubEntityUserEntity_Clubs_ClubsId",
-                        column: x => x.ClubsId,
-                        principalTable: "Clubs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClubEntityUserEntity_Users_UsersId",
-                        column: x => x.UsersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Contracts",
                 columns: table => new
                 {
@@ -114,11 +90,11 @@ namespace VolleyMS.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    notificationType = table.Column<int>(type: "integer", nullable: false),
-                    isChecked = table.Column<bool>(type: "boolean", nullable: false),
                     Text = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     LinkedURL = table.Column<string>(type: "text", nullable: true),
-                    senderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SenderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Category = table.Column<int>(type: "integer", nullable: false),
+                    RequiredClubMemberRole = table.Column<int[]>(type: "integer[]", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -128,8 +104,8 @@ namespace VolleyMS.DataAccess.Migrations
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_Users_senderId",
-                        column: x => x.senderId,
+                        name: "FK_Notifications_Users_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -171,24 +147,60 @@ namespace VolleyMS.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NotificationEntityUserEntity",
+                name: "UserClubs",
                 columns: table => new
                 {
-                    ReceivedNotificationsId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReceiversId = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClubId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClubMemberRole = table.Column<int[]>(type: "integer[]", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NotificationEntityUserEntity", x => new { x.ReceivedNotificationsId, x.ReceiversId });
+                    table.PrimaryKey("PK_UserClubs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NotificationEntityUserEntity_Notifications_ReceivedNotifica~",
-                        column: x => x.ReceivedNotificationsId,
+                        name: "FK_UserClubs_Clubs_ClubId",
+                        column: x => x.ClubId,
+                        principalTable: "Clubs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserClubs_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserNotifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    IsChecked = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNotifications", x => new { x.UserId, x.NotificationId });
+                    table.ForeignKey(
+                        name: "FK_UserNotifications_Notifications_NotificationId",
+                        column: x => x.NotificationId,
                         principalTable: "Notifications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_NotificationEntityUserEntity_Users_ReceiversId",
-                        column: x => x.ReceiversId,
+                        name: "FK_UserNotifications_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -249,11 +261,6 @@ namespace VolleyMS.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ClubEntityUserEntity_UsersId",
-                table: "ClubEntityUserEntity",
-                column: "UsersId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_SenderId",
                 table: "Comments",
                 column: "SenderId");
@@ -274,14 +281,9 @@ namespace VolleyMS.DataAccess.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NotificationEntityUserEntity_ReceiversId",
-                table: "NotificationEntityUserEntity",
-                column: "ReceiversId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Notifications_senderId",
+                name: "IX_Notifications_SenderId",
                 table: "Notifications",
-                column: "senderId");
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskEntityUserEntity_ReceiversId",
@@ -297,14 +299,26 @@ namespace VolleyMS.DataAccess.Migrations
                 name: "IX_Tasks_SenderId",
                 table: "Tasks",
                 column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserClubs_ClubId",
+                table: "UserClubs",
+                column: "ClubId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserClubs_UserId",
+                table: "UserClubs",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserNotifications_NotificationId",
+                table: "UserNotifications",
+                column: "NotificationId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ClubEntityUserEntity");
-
             migrationBuilder.DropTable(
                 name: "Comments");
 
@@ -312,16 +326,19 @@ namespace VolleyMS.DataAccess.Migrations
                 name: "Contracts");
 
             migrationBuilder.DropTable(
-                name: "NotificationEntityUserEntity");
-
-            migrationBuilder.DropTable(
                 name: "TaskEntityUserEntity");
 
             migrationBuilder.DropTable(
-                name: "Notifications");
+                name: "UserClubs");
+
+            migrationBuilder.DropTable(
+                name: "UserNotifications");
 
             migrationBuilder.DropTable(
                 name: "Tasks");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "Clubs");

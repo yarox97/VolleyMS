@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Models;
-
-namespace VolleyMS.Core.Common
+﻿namespace VolleyMS.Core.Common
 {
     public class BaseEntity : AuditableFields
     {
+        protected BaseEntity(Guid id)
+        {
+            Id = id; 
+        }
+        public Guid Id { get; init; }
         public Guid? CreatorId { get; set; }
     }
 }

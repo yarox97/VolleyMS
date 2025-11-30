@@ -5,18 +5,25 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using VolleyMS.Core.Common;
+using VolleyMS.Core.Exceptions;
 
 namespace VolleyMS.Core.Entities
 {
     public class Task : BaseEntity
     {
-        private Task(Guid id, TaskType taskType, TaskStatus taskStatus,
-                                                       PenaltyType penaltyType, DateTime startDate,
-                                                       DateTime? endDate, List<DayOfWeek> dayOfWeek,
-                                                       TimeSpan startTime, TimeSpan endTime,
-                                                       string title, string description)
+        private Task(Guid id, 
+            TaskType taskType, 
+            TaskStatus taskStatus,
+            PenaltyType penaltyType, 
+            DateTime startDate,
+            DateTime? endDate, 
+            List<DayOfWeek> dayOfWeek,
+            TimeSpan startTime, 
+            TimeSpan endTime,
+            string title, 
+            string description)
+            : base(id)
         {
-            Id = id;
             TaskType = taskType;
             TaskStatus = taskStatus;
             TaskStatus = taskStatus;
@@ -29,7 +36,6 @@ namespace VolleyMS.Core.Entities
             Title = title;
             Description = description;
         }
-        public Guid Id { get; }
         public TaskType TaskType { get; }
         public TaskStatus TaskStatus { get; }
         public PenaltyType PenaltyType { get; } = PenaltyType.None;
@@ -42,25 +48,30 @@ namespace VolleyMS.Core.Entities
         public string Title = string.Empty;
         public string Description = string.Empty;  
         
-        public static (Task task, string error) Create(Guid id, TaskType taskType, TaskStatus taskStatus, 
-                                                       PenaltyType penaltyType, DateTime startDate,
-                                                       DateTime? endDate, List<DayOfWeek> dayOfWeek,
-                                                       TimeSpan startTime, TimeSpan endTime,
-                                                       string title, string description)
+        public static Task Create(Guid id, 
+            TaskType taskType, 
+            TaskStatus taskStatus, 
+            PenaltyType penaltyType, 
+            DateTime startDate,
+            DateTime? endDate, 
+            List<DayOfWeek> dayOfWeek,
+            TimeSpan startTime, 
+            TimeSpan endTime,
+            string title, 
+            string description)
         {
-            string error = string.Empty;
             Task task = new Task(id, taskType, taskStatus, penaltyType, startDate, endDate, dayOfWeek, startTime, endTime, title, description);
 
             if (string.IsNullOrEmpty(title))
             {
-                error = "Title cannot be empty!";
+                throw new EmptyFieldDomainException("Task title cannot be empty!");
             }
             if(endDate <= task.CreatedAt || startTime > endTime || startDate > endDate)
             {
-                error = "Task date is outside the bounds!";
+                throw new DateOutOfBoundsDomainException("End date cannot be earlier than this moment!");
             }
 
-            return (task, error);
+            return task;
         }
     }
 }

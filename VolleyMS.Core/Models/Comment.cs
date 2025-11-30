@@ -9,7 +9,10 @@ namespace VolleyMS.Core.Entities
 {
     public class Comment : BaseEntity
     {
-        public Guid Id { get; }
+        public Comment(Guid id)
+            : base(id)
+        {
+        }
         public string Text { get; } = string.Empty;
     }
 }

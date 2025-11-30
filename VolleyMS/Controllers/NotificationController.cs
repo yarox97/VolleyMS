@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using VolleyMS.BusinessLogic.Services;
-using VolleyMS.Core.Requests;
-using VolleyMS.Core.Entities;
-using VolleyMS.Core.Models;
 using VolleyMS.Contracts.DTOs;
+using VolleyMS.Core.Requests;
+using VolleyMS.Extensions;
 
 namespace VolleyMS.Controllers
 {
@@ -25,25 +22,54 @@ namespace VolleyMS.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] NotificationRequest notificationRequest)
         {
-            var senderIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (senderIdClaim == null)
+            var senderId = User.GetUserId();
+
+            return Ok(await _notificationService.SendNotification(notificationRequest, senderId));
+        }
+
+
+        [HttpGet("user/notifications")]
+        [Authorize]
+        public async Task<ActionResult<IList<NotificationDto>>> GetNotifications()
+        {
+            var userId = User.GetUserId();
+
+            var userNotifications = await _notificationService.Get(userId);
+            var response = new List<NotificationDto>();
+
+            foreach (var userNotification in userNotifications)
             {
-                return BadRequest("Claims not found, try re-loggin");
+                response.Add(new NotificationDto
+                {
+                    Text = userNotification.Notification.Text,
+                    IsChecked = userNotification.IsChecked,
+                    LinkedURL = userNotification.Notification.LinkedURL,
+                    NotificationCategory = userNotification.Notification.Category,
+                    RequiredClubMemberRoles = userNotification.Notification.RequiredClubMemberRoles,
+                    SenderId = userNotification.Notification.CreatorId,
+                    PayLoad = userNotification.Notification.Payload,
+                });
             }
 
-            if (!Guid.TryParse(senderIdClaim, out var senderId))
-            {
-                return BadRequest("Invalid sender Id claims");
-            }
+            return Ok(response);
+        }
 
-            try
-            {
-                return Ok(await _notificationService.SendNotification(notificationRequest, senderId));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(400, ex.Message);
-            }
+        [HttpPut("user/notifications/{notificationId}")]
+        [Authorize]
+        public async Task<IActionResult> Check(Guid notificationId)
+        {
+            var userName = User.GetUserName();
+            await _notificationService.Check(notificationId, userName);
+            return NoContent();
+        }
+
+        [HttpDelete("user/notifications/{notificationId}")]
+        [Authorize]
+        public async Task<IActionResult> Delete(Guid notificationId)
+        {
+            var userId = User.GetUserId();
+            await _notificationService.DeleteUserNotification(notificationId, userId);
+            return NoContent();
         }
     }
 }

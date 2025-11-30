@@ -8,14 +8,13 @@ namespace VolleyMS.BusinessLogic.Services
     public class ClubService
     {
         private readonly ClubRepository _clubRepository;
-        private readonly NotificationService _notificationService;
 
-        public ClubService(ClubRepository clubRepository, NotificationService notificationService)
+        public ClubService(ClubRepository clubRepository)
         {
             _clubRepository = clubRepository;
-            _notificationService = notificationService;
         }
 
+        // GENERATE JOIN CODE
         public async Task<string> GenerateJoinCode()
         {
             string joinCode = string.Empty;
@@ -32,83 +31,67 @@ namespace VolleyMS.BusinessLogic.Services
 
             return joinCode;
         }
+        // --------------------------------------------------------------
 
+        // MANAGE CLUB
         public async Task<Guid> Create(CreateClubRequest createClubRequest)
         {
             string joinCode = await GenerateJoinCode();
-            var clubTuple = Club.Create(
-                Guid.NewGuid(), 
-                createClubRequest.Name, 
+            var club = Club.Create(
+                Guid.NewGuid(),
+                createClubRequest.Name,
                 joinCode,
                 createClubRequest.Description,
                 createClubRequest.AvatarURL,
                 createClubRequest.BackGroundURL
                 );
 
-            if (clubTuple.error == string.Empty)
-            {
-                await _clubRepository.Create(clubTuple.club, createClubRequest.CreatorId);
-                return clubTuple.club.Id;
-            }
-            else
-            {
-                throw new Exception(clubTuple.error);
-            }
+            await _clubRepository.Create(club, createClubRequest.CreatorId);
+            return club.Id;
         }
         public async Task Delete(Guid clubId)
         {
-            try
+            await _clubRepository.Delete(clubId);
+        }
+        // --------------------------------------------------------------
+
+
+        // GET CLUB BY JOIN CODE OR ID
+        public async Task<Club?> Get(string joinCode)
+        {
+            return await _clubRepository.Get(joinCode);
+        }
+        public async Task<Club?> Get(Guid clubId)
+        {
+            return await _clubRepository.Get(clubId) ?? throw new Exception("No club was found!");
+        }
+        // --------------------------------------------------------------
+
+
+        // MANAGE CLUB MEMBERS
+        public async Task<Guid?> AddMember(Guid clubId, Guid userId, ClubMemberRole clubMemberRole)
+        {
+            if(!await _clubRepository.ContainsUser(clubId, userId))
             {
-                await _clubRepository.Delete(clubId);
+                await _clubRepository.AddUser(userId, clubId, clubMemberRole);
+                return userId;
             }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error: {ex.Message}");
-            }
+            return null;
         }
-
-        public async Task<Club?> GetClubByJoinCode(string joinCode)
-        {
-            return await _clubRepository.GetClubByCode(joinCode);
-        }
-
-        public async Task<Club?> GetById(Guid clubId)
-        {
-            return await _clubRepository.GetById(clubId) ?? throw new Exception("No club was found!");
-        }
-
-        public async Task AddMember(Guid clubId, Guid userId, ClubMemberRole clubMemberRole)
-        {
-            await _clubRepository.AddUser(userId, clubId, clubMemberRole);
-
-            //Send notification to added member
-        }
-
-        public async Task DeleteMember(Guid clubId, Guid userId, Guid responseUserId)
+        public async Task<Guid> DeleteMember(Guid clubId, Guid userId, Guid responseUserId)
         {
             await _clubRepository.DeleteUser(clubId, userId);
-
-            //Create notification to user who was deleted from team
-            var club = await _clubRepository.GetById(clubId);
-            _ = club ?? throw new Exception("Can't find a club");
-            await _notificationService.SendNotification(new NotificationRequest()
-            {
-                NotificationCategory = NotificationCategory.Informative,
-                Receivers = new List<Guid> { userId },
-                Text = $"You have been removed from the club {club.Name}.",
-            }, responseUserId);
+            // Send notification to removed member
+            return userId;
         }
-
         public async Task<IList<User>> GetAllUsers(Guid clubId)
         {
             return await _clubRepository.GetAllUsers(clubId);
         }
-
         public async Task<List<Guid>> GetUsersIdsByRole(Guid clubId, params ClubMemberRole[] clubMemberRole)
         {
             return await _clubRepository.GetUsersIdsByRole(clubId, clubMemberRole);
         }
-
         public async Task<bool> ContainsUser(Guid clubId, Guid userId)
         {
             return await _clubRepository.ContainsUser(clubId, userId);

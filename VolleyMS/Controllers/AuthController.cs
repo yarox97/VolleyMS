@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Core.Requests;
@@ -24,28 +20,14 @@ namespace VolleyMS.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Registration([FromBody] RegistrationRequest registerRequest)
         {
-            try
-            {
-                await _authService.Register(registerRequest.userName, registerRequest.password, registerRequest.name, registerRequest.surname);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _authService.Register(registerRequest.userName, registerRequest.password, registerRequest.name, registerRequest.surname);
+            return Ok();
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Authorization([FromBody] Core.Requests.LoginRequest loginRequest)
+        public async Task<IActionResult> Authorization([FromBody] LoginRequest loginRequest)
         {
-            try
-            {
-                return Ok(await _authService.Authorize(loginRequest.userName, loginRequest.password));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(await _authService.Authorize(loginRequest.userName, loginRequest.password));
         }
     }
 }

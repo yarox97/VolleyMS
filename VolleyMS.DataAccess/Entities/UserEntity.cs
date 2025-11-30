@@ -1,35 +1,27 @@
 ﻿using VolleyMS.Core.Common;
-using VolleyMS.Core.Models;
-using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess.Entities
 
 {
     public class UserEntity : BaseEntity
     {
-        public UserEntity()
+        public UserEntity() 
+            : base(Guid.NewGuid())
         {
-            UserClubs = new List<User_ClubsEntity>();
-            Contracts = new List<ContractEntity>();
-            SentTasks = new List<TaskEntity>();
-            ReceivedTasks = new List<TaskEntity>();
-            SentComments = new List<CommentEntity>();
-            ReceivedNotifications = new List<NotificationEntity>();
-            SentNotifications = new List<NotificationEntity>();
         }
-        public Guid Id { get; set; }
-        public string UserName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public UserType userType { get; set; } = UserType.Player;
-        public string Name { get; set; } = string.Empty;
-        public string Surname { get; set; } = string.Empty;
+        public string UserName { get; set; }
+        public string Password { get; set; }
+        public UserType UserType { get; set; } = UserType.Player;
+        public string Name { get; set; }
+        public string Surname { get; set; }
 
-        public IList<User_ClubsEntity> UserClubs { get; set; }
+        public IList<UserClubsEntity> UserClubs { get; set; }
         public IList<ContractEntity> Contracts { get; set; }
         public IList<TaskEntity> SentTasks { get; set; }
         public IList<TaskEntity> ReceivedTasks { get; set; }
         public IList<CommentEntity> SentComments { get; set; }
-        public IList<NotificationEntity> SentNotifications { get;  set; }
-        public IList<NotificationEntity> ReceivedNotifications { get; set; }
+        public IList<NotificationEntity> SentNotifications { get; set; }
+        public IList<UserNotificationsEntity> ReceivedNotifications { get; set; }
+        public IList<JoinClubEntity> JoinClubRequests { get; set; }
     }
 }

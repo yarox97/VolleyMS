@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using VolleyMS.BusinessLogic.Authorisation;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.DataAccess;
 using VolleyMS.DataAccess.Repositories;
+using VolleyMS.Extensions;
+using VolleyMS.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,16 +35,20 @@ builder.Services.AddScoped<ClubRepository>();
 builder.Services.AddScoped<ClubService>();
 builder.Services.AddScoped<NotificationRepository>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<JoinClubRepository>();
 builder.Services.AddScoped<JoinClubService>();
-//builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+
+// Configure the HTTP request pipeline.
+app.UseHttpsRedirection();
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
-// Configure the HTTP request pipeline.
 
-app.UseHttpsRedirection();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -1,35 +1,56 @@
 ﻿using VolleyMS.Core.Common;
-using VolleyMS.Core.Models;
+using VolleyMS.Core.Exceptions;
 
-namespace VolleyMS.Core.Entities
+namespace VolleyMS.Core.Models
 {
     public class Notification : BaseEntity
     {
-        private Notification(Guid id, NotificationType notificationType, bool isChecked, string Text, string? LinkedURL)
+        private Notification(Guid id, IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? linkedURL, string? payload)
+            : base(id)
         {
-            Id = id;
-            this.NotificationType = notificationType;
-            this.IsChecked = isChecked;
-            this.Text = Text;
+            RequiredClubMemberRoles = requiredClubMemberRoles;
+            Category = notificationCategory;
+            Text = text;
+            LinkedURL = linkedURL;
+            Payload = payload;
         }
-        public Guid Id { get; }
-        public NotificationType NotificationType { get; }
-        public bool IsChecked { get; } = false;
+        public IList<ClubMemberRole> RequiredClubMemberRoles { get; }
+        public NotificationCategory Category { get; } = NotificationCategory.Informative;
         public string Text { get; }
         public string? LinkedURL { get; } 
-        
+        public string? Payload { get; }
 
-        public static (Notification notification, string error) Create(Guid id, NotificationType notificationType, bool isChecked, string Text, string? LindkedURL)
+
+        public static Notification Create(IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? lindkedURL, string? payload)
         {
-            var error = string.Empty;
-
-            if(Text == string.Empty)
+            if(string.IsNullOrEmpty(text))
             {
-                error = "Notification text cannot be empty!";    
+                throw new EmptyFieldDomainException("Notification text cannot be empty!");    
+            }
+            if(requiredClubMemberRoles == null)
+            {
+                throw new InvalidNotificationTypeDomainException("Notification type cannot be null!");
             }
 
-            var notification = new Notification(id, notificationType, isChecked, Text, LindkedURL);
-            return (notification, error);
+            var notification = new Notification(Guid.NewGuid(), requiredClubMemberRoles, notificationCategory, text, lindkedURL, payload);
+            return notification;
         }
+
+        public static Notification Create(Guid id, IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? lindkedURL, string? payload)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                throw new EmptyFieldDomainException("Notification text cannot be empty!");
+            }
+            if (requiredClubMemberRoles == null)
+            {
+                throw new InvalidNotificationTypeDomainException("Notification type cannot be null!");
+            }
+
+            var notification = new Notification(id, requiredClubMemberRoles, notificationCategory, text, lindkedURL, payload);
+            return notification;
+        }
+
+
     }
 }

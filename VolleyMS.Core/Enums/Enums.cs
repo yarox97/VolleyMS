@@ -53,7 +53,7 @@ public enum NotificationCategory
     TaskLink,
     ClubJoinRequest,
     ClubJoinApproved,
-    ClubJoinReject,
+    ClubJoinRejected,
     System,
     MessageReceived,
     EventReminder
@@ -65,4 +65,11 @@ public enum ClubMemberRole
     Coach,
     Staff,
     Player,
+}
+
+public enum JoinClubRequestStatus
+{
+    Pending,
+    Approved,
+    Rejected
 }

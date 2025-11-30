@@ -23,25 +23,17 @@ namespace VolleyMS.BusinessLogic.Authorisation
             if (await _userRepository.IsLoginTaken(userName))
                 throw new Exception($"Username {userName} is taken!");
 
-            var userTuple = User.Create(Guid.NewGuid(), userName, password, UserType.Player, name, surname);
+            var user = User.Create(Guid.NewGuid(), userName, password, UserType.Player, name, surname);
 
-            if (userTuple.error == string.Empty)
-            {
-                string HashedPassword = new PasswordHasher<User>().HashPassword(userTuple.user, password);
-                userTuple.user.SetHashedPassword(HashedPassword);
+            string HashedPassword = new PasswordHasher<User>().HashPassword(user, password);
+            user.SetHashedPassword(HashedPassword);
 
-                await _userRepository.AddUser(userTuple.user);
-            }
-            else
-            {
-                throw new Exception($"Error while creating a user: {userTuple.error}");
-            }
+            await _userRepository.AddUser(user);
         }
 
         public async Task<string> Authorize(string userName, string password)
         {
-
-            var user = await _userRepository.GetByUserName(userName);
+            var user = await _userRepository.Get(userName);
             if (user == null) 
                 throw new Exception("User not found!"); 
 

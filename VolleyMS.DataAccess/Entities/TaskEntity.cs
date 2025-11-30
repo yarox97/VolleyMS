@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Common;
-using VolleyMS.DataAccess.Entities;
+﻿using VolleyMS.Core.Common;
 
-namespace VolleyMS.DataAccess.Models
+namespace VolleyMS.DataAccess.Entities
 {
     public class TaskEntity : BaseEntity
     {
-        public TaskEntity()
+        public TaskEntity() : base(Guid.NewGuid())
         {
-            Comments = new List<CommentEntity>();
-            Sender = new UserEntity();
-            Receivers = new List<UserEntity>();
-            Club = new ClubEntity();
         }
-        public Guid Id { get; set; }
         public TaskType TaskType { get; set; }
         public TaskStatus TaskStatus { get; set; }
         public PenaltyType PenaltyType { get; set; }

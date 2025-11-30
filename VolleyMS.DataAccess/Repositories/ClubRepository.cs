@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Models;
 using VolleyMS.DataAccess.Entities;
+using VolleyMS.DataAccess.Mappers;
 
 namespace VolleyMS.DataAccess.Repositories
 {
@@ -19,16 +20,11 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task Create(Club club, Guid creatorId)
         {
-            var clubModel = new ClubEntity
+            var clubModel = ClubMapper.ToEntity(club);
+            if(clubModel == null)
             {
-                Id = club.Id,
-                Name = club.Name,
-                Description = club.Description,
-                JoinCode = club.JoinCode,
-                AvatarURL = club.AvatarURL,
-                BackGroundURL = club.BackGroundURL,
-                CreatorId = creatorId
-            };
+                throw new ArgumentNullException(nameof(clubModel), "Club model cannot be null");
+            }
             await _context.Clubs.AddAsync(clubModel);
             await _context.SaveChangesAsync();
         }
@@ -42,57 +38,32 @@ namespace VolleyMS.DataAccess.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Club?> GetClubByCode(string joinCode)
+        public async Task<Club?> Get(string joinCode)
         {
             var clubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.JoinCode == joinCode);
-            if (clubEntity == null)
-            {
-                throw new Exception("Error while extracting club data!");
-            }
-            var clubTuple = Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL);
-            clubTuple.club.CreatorId = clubEntity.CreatorId;
-
-            if (!string.IsNullOrEmpty(clubTuple.error))
-            {
-                throw new Exception("Error while extracting club data!");
-            }
-
-            return clubTuple.club;
+            var club = ClubMapper.ToDomain(clubEntity);
+            return club;
         }
-
-        public async Task<Club?> GetById(Guid Id)
+        public async Task<Club?> Get(Guid Id)
         {
             var clubEntity = await _context.Clubs.FirstOrDefaultAsync(c => c.Id == Id);
-            if (clubEntity == null)
-            {
-                throw new Exception("Error while extracting club data!");
-            }
-            var clubTuple = Club.Create(clubEntity.Id, clubEntity.Name, clubEntity.JoinCode, clubEntity.Description, clubEntity.AvatarURL, clubEntity.BackGroundURL);
-            clubTuple.club.CreatorId = clubEntity.CreatorId;
-
-            if (!string.IsNullOrEmpty(clubTuple.error))
-            {
-                throw new Exception("Error while extracting club data!");
-            }
-
-            return clubTuple.club;
+            var club = ClubMapper.ToDomain(clubEntity);
+            return club;
         }
 
         public async Task<IList<User>> GetAllUsers(Guid clubId)
         {
             var userEntities = await _context.UserClubs
-                .Select(uc => uc.User).Include(uc => uc.UserClubs)
-                .Where(uc => uc.UserClubs.Any(c => c.Club.Id == clubId))
+                .Select(uc => uc.User)
+                .Where(uc => uc.UserClubs
+                    .Any(c => c.Club.Id == clubId))
                 .ToListAsync();
 
             var users = new List<User>();
             foreach (var userEntity in userEntities)
             {
-                var userTuple = User.Create(userEntity.Id, userEntity.UserName, userEntity.Password, userEntity.userType, userEntity.Name, userEntity.Surname);
-                if (string.IsNullOrEmpty(userTuple.error))
-                {
-                    users.Add(userTuple.user);
-                }
+                var user = UserMapper.ToDomain(userEntity);
+                users.Add(user);
             }
             return users;
         }
@@ -116,22 +87,19 @@ namespace VolleyMS.DataAccess.Repositories
 
         public async Task AddUser(Guid userId, Guid clubId, ClubMemberRole clubMemberRole)
         {
-            if (!await ContainsUser(clubId, userId))
+            var club = await Get(clubId) ?? throw new Exception("Club not found");
+            club.UpdatedAt = DateTime.UtcNow;
+
+            var userClub = new UserClubsEntity
             {
-                var userClub = new User_ClubsEntity
-                {
-                    UserId = userId,
-                    ClubId = clubId,
-                    ClubMemberRole = new List<ClubMemberRole> { clubMemberRole }
-                };
+                UserId = userId,
+                ClubId = clubId,
+                ClubMemberRole = new List<ClubMemberRole> { clubMemberRole }
+            };
+            _context.UserClubs.Add(userClub);
 
-                _context.UserClubs.Add(userClub);
 
-                var club = await GetById(clubId);
-                club.UpdatedAt = DateTime.UtcNow;
-
-                await _context.SaveChangesAsync();
-            }
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteUser(Guid clubId, Guid userId)
@@ -139,6 +107,7 @@ namespace VolleyMS.DataAccess.Repositories
             await _context.UserClubs
                 .Where(uc => uc.User.Id == userId && uc.Club.Id == clubId)
                 .ExecuteDeleteAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

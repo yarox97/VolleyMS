@@ -1,12 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VolleyMS.DataAccess.Configurations;
 using VolleyMS.DataAccess.Entities;
-using VolleyMS.DataAccess.Models;
 
 namespace VolleyMS.DataAccess
 {
@@ -19,11 +13,13 @@ namespace VolleyMS.DataAccess
 
         public DbSet<ClubEntity> Clubs { get; set; } 
         public DbSet<UserEntity> Users { get; set; }
-        public DbSet<User_ClubsEntity> UserClubs { get; set; }
+        public DbSet<UserClubsEntity> UserClubs { get; set; }
         public DbSet<ContractEntity> Contracts { get; set; }
         public DbSet<TaskEntity> Tasks { get; set; }
         public DbSet<CommentEntity> Comments { get; set; }
         public DbSet<NotificationEntity> Notifications { get; set; }
+        public DbSet<UserNotificationsEntity> UserNotifications { get; set; }
+        public DbSet<JoinClubEntity> JoinClubRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,7 +29,9 @@ namespace VolleyMS.DataAccess
             modelBuilder.ApplyConfiguration(new TaskConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
-            modelBuilder.ApplyConfiguration(new User_ClubConfiguration());
+            modelBuilder.ApplyConfiguration(new UserClubConfiguration());
+            modelBuilder.ApplyConfiguration(new UserNotificationsConfiguration());
+            modelBuilder.ApplyConfiguration(new JoinClubConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }
