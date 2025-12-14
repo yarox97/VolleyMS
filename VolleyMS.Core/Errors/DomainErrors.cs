@@ -75,6 +75,11 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidPermission = new(
                 "Club.InvalidPermission",
                 "User does not have permission to perform this action.");
+            public static Error JoinRequestAlreadyExists;
+
+            public static Error InvalidMemberRole { get; internal set; }
+
+            public static Error JoinRequestNotFound { get; internal set; }
         }
 
         public static class JoinClub

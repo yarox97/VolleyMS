@@ -9,10 +9,10 @@ namespace VolleyMS.Core.Models
         private JoinClub() : base(Guid.Empty)
         {
         }
-        private JoinClub(Guid id, JoinClubRequestStatus joinClubRequestStatus, Guid userId, Guid clubId)
+        private JoinClub(Guid id, Guid userId, Guid clubId)
             : base(id)
         {
-            JoinClubRequestStatus = joinClubRequestStatus;
+            JoinClubRequestStatus = JoinClubRequestStatus.Pending;
             UserId = userId;
             ClubId = clubId;
         }
@@ -22,11 +22,15 @@ namespace VolleyMS.Core.Models
         public JoinClubRequestStatus JoinClubRequestStatus { get; private set; }
         public Club Club { get; private set; }
 
-        public static Result<JoinClub> Create(JoinClubRequestStatus joinClubRequestStatus, Guid userId, Guid clubId, ClubMemberRole clubMemberRole)
+        public static Result<JoinClub> Create(Guid userId, Guid clubId)
         {
-            if(!Enum.IsDefined(typeof(JoinClubRequestStatus), joinClubRequestStatus)) return Result.Failure<JoinClub>(DomainErrors.JoinClub.InvalidStatus);
+            if(userId == Guid.Empty) return Result.Failure<JoinClub>(Error.NullValue);
+            if(clubId == Guid.Empty) return Result.Failure<JoinClub>(Error.NullValue);
 
-            var joinClub = new JoinClub(Guid.NewGuid(), joinClubRequestStatus, userId, clubId);
+            var joinClub = new JoinClub(Guid.NewGuid(), userId, clubId);
+            joinClub.CreatorId = userId;
+
+            joinClub.RaiseDomainEvent(new JoinClubRequestSent(userId, clubId));
 
             return Result.Success(joinClub);
         }

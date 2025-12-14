@@ -1,4 +1,5 @@
 ﻿using VolleyMS.Core.Common;
+using VolleyMS.Core.DomainEvents;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Shared;
 
@@ -46,6 +47,66 @@ namespace VolleyMS.Core.Models
             if(adminResult.IsFailure) return Result.Failure<Club>(adminResult.Error);
 
             return Result.Success(club);
+        }
+
+        public Result<JoinClub> RequestToJoinClub(User user)
+        {
+            if (user is null) return Result.Failure<JoinClub>(Error.NullValue);
+
+            if (_joinClubRequests.Any(jc => jc.UserId == user.Id 
+                                         && jc.ClubId == Id 
+                                         && jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending)) 
+                return Result.Failure<JoinClub>(DomainErrors.Club.JoinRequestAlreadyExists);
+
+            var joinClubResult = JoinClub.Create(user.Id, this.Id);
+
+            if (joinClubResult.IsFailure) return joinClubResult;
+
+            _joinClubRequests.Add(joinClubResult.Value);
+            UpdatedAt = DateTime.UtcNow;
+
+            return joinClubResult;
+        }
+
+        public Result ApproveJoinClubRequest(User user, ClubMemberRole clubMemberRole)
+        {
+            if (user is null) return Result.Failure<JoinClub>(Error.NullValue);
+
+            var joinClubRequest = _joinClubRequests.FirstOrDefault(jc =>
+                jc.UserId == user.Id &&
+                jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending);
+
+            if (joinClubRequest is null) 
+                return Result.Failure<JoinClub>(DomainErrors.Club.JoinRequestNotFound);
+
+            var approveResult = joinClubRequest.Approve();
+            if(approveResult.IsFailure) 
+                return Result.Failure<JoinClub>(approveResult.Error);
+
+            var addMemberResult = AddMember(user, clubMemberRole);
+            if(addMemberResult.IsFailure) 
+                return Result.Failure<JoinClub>(addMemberResult.Error);
+
+            RaiseDomainEvent(new JoinClubApprovedDomainEvent(user.Id, this.Id));
+
+            return Result.Success();
+        }
+
+        public Result RejectJoinClubRequest(User user)
+        {
+            if (user is null) return Result.Failure<JoinClub>(Error.NullValue);
+
+            var joinClubRequest = _joinClubRequests.FirstOrDefault(jc =>
+                jc.UserId == user.Id &&
+                jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending);
+            if (joinClubRequest is null) return Result.Failure<JoinClub>(DomainErrors.Club.JoinRequestNotFound);
+
+            var approveResult = joinClubRequest.Reject();
+            if (approveResult.IsFailure) return Result.Failure<JoinClub>(approveResult.Error);
+
+            RaiseDomainEvent(new JoinClubRejectedDomainEvent(user.Id, this.Id));
+
+            return Result.Success();
         }
 
         public Result<UserClub> AddMember(User user, ClubMemberRole clubMemberRole)
