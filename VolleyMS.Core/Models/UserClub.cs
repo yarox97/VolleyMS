@@ -24,14 +24,14 @@ namespace VolleyMS.Core.Models
         public Guid ClubId { get; private set; }
         public ClubMemberRole ClubMemberRole { get; private set; }
 
-        internal static Result<UserClub> Create(User user, Club club) 
+        public static Result<UserClub> Create(User user, Club club) 
         {
             if (user == null || club == null) return Result.Failure<UserClub>(Error.NullValue);
 
             return new UserClub(Guid.NewGuid(), user, club);
         }
 
-        internal Result ChangeRole(ClubMemberRole clubMemberRole)
+        public Result ChangeRole(ClubMemberRole clubMemberRole)
         {
             if (!Enum.IsDefined(typeof(ClubMemberRole), clubMemberRole)) return Result.Failure<UserClub>(DomainErrors.Role.InvalidRole);
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Query.Internal;
-using VolleyMS.Core.DomainEvents;
+﻿using VolleyMS.Core.DomainEvents;
 
 namespace VolleyMS.Core.Common
 {
