@@ -13,6 +13,14 @@ namespace VolleyMS.Extensions
             }
             return userId;
         }
+
+        public static Guid? GetUserIdOrNull(this ClaimsPrincipal principal)
+        {
+            var value = principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return Guid.TryParse(value, out var userId) ? userId : null;
+        }
+
         public static string GetUserName(this ClaimsPrincipal user)
         {
             var userNameClaim = user.FindFirstValue(ClaimTypes.Name);

@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using VolleyMS.BusinessLogic.Authorisation;
-using VolleyMS.BusinessLogic.Services;
-using VolleyMS.Core.Requests;
-
-
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using VolleyMS.BusinessLogic.Features.Authorisation.Authentication;
+using VolleyMS.BusinessLogic.Features.Authorisation.Registration;
 
 namespace VolleyMS.Controllers
 {
@@ -11,23 +9,24 @@ namespace VolleyMS.Controllers
     [ApiController]
     public class authController : ControllerBase
     {
-        private readonly AuthService _authService;
-        public authController(UserService userService, AuthService authService)
+        private readonly ISender Sender;
+        public authController(ISender sender)
         {
-            _authService = authService;
+            Sender = sender;
         }
-
         [HttpPost("register")]
-        public async Task<IActionResult> Registration([FromBody] RegistrationRequest registerRequest)
+        public async Task<IActionResult> Registration([FromBody] RegistrationCommand command, CancellationToken cancellation)
         {
-            await _authService.Register(registerRequest.userName, registerRequest.password, registerRequest.name, registerRequest.surname);
-            return Ok();
+            var result = await Sender.Send(command, cancellation);
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error); 
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Authorization([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Authorization([FromBody] LoginCommand command, CancellationToken cancellation)
         {
-            return Ok(await _authService.Authorize(loginRequest.userName, loginRequest.password));
+            var result = await Sender.Send(command, cancellation);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.DataAccess.Configurations;
-using VolleyMS.DataAccess.Entities;
+using VolleyMS.Core.Models;
+using Task = VolleyMS.Core.Models.Task;
 
 namespace VolleyMS.DataAccess
 {
@@ -11,15 +12,15 @@ namespace VolleyMS.DataAccess
         {
         }
 
-        public DbSet<ClubEntity> Clubs { get; set; } 
-        public DbSet<UserEntity> Users { get; set; }
-        public DbSet<UserClubsEntity> UserClubs { get; set; }
-        public DbSet<ContractEntity> Contracts { get; set; }
-        public DbSet<TaskEntity> Tasks { get; set; }
-        public DbSet<CommentEntity> Comments { get; set; }
-        public DbSet<NotificationEntity> Notifications { get; set; }
-        public DbSet<UserNotificationsEntity> UserNotifications { get; set; }
-        public DbSet<JoinClubEntity> JoinClubRequests { get; set; }
+        public DbSet<Club> Clubs { get; set; } 
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserClub> UserClubs { get; set; }
+        public DbSet<Contract> Contracts { get; set; }
+        public DbSet<Task> Tasks { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserNotification> UserNotifications { get; set; }
+        public DbSet<JoinClub> JoinClubRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

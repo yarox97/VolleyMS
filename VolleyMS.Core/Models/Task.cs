@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Common;
+﻿using VolleyMS.Core.Common;
 using VolleyMS.Core.Exceptions;
 
-namespace VolleyMS.Core.Entities
+namespace VolleyMS.Core.Models
 {
     public class Task : BaseEntity
     {
+        private Task() : base(Guid.Empty) 
+        { 
+        }
         private Task(Guid id, 
             TaskType taskType, 
             TaskStatus taskStatus,
@@ -36,18 +33,24 @@ namespace VolleyMS.Core.Entities
             Title = title;
             Description = description;
         }
-        public TaskType TaskType { get; }
-        public TaskStatus TaskStatus { get; }
-        public PenaltyType PenaltyType { get; } = PenaltyType.None;
-        public DateTime StartDate { get; }
-        public DateTime? EndDate { get; }
-        public List<DayOfWeek> DayOfWeek { get; }
-        public TimeSpan StartTime { get; }
-        public TimeSpan EndTime { get; }
+        public TaskType TaskType { get; private set; }
+        public TaskStatus TaskStatus { get; private set; }
+        public PenaltyType PenaltyType { get; private set; } = PenaltyType.None;
+        public DateTime StartDate { get; private set; }
+        public DateTime? EndDate { get; private set; }
+        public List<DayOfWeek> DayOfWeek { get; private set; }
+        public TimeSpan StartTime { get; private set; }
+        public TimeSpan EndTime { get; private set; }
 
-        public string Title = string.Empty;
-        public string Description = string.Empty;  
-        
+        public string Title { get; private set; } 
+        public string Description { get; private set; }
+        public IList<Comment> Comments { get; set; }
+        public Guid SenderId { get; set; }
+        public User Sender { get; set; }
+        public IList<User> Receivers { get; set; }
+        public Guid ClubId { get; set; }
+        public Club Club { get; set; }
+
         public static Task Create(Guid id, 
             TaskType taskType, 
             TaskStatus taskStatus, 
