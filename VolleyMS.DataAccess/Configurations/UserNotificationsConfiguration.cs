@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VolleyMS.DataAccess.Entities;
+using VolleyMS.Core.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    internal sealed class UserNotificationsConfiguration : IEntityTypeConfiguration<UserNotificationsEntity>
+    internal sealed class UserNotificationsConfiguration : IEntityTypeConfiguration<UserNotification>
     {
-        public void Configure(EntityTypeBuilder<UserNotificationsEntity> builder)
+        public void Configure(EntityTypeBuilder<UserNotification> builder)
         {
             builder.HasKey(un => new { un.UserId, un.NotificationId });
 

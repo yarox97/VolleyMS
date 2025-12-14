@@ -1,21 +1,17 @@
-﻿using VolleyMS.Core.Models;
-using VolleyMS.Core.Requests;
-using VolleyMS.DataAccess.Repositories;
-using Task = System.Threading.Tasks.Task;
+﻿using VolleyMS.Core.Repositories;
+using VolleyMS.Core.Services;
 
 namespace VolleyMS.BusinessLogic.Services
 {
-    public class ClubService
+    public class ClubService : IClubService
     {
-        private readonly ClubRepository _clubRepository;
+        private readonly IClubRepository _clubRepository;
 
-        public ClubService(ClubRepository clubRepository)
+        public ClubService(IClubRepository clubRepository)
         {
             _clubRepository = clubRepository;
         }
-
-        // GENERATE JOIN CODE
-        public async Task<string> GenerateJoinCode()
+        public async Task<string> GenerateJoinCode(CancellationToken cancellation)
         {
             string joinCode = string.Empty;
             const string salt = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -30,71 +26,6 @@ namespace VolleyMS.BusinessLogic.Services
             } while (await _clubRepository.IfJoinCodeTaken(joinCode));
 
             return joinCode;
-        }
-        // --------------------------------------------------------------
-
-        // MANAGE CLUB
-        public async Task<Guid> Create(CreateClubRequest createClubRequest)
-        {
-            string joinCode = await GenerateJoinCode();
-            var club = Club.Create(
-                Guid.NewGuid(),
-                createClubRequest.Name,
-                joinCode,
-                createClubRequest.Description,
-                createClubRequest.AvatarURL,
-                createClubRequest.BackGroundURL
-                );
-
-            await _clubRepository.Create(club, createClubRequest.CreatorId);
-            return club.Id;
-        }
-        public async Task Delete(Guid clubId)
-        {
-            await _clubRepository.Delete(clubId);
-        }
-        // --------------------------------------------------------------
-
-
-        // GET CLUB BY JOIN CODE OR ID
-        public async Task<Club?> Get(string joinCode)
-        {
-            return await _clubRepository.Get(joinCode);
-        }
-        public async Task<Club?> Get(Guid clubId)
-        {
-            return await _clubRepository.Get(clubId) ?? throw new Exception("No club was found!");
-        }
-        // --------------------------------------------------------------
-
-
-        // MANAGE CLUB MEMBERS
-        public async Task<Guid?> AddMember(Guid clubId, Guid userId, ClubMemberRole clubMemberRole)
-        {
-            if(!await _clubRepository.ContainsUser(clubId, userId))
-            {
-                await _clubRepository.AddUser(userId, clubId, clubMemberRole);
-                return userId;
-            }
-            return null;
-        }
-        public async Task<Guid> DeleteMember(Guid clubId, Guid userId, Guid responseUserId)
-        {
-            await _clubRepository.DeleteUser(clubId, userId);
-            // Send notification to removed member
-            return userId;
-        }
-        public async Task<IList<User>> GetAllUsers(Guid clubId)
-        {
-            return await _clubRepository.GetAllUsers(clubId);
-        }
-        public async Task<List<Guid>> GetUsersIdsByRole(Guid clubId, params ClubMemberRole[] clubMemberRole)
-        {
-            return await _clubRepository.GetUsersIdsByRole(clubId, clubMemberRole);
-        }
-        public async Task<bool> ContainsUser(Guid clubId, Guid userId)
-        {
-            return await _clubRepository.ContainsUser(clubId, userId);
         }
     }
 }

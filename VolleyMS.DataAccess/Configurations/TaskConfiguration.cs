@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VolleyMS.DataAccess.Entities;
+using VolleyMS.Core.Models;
+using Task = VolleyMS.Core.Models.Task;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class TaskConfiguration : IEntityTypeConfiguration<TaskEntity>
+    public class TaskConfiguration : IEntityTypeConfiguration<Task>
     {
-        public void Configure(EntityTypeBuilder<TaskEntity> builder) 
+        public void Configure(EntityTypeBuilder<Task> builder) 
         {
             builder.HasKey(x => x.Id);
 

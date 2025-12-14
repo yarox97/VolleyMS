@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using VolleyMS.BusinessLogic.Services;
-using VolleyMS.Contracts.DTOs;
+using VolleyMS.BusinessLogic.Features.Club.Create;
+using VolleyMS.BusinessLogic.Features.Club.Delete;
+using VolleyMS.BusinessLogic.Features.Club.Get;
 using VolleyMS.Core.Requests;
 using VolleyMS.Extensions;
 
@@ -11,77 +13,39 @@ namespace VolleyMS.Controllers
     [ApiController]
     public class clubController : ControllerBase
     {
-        private readonly ClubService _clubService;
-        private readonly NotificationService _notificationService;
-        public clubController(ClubService clubService, NotificationService notificationService)
+        private readonly ISender Sender;
+        public clubController(ISender sender)
         {
-            _clubService = clubService;
-            _notificationService = notificationService;
+            Sender = sender;
         }
 
         [HttpGet("{clubId}")]
-        public async Task<IActionResult> GetClub(Guid clubId)
+        public async Task<IActionResult> GetClub([FromRoute] Guid clubId, CancellationToken cancellationToken)
         {
-            var club = await _clubService.Get(clubId);
-            var response = new ClubDto()
-            {
-                Id = club.Id,
-                Name = club.Name,
-                Description = club.Description,
-                AvatarURL = club.AvatarURL,
-                BackGroundURL = club.BackGroundURL,
-                CreatedAt = club.CreatedAt,
-                JoinCode = club.JoinCode
-            };
-            return Ok(response);
+            var userId = User.GetUserIdOrNull(); // Get id from JWT session
+
+            var query = new GetClubQuery(clubId, userId);
+            var result = await Sender.Send(query, cancellationToken);
+
+            return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
         }
 
         [HttpPost()]
         [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> Create([FromBody] CreateClubRequest CreateClubRequest)
+        public async Task<IActionResult> Create([FromBody] CreateClubCommand command, CancellationToken cancellationToken)
         {
-            var creatorId = User.GetUserId();
-            
-            CreateClubRequest.CreatorId = creatorId;
-            var clubId = await _clubService.Create(CreateClubRequest);
+            var result = await Sender.Send(command, cancellationToken);
 
-            return Ok(await _clubService.AddMember(clubId, creatorId, ClubMemberRole.President));
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
         [HttpDelete("{clubId}")]
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(Guid clubId)
         {
-            await _clubService.Delete(clubId);
-            return Ok();
-        }
+            var result =  await Sender.Send(new DeleteClubCommand(clubId, User.GetUserId()));
 
-        [HttpPut("{clubId}/members")]
-        [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> AcceptUserJoinRequest([FromBody] AddUserToClubRequest addUserToClubRequest)
-        {
-            var responseUser = User.GetUserId();
-
-            await _clubService.AddMember(addUserToClubRequest.ClubId, addUserToClubRequest.UserId, addUserToClubRequest.clubMemberRole);
-            return Ok();
-        }
-
-        [HttpGet("{clubId}/members/")]
-        //[Authorize]
-        public async Task<IActionResult> GetClubMembers(Guid clubId)
-        {
-            var members = await _clubService.GetAllUsers(clubId);
-            return Ok(members);
-        }
-
-        [HttpDelete("{clubId}/members/{userId}")]
-        [Authorize(Policy = "AdminOnly")]
-        public async Task<IActionResult> DeleteMember(Guid clubId, Guid userId)
-        {
-            var responseUserId = User.GetUserId();
-
-            // Delete member from the club
-            return Ok(await _clubService.DeleteMember(clubId, userId, responseUserId));
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
     }
 }

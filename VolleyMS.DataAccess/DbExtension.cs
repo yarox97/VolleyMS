@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using VolleyMS.Core.Repositories;
 
 namespace VolleyMS.DataAccess
 {
@@ -7,9 +8,10 @@ namespace VolleyMS.DataAccess
     {
         public static void AddDataBase(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddDbContext<VolleyMsDbContext>(o =>
             {
-                o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb;Username=postgres;password=GabeNewwel228");
+                o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb2;Username=postgres;password=GabeNewwel228");
             });
         }
     }

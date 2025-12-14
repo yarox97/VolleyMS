@@ -65,6 +65,7 @@ public enum ClubMemberRole
     Coach,
     Staff,
     Player,
+    Creator,
 }
 
 public enum JoinClubRequestStatus

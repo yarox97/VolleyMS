@@ -5,6 +5,9 @@ namespace VolleyMS.Core.Models
 {
     public class Contract : BaseEntity
     {
+        private Contract() : base(Guid.Empty)
+        {
+        }
         private Contract(Guid id, decimal? monthlySalary, Currency currency, DateTime beginsFrom, DateTime endsBy)
             : base(id)
         {
@@ -13,10 +16,14 @@ namespace VolleyMS.Core.Models
             BeginsFrom = beginsFrom;
             EndsBy = endsBy;
         }
-        public decimal? MontlySalary { get; }
-        public Currency? Currency { get; }
-        public DateTime BeginsFrom { get; } 
-        public DateTime EndsBy {get;}
+        public decimal? MontlySalary { get; private set; }
+        public Currency? Currency { get; private set; }
+        public DateTime BeginsFrom { get; private set; } 
+        public DateTime EndsBy { get; private set; }
+        public Guid UserId { get; private set; }
+        public User User { get; private set; }
+        public Guid TeamId { get; private set; }
+        public Club Club { get; private set; }
 
         public static Contract Create(Guid id, decimal? monthlySalary, Currency currency, DateTime beginsFrom, DateTime endsBy)
         {

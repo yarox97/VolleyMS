@@ -5,6 +5,9 @@ namespace VolleyMS.Core.Models
 {
     public class Notification : BaseEntity
     {
+        private Notification() : base(Guid.Empty)
+        {
+        }
         private Notification(Guid id, IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? linkedURL, string? payload)
             : base(id)
         {
@@ -16,10 +19,12 @@ namespace VolleyMS.Core.Models
         }
         public IList<ClubMemberRole> RequiredClubMemberRoles { get; }
         public NotificationCategory Category { get; } = NotificationCategory.Informative;
-        public string Text { get; }
-        public string? LinkedURL { get; } 
-        public string? Payload { get; }
-
+        public string Text { get; private set; }
+        public string? LinkedURL { get; private set; } 
+        public string? Payload { get; private set; }
+        public User? Sender { get; private set; }
+        public Guid? SenderId { get; private set; }
+        public ICollection<UserNotification> UserNotifications { get; set; }
 
         public static Notification Create(IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? lindkedURL, string? payload)
         {

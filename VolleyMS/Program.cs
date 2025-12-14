@@ -1,6 +1,11 @@
+using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
-using VolleyMS.BusinessLogic.Authorisation;
+using VolleyMS.BusinessLogic.Features.Authorisation;
+using VolleyMS.BusinessLogic.Features.Authorisation.Registration;
 using VolleyMS.BusinessLogic.Services;
+using VolleyMS.Core.Models;
+using VolleyMS.Core.Repositories;
+using VolleyMS.Core.Services;
 using VolleyMS.DataAccess;
 using VolleyMS.DataAccess.Repositories;
 using VolleyMS.Extensions;
@@ -26,17 +31,19 @@ builder.Services.Configure<AuthConfiguration>(builder.Configuration
 builder.Services.AddAuth(builder.Configuration);
 
 builder.Logging.AddConsole();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IClubService, ClubService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IClubRepository, ClubRepository>();
 
+//builder.Services.AddScoped<ClubService>();
+//builder.Services.AddScoped<NotificationRepository>();
+//builder.Services.AddScoped<NotificationService>();
+//builder.Services.AddScoped<JoinClubRepository>();
+//builder.Services.AddScoped<JoinClubService>();
+builder.Services.AddMediatR(cfg => 
+    cfg.RegisterServicesFromAssembly(typeof(RegistrationCommandHandler).Assembly));
 
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<ClubRepository>();
-builder.Services.AddScoped<ClubService>();
-builder.Services.AddScoped<NotificationRepository>();
-builder.Services.AddScoped<NotificationService>();
-builder.Services.AddScoped<JoinClubRepository>();
-builder.Services.AddScoped<JoinClubService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VolleyMS.DataAccess.Entities;
+using VolleyMS.Core.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    internal class UserClubConfiguration : IEntityTypeConfiguration<UserClubsEntity>
+    internal class UserClubConfiguration : IEntityTypeConfiguration<UserClub>
     {
-        public void Configure(EntityTypeBuilder<UserClubsEntity> builder)
+        public void Configure(EntityTypeBuilder<UserClub> builder)
         {
             builder.HasKey(x => x.Id);
 

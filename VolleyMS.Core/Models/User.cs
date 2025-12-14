@@ -1,17 +1,31 @@
-﻿using System.Runtime.CompilerServices;
-using VolleyMS.Core.Common;
-using VolleyMS.Core.Exceptions;
+﻿using VolleyMS.Core.Common;
+using VolleyMS.Core.Errors;
+using VolleyMS.Core.Shared;
+using static VolleyMS.Core.Errors.DomainErrors;
 
 namespace VolleyMS.Core.Models
 {
     public class User : BaseEntity
     {
+        private readonly List<UserClub> _userClubs = new();
+        private readonly List<Contract> _contracts = new();
+        private readonly List<Task> _sentTasks = new();
+        private readonly List<Task> _receivedTasks = new();
+        private readonly List<Comment> _sentComments = new();
+        private readonly List<Notification> _sentNotifications = new();
+        private readonly List<UserNotification> _receivedNotifications = new();
+        private readonly List<JoinClub> _joinClubRequests = new();
+        private User() : base(Guid.Empty) 
+        {
+        }
         private User(Guid id, 
             string userName, 
             string password, 
             UserType userType, 
             string name, 
-            string surname)
+            string surname,
+            string email,
+            string? avatarUrl)
             : base(id)
         {
             UserName = userName;
@@ -19,48 +33,90 @@ namespace VolleyMS.Core.Models
             UserType = userType;
             Name = name;
             Surname = surname;
+            Email = email;
+            AvatarUrl = avatarUrl;
         }
-        public string UserName { get; } = string.Empty;
-        public string Password { get; private set; } = string.Empty;
-        public UserType UserType { get; } = UserType.Player;
-        public string Name { get; } = string.Empty;
-        public string Surname { get; } = string.Empty;
+        public string UserName { get; private init; }
+        public string Password { get; private set; }
+        public UserType UserType { get; private set; }
+        public string Name { get; private set; }
+        public string Surname { get; private set; }
+        public string Email { get; private set; }
+        public string? AvatarUrl { get; private set; }
+        public IReadOnlyCollection<UserClub> UserClubs => _userClubs;
+        public IReadOnlyCollection<Contract> Contracts => _contracts;
+        public IReadOnlyCollection<Task> SentTasks => _sentTasks;
+        public IReadOnlyCollection<Task> ReceivedTasks => _receivedTasks;
+        public IReadOnlyCollection<Comment> SentComments => _sentComments;
+        public IReadOnlyCollection<Notification> SentNotifications => _sentNotifications;
+        public IReadOnlyCollection<UserNotification> ReceivedNotifications => _receivedNotifications;
+        public IReadOnlyCollection<JoinClub> JoinClubRequests => _joinClubRequests;
 
-        public void SetHashedPassword(string hashedPassword)
+        public Result<User> ChangePassword(string newHashedPassword)
         {
-            Password = hashedPassword;
+            if (string.IsNullOrWhiteSpace(newHashedPassword)) return Result.Failure<User>(DomainErrors.User.PasswordEmpty);
+
+            if (Password == newHashedPassword) return Result.Failure<User>(DomainErrors.User.SamePassword);
+
+            Password = newHashedPassword;
+            return Result.Success(this);
         }
 
-        public static User Create(Guid id, 
+        public static Result<User> Create(
+            Guid id,
             string userName, 
             string password, 
             UserType userType, 
             string name, 
-            string surname)
+            string surname,
+            string email,
+            string? avatarUrl)
         {
-            if (string.IsNullOrEmpty(userName))
-            {
-                throw new EmptyFieldDomainException("Username cannot be null or empty");
-            }
-            if (string.IsNullOrEmpty(password))
-            {
-                throw new EmptyFieldDomainException("Password cannot be null or empty");
-            }
-            if (userType != UserType.Player && userType != UserType.Admin)
-            {
-                throw new InvalidUserTypeDomainException("Invalid user type");
-            }
-            if(string.IsNullOrEmpty(surname))
-            {
-                throw new EmptyFieldDomainException("Surname cannot be null or empty");
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new EmptyFieldDomainException("Name cannot be null or empty");
-            }
-            
-            var user = new User(id, userName, password, userType, name, surname);
-            return user;
+            if (string.IsNullOrWhiteSpace(userName)) 
+                return Result.Failure<User>(DomainErrors.User.UserNameEmpty);
+
+            if (string.IsNullOrWhiteSpace(password)) 
+                return Result.Failure<User>(DomainErrors.User.PasswordEmpty);
+
+            if (!Enum.IsDefined(typeof(UserType), userType)) 
+                return Result.Failure<User>(DomainErrors.User.InvalidUserType);
+
+            if (string.IsNullOrWhiteSpace(surname)) 
+                return Result.Failure<User>(DomainErrors.User.SurnameEmpty);
+
+            if (string.IsNullOrWhiteSpace(name)) 
+                return Result.Failure<User>(DomainErrors.User.NameEmpty);
+
+            if (string.IsNullOrEmpty(email))
+                return Result.Failure<User>(DomainErrors.User.EmailEmpty);
+
+            var user = new User(Guid.NewGuid(), userName, password, userType, name, surname, email, avatarUrl);
+
+            user.RaiseDomainEvent(new DomainEvents.UserCreatedDomainEvent(user.Id));
+
+            return Result.Success(user);
+        }
+        public Result UpdateDetails(string name, string surname)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return Result.Failure(DomainErrors.User.NameEmpty);
+
+            if (string.IsNullOrWhiteSpace(surname))
+                return Result.Failure(DomainErrors.User.SurnameEmpty);
+
+            Name = name;
+            Surname = surname;
+
+            return Result.Success();
+        }
+
+        public Result ChangeRole(UserType newRole)
+        {
+            if (!Enum.IsDefined(typeof(UserType), newRole)) 
+                return Result.Failure(DomainErrors.User.InvalidUserType);
+
+            UserType = newRole;
+            return Result.Success();
         }
     }
 }

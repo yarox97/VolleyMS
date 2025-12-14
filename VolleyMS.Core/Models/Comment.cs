@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.Core.Common;
+﻿using VolleyMS.Core.Common;
 
-namespace VolleyMS.Core.Entities
+namespace VolleyMS.Core.Models
 {
     public class Comment : BaseEntity
     {
@@ -13,6 +8,10 @@ namespace VolleyMS.Core.Entities
             : base(id)
         {
         }
-        public string Text { get; } = string.Empty;
+        public string Text { get; private set; }
+        public Guid TaskId { get; private set; }
+        public Task Task { get; private set; }
+        public Guid SenderId { get; private set; }
+        public User Sender { get; private set; }
     }
 }

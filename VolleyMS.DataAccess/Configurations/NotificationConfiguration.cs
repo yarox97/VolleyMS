@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using VolleyMS.DataAccess.Entities;
+using VolleyMS.Core.Models;
 
 namespace VolleyMS.DataAccess.Configurations
 {
-    public class NotificationConfiguration : IEntityTypeConfiguration<NotificationEntity>
+    public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
     {
-        public void Configure(EntityTypeBuilder<NotificationEntity> builder)
+        public void Configure(EntityTypeBuilder<Notification> builder)
         {
             builder.HasKey(x => x.Id);
 
@@ -22,6 +22,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasMany(n => n.UserNotifications)
                 .WithOne(un => un.Notification)
                 .HasForeignKey(un => un.NotificationId);
+
         }
     }
 }
