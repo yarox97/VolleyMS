@@ -5,14 +5,14 @@ using VolleyMS.Core.Repositories;
 
 namespace VolleyMS.DataAccess.Repositories
 {
-    public class JoinClubRepository : GenericRepository<JoinClub>, IJoinClubRepository
+    public class JoinClubRepository : GenericRepository<JoinClubRequest>, IJoinClubRepository
     {
-        public JoinClubRepository(VolleyMsDbContext context) : base(context)
+        public JoinClubRepository(VolleyMsDbContext volleyMsDbContext) : base(volleyMsDbContext)
         {
         }
-        public async Task<IList<JoinClub>> GetPendingByClubIdAsync(Guid clubId)
+        public async Task<IList<JoinClubRequest>> GetPendingByClubIdAsync(Guid clubId)
         {
-            return await _context.JoinClubRequests
+            return await _volleyMsDbContext.JoinClubRequests
                 .Where(jc => jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending)
                 .ToListAsync();
         }

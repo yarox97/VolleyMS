@@ -1,6 +1,4 @@
-﻿using VolleyMS.Core.DomainEvents;
-
-namespace VolleyMS.Core.Models
+﻿namespace VolleyMS.Core.DomainEvents
 {
     public sealed record JoinClubRequestSent(Guid userId, Guid clubId) : IDomainEvent
     {

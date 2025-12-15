@@ -1,10 +1,11 @@
 ﻿public enum UserType
 {
     Admin,
-    Player
+    User
 }
 
-public enum TaskType
+public enum 
+    TaskType
 {
     Attendance,
     FileConfirmation,

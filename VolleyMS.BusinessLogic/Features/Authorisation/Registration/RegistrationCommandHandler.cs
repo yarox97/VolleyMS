@@ -29,7 +29,7 @@ namespace VolleyMS.BusinessLogic.Features.Authorisation.Registration
                 Guid.NewGuid(),
                 command.userName,
                 hashedPassword,
-                UserType.Player,
+                UserType.User,
                 command.name, 
                 command.surname, 
                 command.email, 

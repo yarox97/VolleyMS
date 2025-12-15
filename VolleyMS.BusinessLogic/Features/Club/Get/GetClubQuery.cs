@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using VolleyMS.BusinessLogic.Contracts.DTOs;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.BusinessLogic.Features.Club.Get

@@ -8,16 +8,16 @@ namespace VolleyMS.DataAccess.Repositories
 {
     public class NotificationRepository : GenericRepository<Notification>, INotificationRepository
     {
-        public NotificationRepository(VolleyMsDbContext context) : base(context)
+        public NotificationRepository(VolleyMsDbContext volleyMsDbContext) : base(volleyMsDbContext)
         {
         }
         public async Task<Guid> DeleteUserNotification(Guid notificationId, Guid userId)
         {
-            await _context.UserNotifications
+            await _volleyMsDbContext.UserNotifications
                 .Where(un => un.NotificationId == notificationId && un.UserId == userId)
                 .ExecuteDeleteAsync();
 
-            await _context.SaveChangesAsync();
+            await _volleyMsDbContext.SaveChangesAsync();
             return notificationId;
         }
     }

@@ -6,13 +6,13 @@ namespace VolleyMS.DataAccess.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
-        protected readonly VolleyMsDbContext _context;
+        protected readonly VolleyMsDbContext _volleyMsDbContext;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericRepository(VolleyMsDbContext context)
+        public GenericRepository(VolleyMsDbContext volleyMsDbContext)
         {
-            _context = context;
-            _dbSet = context.Set<T>();
+            _volleyMsDbContext = volleyMsDbContext;
+            _dbSet = volleyMsDbContext.Set<T>();
         }
 
         public async Task<T?> GetByIdAsync(Guid id)

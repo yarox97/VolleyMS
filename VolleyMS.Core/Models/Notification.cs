@@ -1,61 +1,68 @@
 ﻿using VolleyMS.Core.Common;
-using VolleyMS.Core.Exceptions;
+using VolleyMS.Core.Errors;
+using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Models
 {
     public class Notification : BaseEntity
     {
+        private readonly List<UserNotification> _userNotifications = new();
         private Notification() : base(Guid.Empty)
         {
+            RequiredClubMemberRoles = new List<ClubMemberRole>();
         }
-        private Notification(Guid id, IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? linkedURL, string? payload)
+        private Notification(
+            Guid id,
+            IList<ClubMemberRole> requiredClubMemberRoles,
+            NotificationCategory notificationCategory,
+            string text,
+            string? linkedUrl,
+            string? payload,
+            Guid? senderId)
             : base(id)
         {
             RequiredClubMemberRoles = requiredClubMemberRoles;
             Category = notificationCategory;
             Text = text;
-            LinkedURL = linkedURL;
+            LinkedURL = linkedUrl;
             Payload = payload;
+            SenderId = senderId;
         }
-        public IList<ClubMemberRole> RequiredClubMemberRoles { get; }
-        public NotificationCategory Category { get; } = NotificationCategory.Informative;
+        public IList<ClubMemberRole> RequiredClubMemberRoles { get; private set; }
+        public NotificationCategory Category { get; private set; }
         public string Text { get; private set; }
-        public string? LinkedURL { get; private set; } 
+        public string? LinkedURL { get; private set; }
         public string? Payload { get; private set; }
-        public User? Sender { get; private set; }
         public Guid? SenderId { get; private set; }
-        public ICollection<UserNotification> UserNotifications { get; set; }
+        public User? Sender { get; private set; }
 
-        public static Notification Create(IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? lindkedURL, string? payload)
+        public IReadOnlyCollection<UserNotification> UserNotifications => _userNotifications;
+
+        public static Result<Notification> Create(
+            IList<ClubMemberRole> requiredClubMemberRoles,
+            NotificationCategory notificationCategory,
+            string text,
+            string? linkedUrl,
+            string? payload,
+            User? sender = null)
         {
-            if(string.IsNullOrEmpty(text))
-            {
-                throw new EmptyFieldDomainException("Notification text cannot be empty!");    
-            }
-            if(requiredClubMemberRoles == null)
-            {
-                throw new InvalidNotificationTypeDomainException("Notification type cannot be null!");
-            }
+            if (string.IsNullOrWhiteSpace(text))
+                return Result.Failure<Notification>(DomainErrors.Notification.TextEmpty);
 
-            var notification = new Notification(Guid.NewGuid(), requiredClubMemberRoles, notificationCategory, text, lindkedURL, payload);
-            return notification;
+            if (requiredClubMemberRoles == null || !requiredClubMemberRoles.Any())
+                return Result.Failure<Notification>(DomainErrors.Notification.RolesEmpty);
+
+            var notification = new Notification(
+                Guid.NewGuid(),
+                requiredClubMemberRoles,
+                notificationCategory,
+                text,
+                linkedUrl,
+                payload,
+                sender?.Id
+            );
+
+            return Result.Success(notification);
         }
-
-        public static Notification Create(Guid id, IList<ClubMemberRole> requiredClubMemberRoles, NotificationCategory notificationCategory, string text, string? lindkedURL, string? payload)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                throw new EmptyFieldDomainException("Notification text cannot be empty!");
-            }
-            if (requiredClubMemberRoles == null)
-            {
-                throw new InvalidNotificationTypeDomainException("Notification type cannot be null!");
-            }
-
-            var notification = new Notification(id, requiredClubMemberRoles, notificationCategory, text, lindkedURL, payload);
-            return notification;
-        }
-
-
     }
 }
