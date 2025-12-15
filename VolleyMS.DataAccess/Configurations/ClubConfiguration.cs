@@ -11,6 +11,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("Clubs");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
             // Настройка свойств
             builder.Property(c => c.Name)

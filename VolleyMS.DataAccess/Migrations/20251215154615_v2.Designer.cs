@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using VolleyMS.DataAccess;
@@ -11,9 +12,11 @@ using VolleyMS.DataAccess;
 namespace VolleyMS.DataAccess.Migrations
 {
     [DbContext(typeof(VolleyMsDbContext))]
-    partial class VolleyMsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215154615_v2")]
+    partial class v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,6 +43,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.Club", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("AvatarUrl")
@@ -87,6 +91,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.Comment", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -124,6 +129,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.Contract", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("BeginsFrom")
@@ -213,6 +219,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.Notification", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Category")
@@ -261,6 +268,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.Task", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ClubId")
@@ -330,6 +338,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("AvatarUrl")
@@ -390,6 +399,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.UserClub", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("ClubId")
@@ -428,6 +438,7 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.UserNotification", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")

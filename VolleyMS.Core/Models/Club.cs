@@ -127,17 +127,17 @@ namespace VolleyMS.Core.Models
 
         public Result<UserClub> AddMember(User user, ClubMemberRole clubMemberRole, User creator)
         {
-            if (user is null) return Result.Failure<UserClub>(Error.NullValue);
+            if (user is null) return Result.Failure<UserClub>(DomainErrors.User.UserNotFound);
 
             if (_userClubs.Any(uc => uc.UserId == user.Id && uc.ClubId == Id)) return Result.Failure<UserClub>(DomainErrors.Club.MemberAlreadyExists);
 
-            var userClubResult = UserClub.Create(user, this, creator);
+            var userClubResult = UserClub.Create(user, this, creator, clubMemberRole);
             if (userClubResult.IsFailure) return userClubResult;
 
             _userClubs.Add(userClubResult.Value);
-            UpdatedAt = DateTime.UtcNow;
 
             return userClubResult;
+
         }
 
         public Result<UserClub> ChangeMemberRole(User user, ClubMemberRole clubMemberRole)
@@ -159,7 +159,6 @@ namespace VolleyMS.Core.Models
             if (userClub is null) return Result.Failure(DomainErrors.Club.MemberNotFound);
 
             _userClubs.Remove(userClub);
-            this.UpdatedAt = DateTime.UtcNow;
 
             return Result.Success();
         }

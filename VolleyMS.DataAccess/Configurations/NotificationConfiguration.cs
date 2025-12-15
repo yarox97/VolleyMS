@@ -12,6 +12,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("Notifications");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
             builder.Property(n => n.Text)
                 .HasMaxLength(1000)

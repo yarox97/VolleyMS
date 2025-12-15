@@ -9,12 +9,13 @@ namespace VolleyMS.Core.Models
         private UserClub() : base(Guid.Empty)
         {
         }
-        private UserClub(Guid id, User user, Club club)
+        private UserClub(Guid id, User user, Club club, ClubMemberRole clubMemberRole)
             : base(id)
         {
             User = user;
             UserId = user.Id;
             Club = club;
+            ClubMemberRole = clubMemberRole;
             ClubId = club.Id;
             ClubMemberRole = ClubMemberRole.Player;
         }
@@ -24,12 +25,15 @@ namespace VolleyMS.Core.Models
         public Guid ClubId { get; private set; }
         public ClubMemberRole ClubMemberRole { get; private set; }
 
-        public static Result<UserClub> Create(User user, Club club, User creator) 
+        public static Result<UserClub> Create(User user, Club club, User creator, ClubMemberRole clubMemberRole) 
         {
             if (user == null || club == null || creator == null) 
                 return Result.Failure<UserClub>(Error.NullValue);
 
-            var userClub = new UserClub(Guid.NewGuid(), user, club);
+            if (!Enum.IsDefined(typeof(ClubMemberRole), clubMemberRole)) 
+                return Result.Failure<UserClub>(DomainErrors.Role.InvalidRole);
+
+            var userClub = new UserClub(Guid.NewGuid(), user, club, clubMemberRole);
             userClub.CreatorId = creator.Id;
 
             return Result.Success(userClub);

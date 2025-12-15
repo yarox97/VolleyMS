@@ -11,6 +11,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("Users");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
             // 1. Скалярные свойства
             builder.Property(u => u.UserName)

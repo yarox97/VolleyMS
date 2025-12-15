@@ -67,7 +67,9 @@ namespace VolleyMS.Core.Errors
             public static readonly Error MemberAlreadyExists = new(
                 "Club.MemberAlreadyExists",
                 "The user is already a member of the club.");
-            public static readonly Error InvalidClubMemberRole;
+            public static readonly Error InvalidClubMemberRole = new(
+                "Club.InvalidClubMemberRole",
+                "The specified club member role is invalid.");
             public static Error MemberNotFound = new(
                 "Club.MemberNotFound",
                 "The user is not a member of the club.");
@@ -75,12 +77,21 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidPermission = new(
                 "Club.InvalidPermission",
                 "User does not have permission to perform this action.");
-            public static Error JoinRequestAlreadyExists;
+            public static Error JoinRequestAlreadyExists = new(
+                "Club.JoinRequestAlreadyExists",
+                "A join request from this user to the club already exists."
+                );
 
-            public static Error InvalidMemberRole { get; internal set; }
+            public static Error InvalidMemberRole = new(
+                "Club.InvalidMemberRole",
+                "The specified member role is invalid.");
 
-            public static Error JoinRequestNotFound { get; internal set; }
-            public static Error InvalidJoinCode { get; internal set; }
+            public static Error JoinRequestNotFound = new(
+                "Club.JoinRequestNotFound", 
+                "The join request was not found.");
+            public static Error InvalidJoinCode = new(
+                "Club.InvalidJoinCode",
+                "The provided join code is invalid.");
         }
 
         public static class JoinClubRequest
@@ -91,7 +102,9 @@ namespace VolleyMS.Core.Errors
             public static readonly Error NotPending = new(
                 "JoinClub.NotPending",
                 "Cannot access not pending request.");
-            public static Error ClubNotFound;
+            public static Error ClubNotFound = new(
+                "JoinClub.ClubNotFound",
+                "The specified club was not found.");
         }
 
         public static class Role
@@ -147,7 +160,9 @@ namespace VolleyMS.Core.Errors
                 "Notification.RolesNull",
                 "Required club member roles cannot be null.");
 
-            public static Error RolesEmpty { get; internal set; }
+            public static Error RolesEmpty = new(
+                "Notification.RolesEmpty",
+                "Required club member roles cannot be empty.");
         }
     }
 }

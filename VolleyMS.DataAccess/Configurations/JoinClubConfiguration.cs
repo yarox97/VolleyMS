@@ -14,6 +14,9 @@ namespace VolleyMS.DataAccess.Configurations
             // 2. Первичный ключ
             builder.HasKey(j => j.Id);
 
+            builder.Property(j => j.Id)
+                .ValueGeneratedNever();
+
             // 3. Настройка Enum (храним как строку для читаемости: "Pending", "Approved")
             builder.Property(j => j.JoinClubRequestStatus)
                 .HasConversion<string>()

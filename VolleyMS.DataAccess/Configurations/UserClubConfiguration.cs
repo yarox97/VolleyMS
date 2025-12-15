@@ -11,7 +11,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("UserClubs");
 
             builder.HasKey(x => x.Id);
-
+            builder.Property(x => x.Id).ValueGeneratedNever();
             // 1. ГЛАВНОЕ: Уникальный составной индекс
             // Гарантирует, что пользователь не вступит в один клуб дважды.
             builder.HasIndex(uc => new { uc.UserId, uc.ClubId })

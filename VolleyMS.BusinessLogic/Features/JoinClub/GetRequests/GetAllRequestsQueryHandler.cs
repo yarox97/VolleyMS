@@ -20,6 +20,9 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetRequests
 
             var requests = await _clubRepository.GetAllJoinRequestsAsync(query.clubId, cancellationToken);
 
+            if(requests == null || !requests.Any())
+                return Result.Success(new List<JoinClubRequestDto>());
+
             var requestDtos = requests.Select(r => new JoinClubRequestDto(
                 requestor: new UserDto
                 {

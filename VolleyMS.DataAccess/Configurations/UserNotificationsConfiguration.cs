@@ -12,7 +12,7 @@ namespace VolleyMS.DataAccess.Configurations
 
             // Обычно у join-таблицы составной ключ, если нет своего Id
             builder.HasKey(un => un.Id);
-
+            builder.Property(x => x.Id).ValueGeneratedNever();
             // Уникальность: один пользователь не получает одно уведомление дважды
             builder.HasIndex(un => new { un.UserId, un.NotificationId }).IsUnique();
 

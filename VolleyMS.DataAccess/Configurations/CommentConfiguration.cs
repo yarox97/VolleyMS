@@ -11,6 +11,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("Comments");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
             // Текст комментария
             builder.Property(c => c.Text)

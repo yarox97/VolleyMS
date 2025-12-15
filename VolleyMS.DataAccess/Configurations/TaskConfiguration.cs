@@ -14,6 +14,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("Tasks");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
             builder.Property(t => t.Title)
                 .HasMaxLength(100)

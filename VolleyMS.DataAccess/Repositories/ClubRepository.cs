@@ -52,8 +52,11 @@ namespace VolleyMS.DataAccess.Repositories
         public async Task<IList<JoinClubRequest>> GetAllJoinRequestsAsync(Guid clubId, CancellationToken cancellation)
         {
             return await _volleyMsDbContext.JoinClubRequests
+                .AsNoTracking()
                 .Include(x => x.Club)
                 .ThenInclude(c => c.UserClubs)
+                .Include(u => u.User)
+                .Include(u => u.Responser)
                 .Where(jc => jc.Club.Id == clubId)
                 .ToListAsync(cancellation);
         }
@@ -62,6 +65,7 @@ namespace VolleyMS.DataAccess.Repositories
             return await _volleyMsDbContext.JoinClubRequests
                 .Include(x => x.Club)
                 .ThenInclude(c => c.UserClubs)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(jc => jc.Id == joinRequestId);
         }
     }
