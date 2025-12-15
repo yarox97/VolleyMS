@@ -44,7 +44,6 @@ namespace VolleyMS.Core.Models
             if (!Enum.IsDefined(typeof(ClubMemberRole), clubMemberRole)) return Result.Failure<UserClub>(DomainErrors.Role.InvalidRole);
 
             ClubMemberRole = clubMemberRole;
-            UpdatedAt = DateTime.UtcNow;
 
             return Result.Success();
         }

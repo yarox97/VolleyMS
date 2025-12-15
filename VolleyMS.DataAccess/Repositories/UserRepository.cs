@@ -12,6 +12,8 @@ namespace VolleyMS.DataAccess.Repositories
         public async Task<User?> GetByUserNameAsync(string userName)
         {
             return await _volleyMsDbContext.Users
+                .AsNoTracking()
+                .Include(u => u.UserClubs)
                 .FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
         }
         public async Task<bool> IsLoginTaken(string userName)

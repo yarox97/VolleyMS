@@ -1,4 +1,4 @@
-﻿namespace VolleyMS.BusinessLogic.Features.Authorisation
+﻿namespace VolleyMS.BusinessLogic.Features.Users.Authorisation
 {
     public class AuthConfiguration
     {

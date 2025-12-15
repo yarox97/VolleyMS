@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using VolleyMS.Core.Shared;
 
-namespace VolleyMS.BusinessLogic.Features.Authorisation.Registration
+namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
 {
     public record RegistrationCommand : IRequest<Result<Guid>>
     {

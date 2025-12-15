@@ -8,5 +8,8 @@
         public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? AvatarUrl { get; set; }
+
+        public IList<UserClubDto>? clubDtos { get; set; } = new List<UserClubDto>();
+        public DateTime? createdAt { get; set; }
     }
 }

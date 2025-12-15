@@ -54,13 +54,11 @@ namespace VolleyMS.Core.Models
                 return Result.Failure<Contract>(DomainErrors.Contract.NegativeSalary);
             }
 
-            // Валидация дат
             if (beginsFrom > endsBy)
             {
                 return Result.Failure<Contract>(DomainErrors.Contract.InvalidDates);
             }
 
-            // Валидация ID
             if (userId == Guid.Empty || clubId == Guid.Empty)
             {
                 return Result.Failure<Contract>(Error.NullValue);
