@@ -1,54 +1,40 @@
-﻿//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
-//using System.Security.Claims;
-//using VolleyMS.BusinessLogic.Services;
-//using VolleyMS.Contracts.DTOs;
-//using VolleyMS.Core.Requests;
-//using VolleyMS.Extensions;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using VolleyMS.BusinessLogic.Features.Users.Get;
+using VolleyMS.Extensions;
 
 
-//namespace VolleyMS.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class userController : ControllerBase
-//    {
-//        private readonly UserService _userService;
-//        private readonly NotificationService _notificationService;
-//        private readonly JoinClubService _joinClubService;
+namespace VolleyMS.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class userController : ControllerBase
+    {
+        private readonly ISender Sender;
 
-//        public userController(UserService userService, NotificationService notificationService, JoinClubService joinClubService)
-//        {
-//            _userService = userService;
-//            _notificationService = notificationService;
-//            _joinClubService = joinClubService;
-//        }
+        public userController(ISender sender)
+        {
+            Sender = sender;
+        }
 
-//        [HttpGet("{userName}")]
-//        [Authorize]
-//        public async Task<IActionResult> Get(string userName)
-//        {
-//            var user = await _userService.Get(userName);
-//            if(user == null) return Ok(null);
+        [HttpGet("{userName}")]
+        [Authorize]
+        public async Task<IActionResult> Get(string userName)
+        {
+            var userId = User.GetUserId();
+            if(userId == Guid.Empty) return Unauthorized();
 
-//            var response = new UserDto()
-//            {
-//                Id = user.Id,
-//                FirstName = user.Name,
-//                LastName = user.Surname,
-//                UserName = user.UserName
-//            };
-//            return Ok(response);
-//        }
+            var result = await Sender.Send(new GetUserQuery(userName, userId));
 
-//        [HttpPut("{userName}")]
-//        [Authorize]
-//        public async Task<IActionResult> Modify(string userName, [FromBody] UserModificationRequest userModificationRequest)
-//        {
-//            var userNameClaim = User.GetUserName();
-            
-//            await _userService.Modify(userName, userModificationRequest);
-//            return Ok("User was successfuly modified");
-//        }
-//    }
-//}
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpPut("{userName}")]
+        [Authorize]
+        public async Task<IActionResult> Modify(string userName  )
+        {
+            return Ok();
+        }
+    }
+}

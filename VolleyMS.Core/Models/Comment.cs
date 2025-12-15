@@ -44,7 +44,6 @@ namespace VolleyMS.Core.Models
                 return Result.Failure(DomainErrors.Comment.TextEmpty);
 
             Text = newText;
-            UpdatedAt = DateTime.UtcNow;
 
             return Result.Success();
         }

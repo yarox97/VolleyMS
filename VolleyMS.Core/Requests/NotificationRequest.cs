@@ -1,6 +1,4 @@
-﻿using VolleyMS.Core.Models;
-
-namespace VolleyMS.Core.Requests
+﻿namespace VolleyMS.Core.Requests
 {
     public class NotificationRequest
     {

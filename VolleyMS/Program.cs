@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
-using VolleyMS.BusinessLogic.Features.Authorisation;
-using VolleyMS.BusinessLogic.Features.Authorisation.Registration;
+using VolleyMS.BusinessLogic.Features.Users.Authorisation;
+using VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration;
 using VolleyMS.BusinessLogic.Services;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;

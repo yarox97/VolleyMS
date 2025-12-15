@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using VolleyMS.BusinessLogic.Features.Authorisation.Authentication;
-using VolleyMS.BusinessLogic.Features.Authorisation.Registration;
+using VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration;
+using VolleyMS.BusinessLogic.Features.Users.Authorisation.Authentication;
 
 namespace VolleyMS.Controllers
 {

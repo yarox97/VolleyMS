@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using VolleyMS.Core.Models;
 
-namespace VolleyMS.BusinessLogic.Features.Authorisation
+namespace VolleyMS.BusinessLogic.Features.Users.Authorisation
 {
     public class JwtService(IOptions<AuthConfiguration> options)
     {
