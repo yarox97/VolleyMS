@@ -11,6 +11,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.ToTable("Contracts");
 
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
             builder.Property(c => c.MonthlySalary)
                 .HasPrecision(18, 2)
