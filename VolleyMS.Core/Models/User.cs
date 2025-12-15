@@ -14,7 +14,7 @@ namespace VolleyMS.Core.Models
         private readonly List<Comment> _sentComments = new();
         private readonly List<Notification> _sentNotifications = new();
         private readonly List<UserNotification> _receivedNotifications = new();
-        private readonly List<JoinClub> _joinClubRequests = new();
+        private readonly List<JoinClubRequest> _joinClubRequests = new();
         private User() : base(Guid.Empty) 
         {
         }
@@ -50,7 +50,7 @@ namespace VolleyMS.Core.Models
         public IReadOnlyCollection<Comment> SentComments => _sentComments;
         public IReadOnlyCollection<Notification> SentNotifications => _sentNotifications;
         public IReadOnlyCollection<UserNotification> ReceivedNotifications => _receivedNotifications;
-        public IReadOnlyCollection<JoinClub> JoinClubRequests => _joinClubRequests;
+        public IReadOnlyCollection<JoinClubRequest> JoinClubRequests => _joinClubRequests;
 
         public Result<User> ChangePassword(string newHashedPassword)
         {

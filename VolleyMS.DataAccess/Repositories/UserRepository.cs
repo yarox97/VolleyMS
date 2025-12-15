@@ -6,17 +6,17 @@ namespace VolleyMS.DataAccess.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(VolleyMsDbContext context) : base(context)
+        public UserRepository(VolleyMsDbContext volleyMsDbContext) : base(volleyMsDbContext)
         {
         }
         public async Task<User?> GetByUserNameAsync(string userName)
         {
-            return await _context.Users
+            return await _volleyMsDbContext.Users
                 .FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
         }
         public async Task<bool> IsLoginTaken(string userName)
         {
-            return await _context.Users
+            return await _volleyMsDbContext.Users
                 .AnyAsync(u => u.UserName.ToLower() == userName.ToLower());                           
         }
     }

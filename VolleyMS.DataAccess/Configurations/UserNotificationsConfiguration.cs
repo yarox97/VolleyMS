@@ -8,17 +8,26 @@ namespace VolleyMS.DataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<UserNotification> builder)
         {
-            builder.HasKey(un => new { un.UserId, un.NotificationId });
+            builder.ToTable("UserNotifications");
+
+            // Обычно у join-таблицы составной ключ, если нет своего Id
+            builder.HasKey(un => un.Id);
+
+            // Уникальность: один пользователь не получает одно уведомление дважды
+            builder.HasIndex(un => new { un.UserId, un.NotificationId }).IsUnique();
+
+            builder.Property(un => un.IsChecked).IsRequired();
+
+            // Связи
+            builder.HasOne(un => un.User)
+                .WithMany(u => u.ReceivedNotifications)
+                .HasForeignKey(un => un.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Удалили юзера -> удалили его уведомления
 
             builder.HasOne(un => un.Notification)
                 .WithMany(n => n.UserNotifications)
                 .HasForeignKey(un => un.NotificationId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(un => un.User)
-                .WithMany(u => u.ReceivedNotifications)
-                .HasForeignKey(un => un.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Удалили уведомление -> удалили у всех
         }
     }
 }

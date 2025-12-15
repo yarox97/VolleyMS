@@ -34,7 +34,7 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("ReceiversId");
 
-                    b.ToTable("TaskUser");
+                    b.ToTable("TaskReceivers", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.Club", b =>
@@ -44,10 +44,12 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("AvatarUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("BackGroundURL")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -59,22 +61,28 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("JoinCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clubs");
+                    b.HasIndex("JoinCode")
+                        .IsUnique();
+
+                    b.ToTable("Clubs", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.Comment", b =>
@@ -100,8 +108,8 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -112,7 +120,7 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.Contract", b =>
@@ -121,14 +129,32 @@ namespace VolleyMS.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("BeginsFrom")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ClubId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EndsBy")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("MonthlySalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -138,12 +164,14 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClubId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Contracts");
+                    b.ToTable("Contracts", (string)null);
                 });
 
-            modelBuilder.Entity("VolleyMS.Core.Models.JoinClub", b =>
+            modelBuilder.Entity("VolleyMS.Core.Models.JoinClubRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -161,8 +189,13 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("JoinClubRequestStatus")
-                        .HasColumnType("integer");
+                    b.Property<string>("JoinClubRequestStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid?>("ResponserId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -174,9 +207,11 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("ClubId");
 
+                    b.HasIndex("ResponserId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("JoinClubRequests");
+                    b.ToTable("JoinClubRequests", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.Notification", b =>
@@ -184,6 +219,10 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -193,6 +232,18 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LinkedURL")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Payload")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("RequiredClubMemberRoles")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("SenderId")
                         .HasColumnType("uuid");
@@ -209,7 +260,7 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.Task", b =>
@@ -227,21 +278,48 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("DayOfWeek")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("PenaltyType")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("TaskStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TaskType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -252,7 +330,7 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.User", b =>
@@ -262,7 +340,8 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("AvatarUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -275,7 +354,8 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -299,12 +379,19 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("UserType")
-                        .HasColumnType("integer");
+                    b.Property<string>("UserType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.UserClub", b =>
@@ -316,8 +403,10 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<Guid>("ClubId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("ClubMemberRole")
-                        .HasColumnType("integer");
+                    b.Property<string>("ClubMemberRole")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -338,17 +427,16 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("ClubId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "ClubId")
+                        .IsUnique();
 
-                    b.ToTable("UserClubs");
+                    b.ToTable("UserClubs", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.UserNotification", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("NotificationId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -360,20 +448,26 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
                     b.Property<bool>("IsChecked")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid>("NotificationId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("UserId", "NotificationId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("NotificationId");
 
-                    b.ToTable("UserNotifications");
+                    b.HasIndex("UserId", "NotificationId")
+                        .IsUnique();
+
+                    b.ToTable("UserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("TaskUser", b =>
@@ -396,7 +490,7 @@ namespace VolleyMS.DataAccess.Migrations
                     b.HasOne("VolleyMS.Core.Models.User", "Sender")
                         .WithMany("SentComments")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("VolleyMS.Core.Models.Task", "Task")
@@ -412,22 +506,34 @@ namespace VolleyMS.DataAccess.Migrations
 
             modelBuilder.Entity("VolleyMS.Core.Models.Contract", b =>
                 {
+                    b.HasOne("VolleyMS.Core.Models.Club", "Club")
+                        .WithMany()
+                        .HasForeignKey("ClubId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("VolleyMS.Core.Models.User", "User")
                         .WithMany("Contracts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Club");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("VolleyMS.Core.Models.JoinClub", b =>
+            modelBuilder.Entity("VolleyMS.Core.Models.JoinClubRequest", b =>
                 {
                     b.HasOne("VolleyMS.Core.Models.Club", "Club")
                         .WithMany("JoinClubRequests")
                         .HasForeignKey("ClubId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("VolleyMS.Core.Models.User", "Responser")
+                        .WithMany()
+                        .HasForeignKey("ResponserId");
 
                     b.HasOne("VolleyMS.Core.Models.User", "User")
                         .WithMany("JoinClubRequests")
@@ -436,6 +542,8 @@ namespace VolleyMS.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Club");
+
+                    b.Navigation("Responser");
 
                     b.Navigation("User");
                 });
@@ -461,7 +569,7 @@ namespace VolleyMS.DataAccess.Migrations
                     b.HasOne("VolleyMS.Core.Models.User", "Sender")
                         .WithMany("SentTasks")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Club");

@@ -24,11 +24,15 @@ namespace VolleyMS.Core.Models
         public Guid ClubId { get; private set; }
         public ClubMemberRole ClubMemberRole { get; private set; }
 
-        public static Result<UserClub> Create(User user, Club club) 
+        public static Result<UserClub> Create(User user, Club club, User creator) 
         {
-            if (user == null || club == null) return Result.Failure<UserClub>(Error.NullValue);
+            if (user == null || club == null || creator == null) 
+                return Result.Failure<UserClub>(Error.NullValue);
 
-            return new UserClub(Guid.NewGuid(), user, club);
+            var userClub = new UserClub(Guid.NewGuid(), user, club);
+            userClub.CreatorId = creator.Id;
+
+            return Result.Success(userClub);
         }
 
         public Result ChangeRole(ClubMemberRole clubMemberRole)
@@ -36,6 +40,7 @@ namespace VolleyMS.Core.Models
             if (!Enum.IsDefined(typeof(ClubMemberRole), clubMemberRole)) return Result.Failure<UserClub>(DomainErrors.Role.InvalidRole);
 
             ClubMemberRole = clubMemberRole;
+            UpdatedAt = DateTime.UtcNow;
 
             return Result.Success();
         }

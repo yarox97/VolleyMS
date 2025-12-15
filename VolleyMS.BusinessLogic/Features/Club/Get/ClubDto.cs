@@ -1,4 +1,4 @@
-﻿namespace VolleyMS.BusinessLogic.Contracts.DTOs
+﻿namespace VolleyMS.BusinessLogic.Features.Club.Get
 {
     public class ClubDto
     {

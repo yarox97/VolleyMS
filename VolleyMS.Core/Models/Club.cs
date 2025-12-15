@@ -9,7 +9,7 @@ namespace VolleyMS.Core.Models
     {
         private readonly List<Task> _tasks = new();
         private readonly List<UserClub> _userClubs = new();
-        private readonly List<JoinClub> _joinClubRequests = new();
+        private readonly List<JoinClubRequest> _joinClubRequests = new();
         private Club() : base(Guid.Empty)
         {
         }
@@ -34,7 +34,7 @@ namespace VolleyMS.Core.Models
         public string? BackGroundURL { get; private set; }
         public IReadOnlyCollection<Task> Tasks => _tasks;
         public IReadOnlyCollection<UserClub> UserClubs => _userClubs;
-        public IReadOnlyCollection<JoinClub> JoinClubRequests => _joinClubRequests;
+        public IReadOnlyCollection<JoinClubRequest> JoinClubRequests => _joinClubRequests;
 
         public static Result<Club> Create(string name, string joinCode, string? description, string? avatarUrl, string? backGroundUrl, User creator)
         {
@@ -43,83 +43,100 @@ namespace VolleyMS.Core.Models
             var club = new Club(Guid.NewGuid(), name, joinCode, description, avatarUrl, backGroundUrl);
             club.CreatorId = creator.Id;
 
-            var adminResult = club.AddMember(creator, ClubMemberRole.Creator);
+            var adminResult = club.AddMember(creator, ClubMemberRole.Creator, creator);
             if(adminResult.IsFailure) return Result.Failure<Club>(adminResult.Error);
 
             return Result.Success(club);
         }
 
-        public Result<JoinClub> RequestToJoinClub(User user)
+        public Result<JoinClubRequest> RequestToJoinClub(User user)
         {
-            if (user is null) return Result.Failure<JoinClub>(Error.NullValue);
+            if (user is null) return Result.Failure<JoinClubRequest>(Error.NullValue);
 
             if (_joinClubRequests.Any(jc => jc.UserId == user.Id 
                                          && jc.ClubId == Id 
                                          && jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending)) 
-                return Result.Failure<JoinClub>(DomainErrors.Club.JoinRequestAlreadyExists);
+                return Result.Failure<JoinClubRequest>(DomainErrors.Club.JoinRequestAlreadyExists);
 
-            var joinClubResult = JoinClub.Create(user.Id, this.Id);
+            if (_userClubs.Any(uc => uc.UserId == user.Id && uc.ClubId == Id))
+                return Result.Failure<JoinClubRequest>(DomainErrors.Club.MemberAlreadyExists);
+
+            var joinClubResult = JoinClubRequest.Create(user.Id, this.Id);
 
             if (joinClubResult.IsFailure) return joinClubResult;
 
             _joinClubRequests.Add(joinClubResult.Value);
-            UpdatedAt = DateTime.UtcNow;
+
+            RaiseDomainEvent(new JoinClubRequestSentDomainEvent(user.Id, this.Id)); // Send notification to users who can approve join requests
 
             return joinClubResult;
         }
 
-        public Result ApproveJoinClubRequest(User user, ClubMemberRole clubMemberRole)
+        private bool IsClubAdminOrPresident(Guid userId)
         {
-            if (user is null) return Result.Failure<JoinClub>(Error.NullValue);
+            return _userClubs.Any(u => u.UserId == userId &&
+                   (u.ClubMemberRole == ClubMemberRole.President || u.ClubMemberRole == ClubMemberRole.Creator));
+        }
 
-            var joinClubRequest = _joinClubRequests.FirstOrDefault(jc =>
-                jc.UserId == user.Id &&
-                jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending);
+        public Result ApproveJoinRequest(JoinClubRequest request, ClubMemberRole roleToAdd, User responser)
+        {
+            if (!IsClubAdminOrPresident(responser.Id))
+                return Result.Failure(DomainErrors.Club.InvalidPermission);
 
-            if (joinClubRequest is null) 
-                return Result.Failure<JoinClub>(DomainErrors.Club.JoinRequestNotFound);
+            if (request.ClubId != this.Id)
+                return Result.Failure(DomainErrors.Club.JoinRequestNotFound);
 
-            var approveResult = joinClubRequest.Approve();
-            if(approveResult.IsFailure) 
-                return Result.Failure<JoinClub>(approveResult.Error);
+            var requestResult = request.Approve(responser);
 
-            var addMemberResult = AddMember(user, clubMemberRole);
-            if(addMemberResult.IsFailure) 
-                return Result.Failure<JoinClub>(addMemberResult.Error);
+            if (requestResult.IsFailure)
+                return requestResult;
 
-            RaiseDomainEvent(new JoinClubApprovedDomainEvent(user.Id, this.Id));
+            var newUserMembership = AddMember(request.User, roleToAdd, responser);
+
+            if(newUserMembership.IsFailure)
+                return newUserMembership;
+
+            RaiseDomainEvent(new JoinClubApprovedDomainEvent(request.UserId, request.ClubId)); // Send approval notification to requestor
 
             return Result.Success();
         }
 
-        public Result RejectJoinClubRequest(User user)
+        public Result RejectJoinClubRequest(JoinClubRequest request, User responser)
         {
-            if (user is null) return Result.Failure<JoinClub>(Error.NullValue);
+            if (request.User is null) 
+                return Result.Failure(DomainErrors.User.UserNotFound);
 
-            var joinClubRequest = _joinClubRequests.FirstOrDefault(jc =>
-                jc.UserId == user.Id &&
-                jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending);
-            if (joinClubRequest is null) return Result.Failure<JoinClub>(DomainErrors.Club.JoinRequestNotFound);
+            if (request is null) 
+                return Result.Failure<JoinClubRequest>(DomainErrors.Club.JoinRequestNotFound);
 
-            var approveResult = joinClubRequest.Reject();
-            if (approveResult.IsFailure) return Result.Failure<JoinClub>(approveResult.Error);
+            if (request.JoinClubRequestStatus != JoinClubRequestStatus.Pending) 
+                return Result.Failure<JoinClubRequest>(DomainErrors.JoinClubRequest.NotPending);
 
-            RaiseDomainEvent(new JoinClubRejectedDomainEvent(user.Id, this.Id));
+            if (!IsClubAdminOrPresident(responser.Id)) 
+                return Result.Failure<JoinClubRequest>(DomainErrors.Club.InvalidPermission);
+
+            var requestResult = request.Reject(responser);
+
+            if (requestResult.IsFailure) 
+                return Result.Failure(requestResult.Error);
+
+            RaiseDomainEvent(new JoinClubRejectedDomainEvent(request.UserId, this.Id, responser.Id)); // Send rejection notification to requestor 
 
             return Result.Success();
         }
 
-        public Result<UserClub> AddMember(User user, ClubMemberRole clubMemberRole)
+        public Result<UserClub> AddMember(User user, ClubMemberRole clubMemberRole, User creator)
         {
             if (user is null) return Result.Failure<UserClub>(Error.NullValue);
 
             if (_userClubs.Any(uc => uc.UserId == user.Id && uc.ClubId == Id)) return Result.Failure<UserClub>(DomainErrors.Club.MemberAlreadyExists);
 
-            var userClubResult = UserClub.Create(user, this);
+            var userClubResult = UserClub.Create(user, this, creator);
             if (userClubResult.IsFailure) return userClubResult;
 
             _userClubs.Add(userClubResult.Value);
             UpdatedAt = DateTime.UtcNow;
+
             return userClubResult;
         }
 
@@ -133,7 +150,6 @@ namespace VolleyMS.Core.Models
             var changeRoleResult = userClub.ChangeRole(clubMemberRole);
             if (changeRoleResult.IsFailure) return Result.Failure<UserClub>(changeRoleResult.Error);
 
-            UpdatedAt = DateTime.UtcNow;
             return Result.Success(userClub);
         }
 
@@ -143,6 +159,8 @@ namespace VolleyMS.Core.Models
             if (userClub is null) return Result.Failure(DomainErrors.Club.MemberNotFound);
 
             _userClubs.Remove(userClub);
+            this.UpdatedAt = DateTime.UtcNow;
+
             return Result.Success();
         }
     }

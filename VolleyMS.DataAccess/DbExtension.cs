@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using VolleyMS.Core.Repositories;
 
 namespace VolleyMS.DataAccess
@@ -12,6 +13,9 @@ namespace VolleyMS.DataAccess
             serviceCollection.AddDbContext<VolleyMsDbContext>(o =>
             {
                 o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb2;Username=postgres;password=GabeNewwel228");
+
+                o.EnableSensitiveDataLogging();
+                o.LogTo(Console.WriteLine, LogLevel.Information);
             });
         }
     }

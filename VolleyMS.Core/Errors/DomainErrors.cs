@@ -67,7 +67,7 @@ namespace VolleyMS.Core.Errors
             public static readonly Error MemberAlreadyExists = new(
                 "Club.MemberAlreadyExists",
                 "The user is already a member of the club.");
-
+            public static readonly Error InvalidClubMemberRole;
             public static Error MemberNotFound = new(
                 "Club.MemberNotFound",
                 "The user is not a member of the club.");
@@ -80,9 +80,10 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidMemberRole { get; internal set; }
 
             public static Error JoinRequestNotFound { get; internal set; }
+            public static Error InvalidJoinCode { get; internal set; }
         }
 
-        public static class JoinClub
+        public static class JoinClubRequest
         {
             public static readonly Error InvalidStatus = new(
                 "JoinClub.InvalidStatus",
@@ -90,6 +91,7 @@ namespace VolleyMS.Core.Errors
             public static readonly Error NotPending = new(
                 "JoinClub.NotPending",
                 "Cannot access not pending request.");
+            public static Error ClubNotFound;
         }
 
         public static class Role
@@ -125,6 +127,16 @@ namespace VolleyMS.Core.Errors
                 "Start time cannot be later than end time.");
         }
 
+        public static class Comment
+        {
+            public static readonly Error TextEmpty = new(
+                "Comment.TextEmpty",
+                "Comment text cannot be empty.");
+            public static readonly Error NotAuthor = new(
+                "Comment.NotAuthor",
+                "Only the author can modify or delete the comment.");
+        }
+
         public static class Notification
         {
             public static readonly Error TextEmpty = new(
@@ -134,6 +146,8 @@ namespace VolleyMS.Core.Errors
             public static readonly Error RolesNull = new(
                 "Notification.RolesNull",
                 "Required club member roles cannot be null.");
+
+            public static Error RolesEmpty { get; internal set; }
         }
     }
 }

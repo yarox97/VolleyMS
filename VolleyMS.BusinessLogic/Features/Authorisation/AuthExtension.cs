@@ -26,7 +26,7 @@ namespace VolleyMS.BusinessLogic.Features.Authorisation
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminOnly", policy => policy.RequireRole("UserType", UserType.Admin.ToString()));
-                options.AddPolicy("PlayerOnly", policy => policy.RequireRole("UserType", UserType.Player.ToString()));
+                options.AddPolicy("PlayerOnly", policy => policy.RequireRole("UserType", UserType.User.ToString()));
             });
 
             return services;

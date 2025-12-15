@@ -1,5 +1,6 @@
 ﻿using VolleyMS.Core.Common;
-using VolleyMS.Core.Exceptions;
+using VolleyMS.Core.Errors;
+using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Models
 {
@@ -8,35 +9,80 @@ namespace VolleyMS.Core.Models
         private Contract() : base(Guid.Empty)
         {
         }
-        private Contract(Guid id, decimal? monthlySalary, Currency currency, DateTime beginsFrom, DateTime endsBy)
+
+        private Contract(
+            Guid id,
+            decimal? monthlySalary,
+            Currency currency,
+            DateTime beginsFrom,
+            DateTime endsBy,
+            Guid userId,
+            Guid clubId)
             : base(id)
         {
-            MontlySalary = monthlySalary;
+            MonthlySalary = monthlySalary;
             Currency = currency;
             BeginsFrom = beginsFrom;
             EndsBy = endsBy;
+            UserId = userId;
+            ClubId = clubId;
         }
-        public decimal? MontlySalary { get; private set; }
-        public Currency? Currency { get; private set; }
-        public DateTime BeginsFrom { get; private set; } 
+        public decimal? MonthlySalary { get; private set; }
+        public Currency Currency { get; private set; }
+
+        public DateTime BeginsFrom { get; private set; }
         public DateTime EndsBy { get; private set; }
+
         public Guid UserId { get; private set; }
         public User User { get; private set; }
-        public Guid TeamId { get; private set; }
+
+        // Исправил TeamId на ClubId
+        public Guid ClubId { get; private set; }
         public Club Club { get; private set; }
 
-        public static Contract Create(Guid id, decimal? monthlySalary, Currency currency, DateTime beginsFrom, DateTime endsBy)
+        public static Result<Contract> Create(
+            decimal? monthlySalary,
+            Currency currency,
+            DateTime beginsFrom,
+            DateTime endsBy,
+            Guid userId,
+            Guid clubId)
         {
-            if (monthlySalary < 0)
+            // Валидация денег
+            if (monthlySalary.HasValue && monthlySalary < 0)
             {
-                throw new InvalidSalaryDomainException("Monthly salary cannot be negative!");
-            }
-            if(beginsFrom > endsBy)
-            {
-                throw new DateOutOfBoundsDomainException("Contract start date cannot be later than end date!");
+                return Result.Failure<Contract>(DomainErrors.Contract.NegativeSalary);
             }
 
-            return new Contract(id, monthlySalary, currency, beginsFrom, endsBy);
+            // Валидация дат
+            if (beginsFrom > endsBy)
+            {
+                return Result.Failure<Contract>(DomainErrors.Contract.InvalidDates);
+            }
+
+            // Валидация ID
+            if (userId == Guid.Empty || clubId == Guid.Empty)
+            {
+                return Result.Failure<Contract>(Error.NullValue);
+            }
+
+            // Проверка enum
+            if (!Enum.IsDefined(typeof(Currency), currency))
+            {
+                return Result.Failure<Contract>(DomainErrors.Contract.InvalidDates);
+            }
+
+            var contract = new Contract(
+                Guid.NewGuid(),
+                monthlySalary,
+                currency,
+                beginsFrom,
+                endsBy,
+                userId,
+                clubId
+            );
+
+            return Result.Success(contract);
         }
     }
 }
