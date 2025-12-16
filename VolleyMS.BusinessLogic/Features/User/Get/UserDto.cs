@@ -1,4 +1,6 @@
-﻿namespace VolleyMS.BusinessLogic.Contracts.DTOs
+﻿using VolleyMS.BusinessLogic.Contracts.DTOs;
+
+namespace VolleyMS.BusinessLogic.Features.Users.Get
 {
     public class UserDto
     {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
-using Task = System.Threading.Tasks.Task;
 
 
 namespace VolleyMS.DataAccess.Repositories
@@ -11,6 +10,7 @@ namespace VolleyMS.DataAccess.Repositories
         public NotificationRepository(VolleyMsDbContext volleyMsDbContext) : base(volleyMsDbContext)
         {
         }
+
         public async Task<Guid> DeleteUserNotification(Guid notificationId, Guid userId)
         {
             await _volleyMsDbContext.UserNotifications
@@ -19,6 +19,16 @@ namespace VolleyMS.DataAccess.Repositories
 
             await _volleyMsDbContext.SaveChangesAsync();
             return notificationId;
+        }
+
+        public async Task<IEnumerable<UserNotification>> GetUserNotifications(Guid userId, CancellationToken cancellationToken)
+        {
+            var userNotifications = await _volleyMsDbContext.UserNotifications
+                .Where(un => un.UserId == userId)
+                .Include(un => un.Notification)
+                .ToListAsync(cancellationToken);
+
+            return userNotifications;
         }
     }
 }

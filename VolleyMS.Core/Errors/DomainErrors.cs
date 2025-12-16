@@ -67,9 +67,11 @@ namespace VolleyMS.Core.Errors
             public static readonly Error MemberAlreadyExists = new(
                 "Club.MemberAlreadyExists",
                 "The user is already a member of the club.");
+
             public static readonly Error InvalidClubMemberRole = new(
                 "Club.InvalidClubMemberRole",
                 "The specified club member role is invalid.");
+
             public static Error MemberNotFound = new(
                 "Club.MemberNotFound",
                 "The user is not a member of the club.");
@@ -77,6 +79,7 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidPermission = new(
                 "Club.InvalidPermission",
                 "User does not have permission to perform this action.");
+
             public static Error JoinRequestAlreadyExists = new(
                 "Club.JoinRequestAlreadyExists",
                 "A join request from this user to the club already exists."
@@ -89,9 +92,12 @@ namespace VolleyMS.Core.Errors
             public static Error JoinRequestNotFound = new(
                 "Club.JoinRequestNotFound", 
                 "The join request was not found.");
+
             public static Error InvalidJoinCode = new(
                 "Club.InvalidJoinCode",
                 "The provided join code is invalid.");
+
+            public static Error ClubNotFound { get; set; }
         }
 
         public static class JoinClubRequest
@@ -99,9 +105,11 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidStatus = new(
                 "JoinClub.InvalidStatus",
                 "Invalid join club request status.");
+
             public static readonly Error NotPending = new(
                 "JoinClub.NotPending",
                 "Cannot access not pending request.");
+
             public static Error ClubNotFound = new(
                 "JoinClub.ClubNotFound",
                 "The specified club was not found.");
@@ -160,9 +168,25 @@ namespace VolleyMS.Core.Errors
                 "Notification.RolesNull",
                 "Required club member roles cannot be null.");
 
+            public static readonly Error NoRecipients = new(
+                "Notification.NoRecipients",
+                "No recipients found for the notification.");
+
+            public static readonly Error NotificationNotFound = new(
+                "Notification.NotificationNotFound",
+                "Notification not found.");
+
             public static Error RolesEmpty = new(
                 "Notification.RolesEmpty",
                 "Required club member roles cannot be empty.");
+
+            public static Error ErrorCreatingPayload = new(
+                "Notification.ErrorCreatingPayload",
+                "Error occurred while creating notification payload.");
+
+            public static Error ClubIdIsNull = new(
+                "Notification.ClubIdIsNull",
+                "ClubId cannot be null for club-related notifications.");
         }
     }
 }

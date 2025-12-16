@@ -13,7 +13,7 @@ namespace VolleyMS.Core.Models
         }
         private Notification(
             Guid id,
-            IList<ClubMemberRole> requiredClubMemberRoles,
+            IList<ClubMemberRole>? requiredClubMemberRoles,
             NotificationCategory notificationCategory,
             string text,
             string? linkedUrl,
@@ -28,7 +28,7 @@ namespace VolleyMS.Core.Models
             Payload = payload;
             SenderId = senderId;
         }
-        public IList<ClubMemberRole> RequiredClubMemberRoles { get; private set; }
+        public IList<ClubMemberRole>? RequiredClubMemberRoles { get; private set; }
         public NotificationCategory Category { get; private set; }
         public string Text { get; private set; }
         public string? LinkedURL { get; private set; }
@@ -63,6 +63,23 @@ namespace VolleyMS.Core.Models
             );
 
             return Result.Success(notification);
+        }
+
+        public Result Send(IList<User> receivers)
+        {
+            if(receivers == null || !receivers.Any())
+                return Result.Failure(DomainErrors.Notification.NoRecipients);
+
+            foreach (var member in receivers)
+            {
+                var userNotificationResult = UserNotification.Create(member, this);
+
+                if (userNotificationResult.IsFailure)
+                    return Result.Failure(userNotificationResult.Error);
+
+                _userNotifications.Add(userNotificationResult.Value);
+            }
+            return Result.Success();
         }
     }
 }

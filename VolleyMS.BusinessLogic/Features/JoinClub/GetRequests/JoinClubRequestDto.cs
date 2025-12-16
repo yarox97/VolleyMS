@@ -1,4 +1,4 @@
-﻿using VolleyMS.BusinessLogic.Contracts.DTOs;
+﻿using VolleyMS.BusinessLogic.Features.Users.Get;
 
 namespace VolleyMS.BusinessLogic.Features.JoinClub.GetRequests
 {

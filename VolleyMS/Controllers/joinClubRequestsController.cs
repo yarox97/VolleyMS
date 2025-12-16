@@ -53,7 +53,6 @@ namespace VolleyMS.Controllers
             CancellationToken cancellation)
         {
             var userId = User.GetUserId();
-            if (userId == Guid.Empty) return Unauthorized();
 
             var command = new ApproveRequestToJoinClubCommand(requestId, approveRequestDto.Role, userId);
 
@@ -66,7 +65,6 @@ namespace VolleyMS.Controllers
         public async Task<IActionResult> RejectRequest([FromRoute] Guid clubId, [FromRoute] Guid requestId)
         {
             var responserId = User.GetUserId();
-            if (responserId == Guid.Empty) return Unauthorized();
 
             var command = new RejectRequestToJoinClubCommand(requestId, responserId);
 

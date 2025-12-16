@@ -6,8 +6,9 @@ namespace VolleyMS.Core.Repositories
     {
         Task<bool> IfJoinCodeTaken(string joinCode);
         Task<Club?> GetByJoinCodeAsync(string joinCode);
-        Task<List<User>> GetAllUsers(Guid clubId);
         Task<Club?> GetByIdWithMembersAsync(Guid clubId, CancellationToken cancellationToken);
+        Task<List<User>> GetAllUsers(Guid clubId);
+        Task<List<UserClub>> GetMembershipsAsync(Guid clubId);
         Task<List<User>> GetUsersByRole(Guid clubId, params ClubMemberRole[] clubMemberRoles);
         Task<bool> ContainsUser(Guid clubId, Guid? userId);
 

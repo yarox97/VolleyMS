@@ -5,7 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VolleyMS.BusinessLogic.NotificationPayloads.Categorized
+namespace VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized
 {
     public record InformativeNotificationPayload(Guid? SenderId, string? LinkedUrl, string? Title);
 }

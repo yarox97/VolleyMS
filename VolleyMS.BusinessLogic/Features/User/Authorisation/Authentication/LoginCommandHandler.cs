@@ -10,7 +10,7 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Authentication
     public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<string>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IPasswordHasher<Core.Models.User> _passwordHasher;
+        private readonly IPasswordHasher<User> _passwordHasher;
         private readonly JwtService _jwtService;
         public LoginCommandHandler(IUserRepository repository, IPasswordHasher<User> passwordHasher, JwtService jwtService)
         {

@@ -7,7 +7,7 @@
         public string Text { get; set; } = string.Empty;
         public string? LinkedURL { get; set; }
         public NotificationCategory NotificationCategory { get; set; }
-        public IList<ClubMemberRole> RequiredClubMemberRole { get; set; } = new List<ClubMemberRole>();
+        public IList<ClubMemberRole>? RequiredClubMemberRole { get; set; } = new List<ClubMemberRole>();
         public IList<Guid> Receivers { get; set; } = new List<Guid>();
 
 
