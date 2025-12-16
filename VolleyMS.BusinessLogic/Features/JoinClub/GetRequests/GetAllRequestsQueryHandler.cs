@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using VolleyMS.BusinessLogic.Contracts.DTOs;
+using VolleyMS.BusinessLogic.Features.Users.Get;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Shared;

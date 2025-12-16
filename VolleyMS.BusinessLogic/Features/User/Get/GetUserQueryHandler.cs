@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using VolleyMS.BusinessLogic.Contracts.DTOs;
+using VolleyMS.BusinessLogic.Features.Users.Get;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Shared;
@@ -23,7 +24,15 @@ namespace VolleyMS.BusinessLogic.Features.Users.Get
 
             UserDto userDto = new UserDto();
 
-            if (query.requestorId == user.Id)
+            if (query.requestorId == null || query.requestorId != user.Id)
+            {
+                userDto.Id = user.Id;
+                userDto.UserName = user.UserName;
+                userDto.FirstName = user.Name;
+                userDto.LastName = user.Surname;
+                userDto.AvatarUrl = user.AvatarUrl;
+            }
+            else
             {
                 userDto.Id = user.Id;
                 userDto.UserName = user.UserName;
@@ -40,14 +49,6 @@ namespace VolleyMS.BusinessLogic.Features.Users.Get
                     ClubName = uc.Club.Name,
                     Role = uc.ClubMemberRole
                 }).ToList();
-            }
-            else
-            {
-                userDto.Id = user.Id;
-                userDto.UserName = user.UserName;
-                userDto.FirstName = user.Name;
-                userDto.LastName = user.Surname;
-                userDto.AvatarUrl = user.AvatarUrl;
             }
 
             return Result.Success(userDto);

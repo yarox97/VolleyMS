@@ -110,6 +110,15 @@ namespace VolleyMS.Core.Models
             return Result.Success();
         }
 
+        public Result<ClubMemberRole> GetRoleInClub(Guid clubId)
+        {
+            var userClub = _userClubs.FirstOrDefault(uc => uc.ClubId == clubId && uc.UserId == this.Id);
+            if (userClub == null)
+                return Result.Failure<ClubMemberRole>(DomainErrors.Club.MemberNotFound);
+
+            return Result.Success(userClub.ClubMemberRole);
+        }
+
         public Result ChangeRole(UserType newRole)
         {
             if (!Enum.IsDefined(typeof(UserType), newRole)) 

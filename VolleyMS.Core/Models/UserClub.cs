@@ -17,7 +17,6 @@ namespace VolleyMS.Core.Models
             Club = club;
             ClubMemberRole = clubMemberRole;
             ClubId = club.Id;
-            ClubMemberRole = ClubMemberRole.Player;
         }
         public User User { get; private set; }
         public Guid UserId { get; private set; }

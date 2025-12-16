@@ -32,6 +32,7 @@ namespace VolleyMS.DataAccess.Repositories
         {
             return await _volleyMsDbContext.UserClubs
             .AsNoTracking()
+            .Include(uc => uc.User)
             .Where(uc => uc.ClubId == clubId)
             .Select(uc => uc.User!)           
             .ToListAsync();
@@ -67,6 +68,16 @@ namespace VolleyMS.DataAccess.Repositories
                 .ThenInclude(c => c.UserClubs)
                 .Include(u => u.User)
                 .FirstOrDefaultAsync(jc => jc.Id == joinRequestId);
+        }
+
+        public async Task<List<UserClub>> GetMembershipsAsync(Guid clubId)
+        {
+            return await _volleyMsDbContext.UserClubs
+                .AsNoTracking()
+                .Include(uc => uc.User) // Подгружаем данные пользователя
+                .Where(uc => uc.ClubId == clubId)
+                // Убираем Select(uc => uc.User!), возвращаем саму связь
+                .ToListAsync();
         }
     }
 }

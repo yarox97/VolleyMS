@@ -1,12 +1,13 @@
 ﻿using System.Text.Json;
-using VolleyMS.BusinessLogic.NotificationPayloads.Categorized;
+using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized;
 using VolleyMS.Core.Requests;
+using VolleyMS.Core.Shared;
 
-namespace VolleyMS.BusinessLogic.NotificationPayloads
+namespace VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads
 {
     public static class PayLoadFactory
     {
-        public static string? CreatePayLoad(NotificationRequest notificationRequest, Guid? senderId)
+        public static Result<string>? CreatePayLoad(NotificationRequest notificationRequest, Guid? senderId)
         {
             return notificationRequest.NotificationCategory switch
             {
@@ -18,7 +19,7 @@ namespace VolleyMS.BusinessLogic.NotificationPayloads
                     notificationRequest.SenderSurname ?? throw new ArgumentException("SenderSurname is required")
                 )),
 
-                NotificationCategory.ClubJoinApproved => JsonSerializer.Serialize(new JoinClubRequestApprovedPayLoad(
+                NotificationCategory.ClubJoinApproved => JsonSerializer.Serialize(new JoinClubRequestApprovedPayload(
                     notificationRequest.ClubId ?? throw new ArgumentException("ClubId is required"),
                     notificationRequest.ClubName ?? throw new ArgumentException("ClubName is required")
                 )),

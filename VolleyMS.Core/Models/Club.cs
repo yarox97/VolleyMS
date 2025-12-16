@@ -67,7 +67,7 @@ namespace VolleyMS.Core.Models
 
             _joinClubRequests.Add(joinClubResult.Value);
 
-            RaiseDomainEvent(new JoinClubRequestSentDomainEvent(user.Id, this.Id)); // Send notification to users who can approve join requests
+            RaiseDomainEvent(new JoinClubRequestSentDomainEvent(user.Id, this.Id, user.Name, user.Surname, this.Name)); // Send notification to users who can approve join requests
 
             return joinClubResult;
         }
@@ -96,7 +96,7 @@ namespace VolleyMS.Core.Models
             if(newUserMembership.IsFailure)
                 return newUserMembership;
 
-            RaiseDomainEvent(new JoinClubApprovedDomainEvent(request.UserId, request.ClubId)); // Send approval notification to requestor
+            RaiseDomainEvent(new JoinClubApprovedDomainEvent(request.UserId, request.ClubId, responser.Id, this.Name)); // Send approval notification to requestor
 
             return Result.Success();
         }
@@ -120,7 +120,7 @@ namespace VolleyMS.Core.Models
             if (requestResult.IsFailure) 
                 return Result.Failure(requestResult.Error);
 
-            RaiseDomainEvent(new JoinClubRejectedDomainEvent(request.UserId, this.Id, responser.Id)); // Send rejection notification to requestor 
+            RaiseDomainEvent(new JoinClubRejectedDomainEvent(request.UserId, this.Id, responser.Id, this.Name, responser.Id)); // Send rejection notification to requestor 
 
             return Result.Success();
         }

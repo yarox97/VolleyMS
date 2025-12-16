@@ -1,4 +1,6 @@
 ﻿using VolleyMS.Core.Common;
+using VolleyMS.Core.Errors;
+using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Models 
 { 
@@ -7,7 +9,7 @@ namespace VolleyMS.Core.Models
         private UserNotification() : base(Guid.Empty)
         {
         }
-        public UserNotification(Guid id, User user, Notification notification)
+        private UserNotification(Guid id, User user, Notification notification)
             : base(id)
         {
             Notification = notification;
@@ -21,14 +23,24 @@ namespace VolleyMS.Core.Models
         public Guid UserId { get; }
         public User User { get; }
         public bool IsChecked { get; private set; }
-        public string? PayLoad { get; }
 
-        internal void Check()
+        public void Check()
         {
             if (!IsChecked)
             {
                 IsChecked = true;
             }
+        }
+
+        public static Result<UserNotification> Create(User user, Notification notification)
+        {
+            if (user == null)
+                return Result.Failure<UserNotification>(DomainErrors.User.UserNotFound);
+
+            if (notification == null)
+                return Result.Failure<UserNotification>(DomainErrors.Notification.NotificationNotFound);
+
+            return Result.Success(new UserNotification(Guid.NewGuid(), user, notification));
         }
     }
 }

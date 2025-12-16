@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace VolleyMS.BusinessLogic.Contracts.DTOs
+﻿namespace VolleyMS.BusinessLogic.Contracts.DTOs
 {
     public class UserClubDto
     {
