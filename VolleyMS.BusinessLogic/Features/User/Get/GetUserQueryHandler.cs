@@ -41,6 +41,7 @@ namespace VolleyMS.BusinessLogic.Features.Users.Get
                 userDto.Email = user.Email;
                 userDto.AvatarUrl = user.AvatarUrl;
                 userDto.createdAt = user.CreatedAt;
+                userDto.userType = user.UserType;
                 userDto.clubDtos = user.UserClubs.Select(uc => new UserClubDto
                 {
                     JoinDate = uc.CreatedAt,

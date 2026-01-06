@@ -32,8 +32,8 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
                 UserType.User,
                 command.name, 
                 command.surname, 
-                command.email, 
-                command.avatarUrl);
+                command.email,
+                null);
 
             if (userResult.IsFailure)
                 return Result.Failure<Guid>(userResult.Error);

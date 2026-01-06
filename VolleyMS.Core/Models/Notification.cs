@@ -49,9 +49,6 @@ namespace VolleyMS.Core.Models
             if (string.IsNullOrWhiteSpace(text))
                 return Result.Failure<Notification>(DomainErrors.Notification.TextEmpty);
 
-            if (requiredClubMemberRoles == null || !requiredClubMemberRoles.Any())
-                return Result.Failure<Notification>(DomainErrors.Notification.RolesEmpty);
-
             var notification = new Notification(
                 Guid.NewGuid(),
                 requiredClubMemberRoles,

@@ -31,6 +31,7 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Authentication
                 return Result.Failure<string>(DomainErrors.User.InvalidPassword);
 
             var token = _jwtService.GenerateToken(userResult);
+
             return Result.Success(token);
         }
     }

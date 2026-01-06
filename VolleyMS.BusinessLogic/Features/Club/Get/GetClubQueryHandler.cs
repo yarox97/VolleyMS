@@ -26,6 +26,7 @@ namespace VolleyMS.BusinessLogic.Features.Club.Get
                 clubDto.Description = club.Description;
                 clubDto.AvatarURL = club.AvatarUrl;
                 clubDto.BackGroundURL = club.BackGroundURL;
+                clubDto.VolleyBoxUrl = club.VolleyBoxUrl;
             }
             else
             {
@@ -34,6 +35,7 @@ namespace VolleyMS.BusinessLogic.Features.Club.Get
                 clubDto.Description = club.Description;
                 clubDto.AvatarURL = club.AvatarUrl;
                 clubDto.BackGroundURL = club.BackGroundURL;
+                clubDto.VolleyBoxUrl = club.VolleyBoxUrl;
 
                 clubDto.CreatedAt = club.CreatedAt;
                 clubDto.JoinCode = club.JoinCode;

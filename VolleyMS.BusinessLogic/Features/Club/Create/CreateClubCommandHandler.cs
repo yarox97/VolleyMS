@@ -31,7 +31,8 @@ namespace VolleyMS.BusinessLogic.Features.Club.Create
                 joinCode, 
                 command.Description, 
                 command.AvatarURL, 
-                command.BackGroundURL, 
+                command.BackGroundURL,
+                command.VolleyBoxUrl,
                 user);
 
             if(clubResult.IsFailure) return Result.Failure<Guid>(clubResult.Error);

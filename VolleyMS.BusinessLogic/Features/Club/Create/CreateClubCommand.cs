@@ -11,5 +11,6 @@ namespace VolleyMS.BusinessLogic.Features.Club.Create
         public string Description { get; set; } = string.Empty;
         public string AvatarURL { get; set; } = string.Empty;
         public string BackGroundURL { get; set; } = string.Empty;
+        public string VolleyBoxUrl { get; set; } = string.Empty;
     }
 }

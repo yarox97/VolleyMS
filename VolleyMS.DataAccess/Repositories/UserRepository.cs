@@ -22,5 +22,11 @@ namespace VolleyMS.DataAccess.Repositories
             return await _volleyMsDbContext.Users
                 .AnyAsync(u => u.UserName.ToLower() == userName.ToLower());                           
         }
+
+        public async Task<bool> IsEmailTaken(string email)
+        {
+            return await _volleyMsDbContext.Users
+                .AnyAsync(u => u.Email.ToLower() == email.ToLower());
+        }
     }
 }

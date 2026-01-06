@@ -1,79 +1,77 @@
-﻿using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized;
+﻿using MediatR;
+using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized;
 using VolleyMS.Core.DomainEvents;
 using VolleyMS.Core.Errors;
+using VolleyMS.Core.Exceptions;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Requests;
 using VolleyMS.Core.Services;
 using VolleyMS.Core.Shared;
+using Task = System.Threading.Tasks.Task;
 
 namespace VolleyMS.BusinessLogic.Features.JoinClub.ApproveRequest
 {
-    public class ApproveRequestToJoinClubDomanEventHandler
+    public class ApproveRequestToJoinClubDomainEventHandler : INotificationHandler<JoinClubApprovedDomainEvent>
     {
-        public class ApproveRequestToJoinClubDomainEventHandler
+        private readonly INotificationService _notificationService;
+        private readonly INotificationRepository _notificationRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public ApproveRequestToJoinClubDomainEventHandler(
+            INotificationService notificationService,
+            IUserRepository userRepository,
+            IUnitOfWork unitOfWork,
+            INotificationRepository notificationRepository)
         {
-            private readonly INotificationService _notificationService;
-            private readonly INotificationRepository _notificationRepository;
-            private readonly IUserRepository _userRepository;
-            private readonly IUnitOfWork _unitOfWork;
+            _notificationService = notificationService;
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
+            _notificationRepository = notificationRepository;
+        }
 
-            public ApproveRequestToJoinClubDomainEventHandler(
-                INotificationService notificationService,
-                IUserRepository userRepository,
-                IUnitOfWork unitOfWork,
-                INotificationRepository notificationRepository)
+        public async Task Handle(JoinClubApprovedDomainEvent domainEvent, CancellationToken cancellationToken)
+        {
+            var requestorUser = await _userRepository.GetByIdAsync(domainEvent.userId);
+
+            if (requestorUser is null)
+                throw new DomainException(DomainErrors.User.UserNotFound);
+
+            var notificationRequest = new NotificationRequest
             {
-                _notificationService = notificationService;
-                _userRepository = userRepository;
-                _unitOfWork = unitOfWork;
-                _notificationRepository = notificationRepository;
-            }
+                RequiredClubMemberRole = null,
+                NotificationCategory = NotificationCategory.ClubJoinApproved, 
+                Text = $"Your request to join club '{domainEvent.clubName}' was approved.",
+                LinkedURL = $"/clubs/{domainEvent.clubId}",
+                ClubId = domainEvent.clubId,
+                ClubName = domainEvent.clubName
+            };
 
-            public async Task<Result> Handle(JoinClubApprovedDomainEvent domainEvent, CancellationToken cancellationToken)
-            {
-                var requestorUser = await _userRepository.GetByIdAsync(domainEvent.responserId);
+            var payloadResult = _notificationService.HandleCategorizedPayload(notificationRequest, domainEvent.responserId);
 
-                if (requestorUser is null)
-                    return Result.Failure(DomainErrors.User.UserNotFound);
+            if (payloadResult.IsFailure)
+                throw new DomainException(payloadResult.Error);
 
-                var notificationRequest = new NotificationRequest
-                {
-                    RequiredClubMemberRole = null,
-                    NotificationCategory = NotificationCategory.ClubJoinApproved, 
-                    Text = $"Your request to join club '{domainEvent.clubName}' was approved.",
-                    LinkedURL = $"/clubs/{domainEvent.clubId}",
-                };
+            var notificationResult = Notification.Create(
+                notificationRequest.RequiredClubMemberRole,
+                notificationRequest.NotificationCategory,
+                notificationRequest.Text,
+                notificationRequest.LinkedURL,
+                payloadResult.Value);
 
-                var payload = new JoinClubRequestApprovedPayload(domainEvent.clubId, domainEvent.clubName);
+            if (notificationResult.IsFailure)
+                throw new DomainException(notificationResult.Error);
 
-                var payloadResult = _notificationService.HandleCategorizedPayload(notificationRequest, domainEvent.responserId);
+            var notification = notificationResult.Value;
 
-                if (payloadResult.IsFailure)
-                    return Result.Failure(payloadResult.Error);
+            var sendResult = notification.Send(new List<User> { requestorUser });
 
-                var notificationResult = Notification.Create(
-                    notificationRequest.RequiredClubMemberRole,
-                    notificationRequest.NotificationCategory,
-                    notificationRequest.Text,
-                    notificationRequest.LinkedURL,
-                    payloadResult.Value);
+            if (sendResult.IsFailure)
+                throw new DomainException(sendResult.Error);
 
-                if (notificationResult.IsFailure)
-                    return Result.Failure(notificationResult.Error);
-
-                var notification = notificationResult.Value;
-
-                var sendResult = notification.Send(new List<User> { requestorUser });
-
-                if (sendResult.IsFailure)
-                    return Result.Failure(sendResult.Error);
-
-                await _notificationRepository.AddAsync(notification);
-                await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                return Result.Success();
-            }
+            await _notificationRepository.AddAsync(notification);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

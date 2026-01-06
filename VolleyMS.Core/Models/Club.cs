@@ -18,7 +18,8 @@ namespace VolleyMS.Core.Models
             string joinCode,
             string? description,
             string? avatarUrl,
-            string? backGroundUrl)
+            string? backGroundUrl,
+            string? volleyBoxUrl)
             : base(id)
         {
             Name = name;
@@ -26,21 +27,23 @@ namespace VolleyMS.Core.Models
             JoinCode = joinCode;
             AvatarUrl = avatarUrl;
             BackGroundURL = backGroundUrl;
+            VolleyBoxUrl = volleyBoxUrl;
         }
         public string Name { get; private set; }
         public string JoinCode { get; private set; }
         public string? Description { get; private set; }
         public string? AvatarUrl { get; private set; }
         public string? BackGroundURL { get; private set; }
+        public string? VolleyBoxUrl { get; private set; }
         public IReadOnlyCollection<Task> Tasks => _tasks;
         public IReadOnlyCollection<UserClub> UserClubs => _userClubs;
         public IReadOnlyCollection<JoinClubRequest> JoinClubRequests => _joinClubRequests;
 
-        public static Result<Club> Create(string name, string joinCode, string? description, string? avatarUrl, string? backGroundUrl, User creator)
+        public static Result<Club> Create(string name, string joinCode, string? description, string? avatarUrl, string? backGroundUrl, string? volleyBoxUrl, User creator)
         {
             if(string.IsNullOrEmpty(name)) return Result.Failure<Club>(DomainErrors.Club.NameEmpty);
             
-            var club = new Club(Guid.NewGuid(), name, joinCode, description, avatarUrl, backGroundUrl);
+            var club = new Club(Guid.NewGuid(), name, joinCode, description, avatarUrl, backGroundUrl, volleyBoxUrl);
             club.CreatorId = creator.Id;
 
             var adminResult = club.AddMember(creator, ClubMemberRole.Creator, creator);

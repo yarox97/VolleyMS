@@ -1,15 +1,18 @@
-﻿using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized;
+﻿using MediatR;
+using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized;
 using VolleyMS.Core.DomainEvents;
 using VolleyMS.Core.Errors;
+using VolleyMS.Core.Exceptions;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Requests;
 using VolleyMS.Core.Services;
 using VolleyMS.Core.Shared;
+using Task = System.Threading.Tasks.Task;
 
 namespace VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest
 {
-    public class RejectRequestToJoinClubDomainEventHandler
+    public class RejectRequestToJoinClubDomainEventHandler : INotificationHandler<JoinClubRejectedDomainEvent>
     {
         private readonly INotificationService _notificationService;
         private readonly INotificationRepository _notificationRepository;
@@ -27,19 +30,21 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest
             _unitOfWork = unitOfWork;
             _notificationRepository = notificationRepository;
         }
-        public async Task<Result> Handle(JoinClubRejectedDomainEvent domainEvent, CancellationToken cancellationToken)
+        public async Task Handle(JoinClubRejectedDomainEvent domainEvent, CancellationToken cancellationToken)
         {
-            var requestorUser = await _userRepository.GetByIdAsync(domainEvent.requestorId);
+            var requestorUser = await _userRepository.GetByIdAsync(domainEvent.userId);
 
             if (requestorUser is null)
-                return Result.Failure(DomainErrors.User.UserNotFound);
+                throw new DomainException("User not found in: reject join club");
 
             var notificationRequest = new NotificationRequest
             {
                 RequiredClubMemberRole = null,
                 NotificationCategory = NotificationCategory.ClubJoinRejected,
                 Text = $"Your request to join club '{domainEvent.clubName}' was rejected.",
-                LinkedURL = "/clubs"
+                LinkedURL = "/clubs",
+                ClubId = domainEvent.clubId,
+                ClubName = domainEvent.clubName
             };
 
             var payload = new JoinClubRequestRejectedPayLoad(domainEvent.clubId, domainEvent.clubName);
@@ -47,7 +52,7 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest
             var payloadResult = _notificationService.HandleCategorizedPayload(notificationRequest, domainEvent.requestorId);
 
             if (payloadResult.IsFailure)
-                return Result.Failure(payloadResult.Error);
+                throw new DomainException(payloadResult.Error);
 
             var notificationResult = Notification.Create(
                 notificationRequest.RequiredClubMemberRole,
@@ -57,19 +62,17 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest
                 payloadResult.Value);
 
             if (notificationResult.IsFailure)
-                return Result.Failure(notificationResult.Error);
+                throw new DomainException(notificationResult.Error);
 
             var notification = notificationResult.Value;
 
             var sendResult = notification.Send(new List<User> { requestorUser });
 
             if (sendResult.IsFailure)
-                return Result.Failure(sendResult.Error);
+                throw new DomainException(sendResult.Error);
 
             await _notificationRepository.AddAsync(notification);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            return Result.Success();
         }
     }
 }

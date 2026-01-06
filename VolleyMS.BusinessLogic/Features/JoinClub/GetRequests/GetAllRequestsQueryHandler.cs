@@ -15,6 +15,11 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetRequests
         }
         public async Task<Result<List<JoinClubRequestDto>>> Handle(GetAllRequestsQuery query, CancellationToken cancellationToken)
         {
+            var club = await _clubRepository.GetByIdAsync(query.clubId);
+
+            if(club == null) 
+                return Result.Failure<List<JoinClubRequestDto>>(DomainErrors.Club.ClubNotFound);
+
             var aligedUsers = await _clubRepository.GetUsersByRole(query.clubId, ClubMemberRole.Creator, ClubMemberRole.President, ClubMemberRole.Coach);
             if (!aligedUsers.Any(au => au.Id == query.userId)) return Result.Failure<List<JoinClubRequestDto>>(DomainErrors.Club.InvalidPermission);
 
@@ -24,6 +29,8 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetRequests
                 return Result.Success(new List<JoinClubRequestDto>());
 
             var requestDtos = requests.Select(r => new JoinClubRequestDto(
+                club.Id,
+                club.Name,
                 requestor: new UserDto
                 {
                     Id = r.User.Id,

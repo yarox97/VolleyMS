@@ -9,5 +9,6 @@
         public string AvatarURL { get; set; } = string.Empty;
         public string BackGroundURL { get; set; } = string.Empty;
         public DateTime? CreatedAt { get; set; }
+        public string? VolleyBoxUrl { get; set; }
     }
 }

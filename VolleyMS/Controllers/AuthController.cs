@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation.Authentication;
+using VolleyMS.BusinessLogic.Features.Users.Authorisation.LoginCheck;
+using VolleyMS.BusinessLogic.Features.Users.Authorisation.EmailCheck;
 
 namespace VolleyMS.Controllers
 {
@@ -21,12 +23,49 @@ namespace VolleyMS.Controllers
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error); 
         }
 
+        [HttpGet("login-check")]
+        public async Task<IActionResult> IsLoginFree([FromQuery] string userName, CancellationToken cancellation)
+        {
+            var result = await Sender.Send(new LoginCheckQuery(userName), cancellation);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpGet("email-check")]
+        public async Task<IActionResult> IsEmailFree([FromQuery] string email, CancellationToken cancellation)
+        {
+            var result = await Sender.Send(new EmailCheckQuery(email), cancellation);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+
         [HttpPost("login")]
         public async Task<IActionResult> Authorization([FromBody] LoginCommand command, CancellationToken cancellation)
         {
             var result = await Sender.Send(command, cancellation);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+
+            var token = result.Value;
+
+            var cookieOptions = new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(14)
+            };
+
+            Response.Cookies.Append("my-cookies", token, cookieOptions);
+
+            return Ok();
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("my-cookies");
+
+            return Ok();
         }
     }
 }

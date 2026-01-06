@@ -28,11 +28,16 @@ namespace VolleyMS.Controllers
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
-        //[HttpPut("{userName}")]
-        //[Authorize]
-        //public async Task<IActionResult> Modify(string userName  )
-        //{
-        //    return Ok();
-        //}
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetMe()
+        {
+            var userName = User.GetUserName();
+            var userId = User.GetUserId();
+
+            var result = await Sender.Send(new GetUserQuery(userName, userId));
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
     }
 }

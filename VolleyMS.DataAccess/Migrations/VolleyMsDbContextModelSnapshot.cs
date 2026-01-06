@@ -76,6 +76,10 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("VolleyBoxUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("JoinCode")
@@ -237,7 +241,6 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasColumnType("character varying(2000)");
 
                     b.Property<string>("RequiredClubMemberRoles")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("SenderId")
@@ -459,6 +462,34 @@ namespace VolleyMS.DataAccess.Migrations
                         .IsUnique();
 
                     b.ToTable("UserNotifications", (string)null);
+                });
+
+            modelBuilder.Entity("VolleyMS.DataAccess.Outbox.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OccuredOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ProcessedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxMessages", (string)null);
                 });
 
             modelBuilder.Entity("TaskUser", b =>

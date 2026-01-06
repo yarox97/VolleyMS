@@ -22,7 +22,19 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfiguration.SecretKey))
                     };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["my-cookies"];
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
+
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminOnly", policy => policy.RequireRole("UserType", UserType.Admin.ToString()));

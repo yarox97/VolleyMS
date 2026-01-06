@@ -16,5 +16,14 @@ namespace VolleyMS.DataAccess.Repositories
                 .Where(jc => jc.JoinClubRequestStatus == JoinClubRequestStatus.Pending)
                 .ToListAsync();
         }
+
+        public async Task<List<JoinClubRequest>?> GetUserRequests(Guid userId)
+        {
+            return await _volleyMsDbContext.JoinClubRequests
+                .Include(j => j.Club)
+                .Include(j => j.User)
+                .Where(j => j.CreatorId == userId)
+                .ToListAsync();
+        }
     }
 }

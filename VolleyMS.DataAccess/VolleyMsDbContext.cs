@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VolleyMS.DataAccess.Configurations;
-using VolleyMS.Core.Models;
 using VolleyMS.Core.Common;
+using VolleyMS.Core.Models;
+using VolleyMS.DataAccess.Configurations;
+using VolleyMS.DataAccess.Outbox;
 using Task = VolleyMS.Core.Models.Task;
 
 namespace VolleyMS.DataAccess
@@ -21,12 +22,20 @@ namespace VolleyMS.DataAccess
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<JoinClubRequest> JoinClubRequests { get; set; }
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ClubConfiguration).Assembly);
 
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<OutboxMessage>(b =>
+            {
+                b.ToTable("OutboxMessages");
+                b.HasKey(e => e.Id);
+            });
+
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

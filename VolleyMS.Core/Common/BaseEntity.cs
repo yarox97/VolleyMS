@@ -12,6 +12,8 @@ namespace VolleyMS.Core.Common
         public Guid Id { get; init; }
         public Guid? CreatorId { get; set; }
 
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents.ToList();
+        public void ClearDomainEvents() => _domainEvents.Clear();
         protected void RaiseDomainEvent(IDomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);

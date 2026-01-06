@@ -1,6 +1,8 @@
-﻿namespace VolleyMS.Core.DomainEvents
+﻿using MediatR;
+
+namespace VolleyMS.Core.DomainEvents
 {
-    public interface IDomainEvent
+    public interface IDomainEvent : INotification 
     {
     }
 }

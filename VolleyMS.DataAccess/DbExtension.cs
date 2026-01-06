@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VolleyMS.Core.Repositories;
+using VolleyMS.DataAccess.Interceptors;
 
 namespace VolleyMS.DataAccess
 {
@@ -10,9 +11,12 @@ namespace VolleyMS.DataAccess
         public static void AddDataBase(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-            serviceCollection.AddDbContext<VolleyMsDbContext>(o =>
+            serviceCollection.AddDbContext<VolleyMsDbContext>((sp, o) =>
             {
-                o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb2;Username=postgres;password=GabeNewwel228");
+                var interceptor = sp.GetService<ConvertDomainEventToOutboxMessageInterceptor>();
+
+                o.UseNpgsql("host=localhost;port=5432;Database=VolleyMsDb2;Username=postgres;password=GabeNewwel228")
+                    .AddInterceptors(interceptor);
 
                 o.EnableSensitiveDataLogging();
                 o.LogTo(Console.WriteLine, LogLevel.Information);

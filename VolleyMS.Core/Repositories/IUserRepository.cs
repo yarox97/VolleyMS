@@ -5,6 +5,7 @@ namespace VolleyMS.Core.Repositories
     public interface IUserRepository : IGenericRepository<User>
     {
         public Task<bool> IsLoginTaken(string userName);
+        public Task<bool> IsEmailTaken(string email);
         public Task<User?> GetByUserNameAsync(string userName);
     }
 }

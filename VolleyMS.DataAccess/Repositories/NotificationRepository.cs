@@ -30,5 +30,25 @@ namespace VolleyMS.DataAccess.Repositories
 
             return userNotifications;
         }
+
+        
+
+        public async Task<(IEnumerable<UserNotification> Items, int TotalCount)> GetUserNotificationsPaged(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var baseQuery = _volleyMsDbContext.UserNotifications
+                .Where(un => un.UserId == userId);
+
+            var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+            var items = await baseQuery
+                .Include(un => un.Notification) 
+                .OrderByDescending(un => un.IsChecked == false)
+                .ThenByDescending(un => un.Notification.CreatedAt) 
+                .Skip((pageNumber - 1) * pageSize) 
+                .Take(pageSize)                   
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
     }
 }

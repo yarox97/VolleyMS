@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.JoinClub.ApproveRequest;
+using VolleyMS.BusinessLogic.Features.JoinClub.GetMyRequests;
 using VolleyMS.BusinessLogic.Features.JoinClub.GetRequests;
 using VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest;
 using VolleyMS.BusinessLogic.Features.JoinClub.RequestToJoinClub;
@@ -45,6 +46,18 @@ namespace VolleyMS.Controllers
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
+        [HttpGet("my")]
+        [Authorize]
+        public async Task<IActionResult> GetAllRequests()
+        {
+            var userId = User.GetUserId();
+            var query = new GetMyRequestsQuery(userId);
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
         [HttpPut("{clubId}/requests/{requestId}/approve")]
         public async Task<IActionResult> ApproveRequest(
             [FromBody] ApproveRequestDto approveRequestDto, 
@@ -54,7 +67,7 @@ namespace VolleyMS.Controllers
         {
             var userId = User.GetUserId();
 
-            var command = new ApproveRequestToJoinClubCommand(requestId, approveRequestDto.Role, userId);
+            var command = new ApproveRequestToJoinClubCommand(requestId, userId, approveRequestDto.Role);
 
             var result = await Sender.Send(command, cancellation);
 

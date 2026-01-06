@@ -4,6 +4,10 @@ namespace VolleyMS.Core.Repositories
 {
     public interface INotificationRepository : IGenericRepository<Notification>
     {
-        public Task<IEnumerable<UserNotification>> GetUserNotifications(Guid userId, CancellationToken cancellationToken);
+        Task<(IEnumerable<UserNotification> Items, int TotalCount)> GetUserNotificationsPaged(
+        Guid userId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken);
     }
 }

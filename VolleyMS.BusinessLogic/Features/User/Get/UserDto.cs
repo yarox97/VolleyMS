@@ -13,5 +13,6 @@ namespace VolleyMS.BusinessLogic.Features.Users.Get
 
         public IList<UserClubDto>? clubDtos { get; set; } = new List<UserClubDto>();
         public DateTime? createdAt { get; set; }
+        public UserType userType { get; set; }
     }
 }
