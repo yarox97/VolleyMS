@@ -21,6 +21,7 @@ namespace VolleyMS.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> RequestToJoinClub(
             [FromBody] JoinCodeDto joinCodeDto,
             CancellationToken cancellationToken)
@@ -58,6 +59,7 @@ namespace VolleyMS.Controllers
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
+        [Authorize]
         [HttpPut("{clubId}/requests/{requestId}/approve")]
         public async Task<IActionResult> ApproveRequest(
             [FromBody] ApproveRequestDto approveRequestDto, 
@@ -74,6 +76,7 @@ namespace VolleyMS.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
+        [Authorize]
         [HttpPut("{clubId}/requests/{requestId}/reject")]
         public async Task<IActionResult> RejectRequest([FromRoute] Guid clubId, [FromRoute] Guid requestId)
         {

@@ -10,8 +10,8 @@
         public NotificationCategory NotificationCategory { get; set; }
         public IList<ClubMemberRole> RequiredClubMemberRoles { get; set; }
         public Guid? SenderId { get; set; }
+        public string? SenderUsername { get; set; }
         public string? Payload { get; set; }
         public DateTime CreatedAt { get; set; }
-
     }
 }

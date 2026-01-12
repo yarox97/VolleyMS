@@ -9,5 +9,6 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetRequests
         JoinClubRequestStatus joinClubRequestStatus, 
         DateTime createdAt, 
         DateTime? respondedAt, 
-        UserDto responder);
+        UserDto responder,
+        Guid JoinClubRequestId);
 }

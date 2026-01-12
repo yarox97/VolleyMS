@@ -36,6 +36,21 @@ namespace VolleyMS.Controllers
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
+        [HttpGet("user/notifications/{notificationId}")]
+        [Authorize]
+        public async Task<ActionResult<NotificationDto>> GetNotification(Guid notificationId)
+        {
+            var query = new GetNotificationQuery
+            (
+                notificationId,
+                User.GetUserId()
+            );
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
         [HttpPut("user/notifications/{notificationId}")]
         [Authorize]
         public async Task<IActionResult> Check(Guid notificationId)

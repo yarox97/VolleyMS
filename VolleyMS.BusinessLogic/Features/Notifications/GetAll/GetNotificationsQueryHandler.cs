@@ -39,7 +39,8 @@ namespace VolleyMS.BusinessLogic.Features.Notifications.Get
                 LinkedURL = un.Notification.LinkedURL,
                 Payload = un.Notification.Payload,
                 CreatedAt = un.Notification.CreatedAt,
-                IsChecked = un.IsChecked
+                IsChecked = un.IsChecked,
+                SenderId = un.Notification.Sender?.Id
             });
 
             var result = new PaginatedResult<NotificationDto>(dtos, totalCount, validPageNumber, validPageSize);

@@ -54,12 +54,15 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest
             if (payloadResult.IsFailure)
                 throw new DomainException(payloadResult.Error);
 
+            var sender = await _userRepository.GetByIdAsync(domainEvent.responserId);
+
             var notificationResult = Notification.Create(
                 notificationRequest.RequiredClubMemberRole,
                 notificationRequest.NotificationCategory,
                 notificationRequest.Text,
                 notificationRequest.LinkedURL,
-                payloadResult.Value);
+                payloadResult.Value,
+                sender);
 
             if (notificationResult.IsFailure)
                 throw new DomainException(notificationResult.Error);

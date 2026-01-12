@@ -14,16 +14,19 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RequestToJoinClub
         private readonly INotificationService _notificationService;
         private readonly INotificationRepository _notificationRepository;
         private readonly IClubRepository _clubRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public RequestToJoinClubDomainEventHandler(
             INotificationService notificationService,
             IClubRepository clubRepository,
+            IUserRepository userRepository,
             IUnitOfWork unitOfWork,
             INotificationRepository notificationRepository)
         {
             _notificationService = notificationService;
             _clubRepository = clubRepository;
+            _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _notificationRepository = notificationRepository;
         }
@@ -32,6 +35,13 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RequestToJoinClub
             JoinClubRequestSentDomainEvent domainEvent,
             CancellationToken cancellationToken)
         {
+            var sender = await _userRepository.GetByIdAsync(domainEvent.requestorId);
+            if (sender == null)
+            {
+                // LOGGING
+                return; 
+            }
+
             var notificationRequest = new NotificationRequest
             {
                 RequiredClubMemberRole = new List<ClubMemberRole>
@@ -62,7 +72,9 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.RequestToJoinClub
                 notificationRequest.NotificationCategory,
                 notificationRequest.Text,
                 notificationRequest.LinkedURL,
-                payloadResult.Value);
+                payloadResult.Value,
+                sender
+                );
 
             if (notificationResult.IsFailure)
                 throw new DomainException(notificationResult.Error);

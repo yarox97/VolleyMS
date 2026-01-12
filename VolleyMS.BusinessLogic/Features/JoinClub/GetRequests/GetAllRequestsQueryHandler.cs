@@ -44,6 +44,7 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetRequests
                 joinClubRequestStatus: r.JoinClubRequestStatus,
                 createdAt: r.CreatedAt,
                 respondedAt: r.UpdatedAt,
+                JoinClubRequestId: r.Id,
 
                 responder: r.Responser != null ? new UserDto
                 {

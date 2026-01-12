@@ -32,7 +32,7 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetMyRequests
                 return Result.Success(new List<JoinClubRequestDto>());
 
             var requestDtos = requests.Select(r => new JoinClubRequestDto(
-                ClubId: r.Club.Id,         
+                ClubId: r.Club.Id,
                 ClubName: r.Club.Name,
                 requestor: new UserDto
                 {
@@ -47,6 +47,7 @@ namespace VolleyMS.BusinessLogic.Features.JoinClub.GetMyRequests
                 joinClubRequestStatus: r.JoinClubRequestStatus,
                 createdAt: r.CreatedAt,
                 respondedAt: r.UpdatedAt,
+                JoinClubRequestId: r.Id,
 
                 responder: r.Responser != null ? new UserDto
                 {
