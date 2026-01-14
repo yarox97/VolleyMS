@@ -127,5 +127,24 @@ namespace VolleyMS.Core.Models
             UserType = newRole;
             return Result.Success();
         }
+
+        public Result ChangePrimaryData(string? Name, string? Surname)
+        {
+            if (Name != null && string.IsNullOrEmpty(Name)) 
+                this.Name = Name;
+
+            if (Surname != null && string.IsNullOrEmpty(Surname)) 
+                this.Surname = Surname;
+
+            return Result.Success();
+        }
+
+        public Result ChangeEmail(string? Email)
+        {
+            if (Email != null && string.IsNullOrEmpty(Email)) 
+                this.Email = Email;
+
+            return Result.Success();
+        }
     }
 }

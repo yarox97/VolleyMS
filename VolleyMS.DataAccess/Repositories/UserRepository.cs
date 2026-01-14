@@ -9,7 +9,7 @@ namespace VolleyMS.DataAccess.Repositories
         public UserRepository(VolleyMsDbContext volleyMsDbContext) : base(volleyMsDbContext)
         {
         }
-        public async Task<User?> GetByUserNameAsync(string userName)
+        public async Task<User?> GetByUserNameWithClubsAsync(string userName)
         {
             return await _volleyMsDbContext.Users
                 .AsNoTracking()
@@ -17,6 +17,15 @@ namespace VolleyMS.DataAccess.Repositories
                 .ThenInclude(u => u.Club)
                 .FirstOrDefaultAsync(u => u.UserName.ToLower() == userName.ToLower());
         }
+
+        public async Task<User?> GetByIdWithClubsAsync(Guid userId)
+        {
+            return await _volleyMsDbContext.Users
+                .Include(u => u.UserClubs)
+                .ThenInclude(uc => uc.Club)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
         public async Task<bool> IsLoginTaken(string userName)
         {
             return await _volleyMsDbContext.Users

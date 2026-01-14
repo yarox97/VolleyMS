@@ -71,7 +71,7 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidClubMemberRole = new(
                 "Club.InvalidClubMemberRole",
                 "The specified club member role is invalid.");
-
+            public static readonly Error CannotChangeOwnRole;
             public static Error MemberNotFound = new(
                 "Club.MemberNotFound",
                 "The user is not a member of the club.");
@@ -96,6 +96,7 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidJoinCode = new(
                 "Club.InvalidJoinCode",
                 "The provided join code is invalid.");
+            public static Error ClubMembershipNotFound;
 
             public static Error ClubNotFound { get; set; }
         }
@@ -120,6 +121,8 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidRole = new(
                 "Role.InvalidRole",
                 "Invalid club member role.");
+
+            public static Error CreatorRoleError { get; internal set; }
         }
 
         public static class Contract

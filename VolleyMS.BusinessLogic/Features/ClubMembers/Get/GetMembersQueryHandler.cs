@@ -21,9 +21,11 @@ namespace VolleyMS.BusinessLogic.Features.ClubMembers.Get
             if (club == null)
                 return Result.Failure<IEnumerable<ClubMemberDto>>(DomainErrors.Club.ClubNotFound);
 
-            var requestor = await _userRepository.GetByIdAsync(request.requestorId);
-            if (requestor == null)
+            var requestorId = await _userRepository.GetByIdAsync(request.requestorId);
+            if (requestorId == null)
                 return Result.Failure<IEnumerable<ClubMemberDto>>(DomainErrors.User.UserNotFound);
+
+            var requestor = await _userRepository.GetByUserNameWithClubsAsync(requestorId.UserName);
 
             var requestorRoleInClub = requestor.GetRoleInClub(request.clubId);
             if (requestorRoleInClub.IsFailure)

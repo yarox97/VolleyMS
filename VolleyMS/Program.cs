@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Diagnostics.Internal;
 using Quartz;
 using System.Text.Json.Serialization;
 using VolleyMS.BusinessLogic.BackgorundJobs;
@@ -63,6 +62,7 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
 builder.Services.AddScoped<IJoinClubRepository, JoinClubRepository>();
+builder.Services.AddScoped<IUserClubRepository, UserClubRepository>();
 
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(RegistrationCommandHandler).Assembly));

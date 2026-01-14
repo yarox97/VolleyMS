@@ -17,7 +17,7 @@ namespace VolleyMS.BusinessLogic.Features.Users.Get
 
         public async Task<Result<UserDto>> Handle(GetUserQuery query, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByUserNameAsync(query.userName);
+            var user = await _userRepository.GetByUserNameWithClubsAsync(query.userName);
 
             if (user == null)
                 return Result.Failure<UserDto>(DomainErrors.User.UserNotFound);

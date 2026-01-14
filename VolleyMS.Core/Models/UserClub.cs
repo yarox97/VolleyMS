@@ -1,4 +1,5 @@
-﻿using VolleyMS.Core.Common;
+﻿using MediatR;
+using VolleyMS.Core.Common;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Shared;
 
@@ -41,6 +42,7 @@ namespace VolleyMS.Core.Models
         public Result ChangeRole(ClubMemberRole clubMemberRole)
         {
             if (!Enum.IsDefined(typeof(ClubMemberRole), clubMemberRole)) return Result.Failure<UserClub>(DomainErrors.Role.InvalidRole);
+            if (clubMemberRole == ClubMemberRole.Creator) return Result.Failure(DomainErrors.Role.CreatorRoleError); // Cannot assign Creator role
 
             ClubMemberRole = clubMemberRole;
 

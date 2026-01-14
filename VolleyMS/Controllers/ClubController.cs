@@ -40,7 +40,6 @@ namespace VolleyMS.Controllers
         }
 
         [HttpDelete("{clubId}")]
-        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(Guid clubId)
         {
             var result =  await Sender.Send(new DeleteClubCommand(clubId, User.GetUserId()));

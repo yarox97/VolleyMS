@@ -1,6 +1,8 @@
 ﻿using VolleyMS.Core.Common;
 using VolleyMS.Core.DomainEvents;
+using VolleyMS.Core.Enums;
 using VolleyMS.Core.Errors;
+using VolleyMS.Core.Services;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Models
@@ -75,19 +77,18 @@ namespace VolleyMS.Core.Models
             return joinClubResult;
         }
 
-        private bool IsClubAdminOrPresident(Guid userId)
-        {
-            return _userClubs.Any(u => u.UserId == userId &&
-                   (u.ClubMemberRole == ClubMemberRole.President || u.ClubMemberRole == ClubMemberRole.Creator));
-        }
-
         public Result ApproveJoinRequest(JoinClubRequest request, ClubMemberRole roleToAdd, User responser)
         {
-            if (!IsClubAdminOrPresident(responser.Id))
+            var responserRole = _userClubs.FirstOrDefault(uc => uc.UserId == responser.Id)?.ClubMemberRole;
+
+            if (responserRole is null || !ClubRoleConfig.HasPermission((ClubMemberRole)responserRole, ClubPermission.AcceptJoinRequest))
                 return Result.Failure(DomainErrors.Club.InvalidPermission);
 
             if (request.ClubId != this.Id)
                 return Result.Failure(DomainErrors.Club.JoinRequestNotFound);
+
+            if (request.JoinClubRequestStatus != JoinClubRequestStatus.Pending)
+                return Result.Failure<JoinClubRequest>(DomainErrors.JoinClubRequest.NotPending);
 
             var requestResult = request.Approve(responser);
 
@@ -106,17 +107,19 @@ namespace VolleyMS.Core.Models
 
         public Result RejectJoinClubRequest(JoinClubRequest request, User responser)
         {
-            if (request.User is null) 
-                return Result.Failure(DomainErrors.User.UserNotFound);
-
             if (request is null) 
                 return Result.Failure<JoinClubRequest>(DomainErrors.Club.JoinRequestNotFound);
+
+            if (request.User is null) 
+                return Result.Failure(DomainErrors.User.UserNotFound);
 
             if (request.JoinClubRequestStatus != JoinClubRequestStatus.Pending) 
                 return Result.Failure<JoinClubRequest>(DomainErrors.JoinClubRequest.NotPending);
 
-            if (!IsClubAdminOrPresident(responser.Id)) 
-                return Result.Failure<JoinClubRequest>(DomainErrors.Club.InvalidPermission);
+            var responserRole = _userClubs.FirstOrDefault(uc => uc.UserId == responser.Id)?.ClubMemberRole;
+
+            if (responserRole is null || !ClubRoleConfig.HasPermission((ClubMemberRole)responserRole, ClubPermission.AcceptJoinRequest))
+                return Result.Failure(DomainErrors.Club.InvalidPermission);
 
             var requestResult = request.Reject(responser);
 

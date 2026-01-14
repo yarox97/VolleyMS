@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using VolleyMS.BusinessLogic.Features.Users.ChangeEmail;
+using VolleyMS.BusinessLogic.Features.Users.Modify;
 using VolleyMS.BusinessLogic.Features.Users.Get;
 using VolleyMS.Extensions;
 
@@ -38,6 +40,26 @@ namespace VolleyMS.Controllers
             var result = await Sender.Send(new GetUserQuery(userName, userId));
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpPut("modify-primary")]
+        [Authorize]
+        public async Task<IActionResult> ModifyPrimaryData([FromBody] ModifyUserCommand command)
+        {
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
+        [HttpPut("modify-email")]
+        [Authorize]
+        public async Task<IActionResult> ModifyPrimaryData([FromBody] string? Email)
+        {
+            var command = new ChangeEmailCommand(User.GetUserId(), Email);
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
     }
 }

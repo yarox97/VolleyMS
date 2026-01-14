@@ -21,7 +21,7 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Authentication
 
         public async Task<Result<string>> Handle(LoginCommand command, CancellationToken cancellation)
         {
-            var userResult = await _userRepository.GetByUserNameAsync(command.userName);
+            var userResult = await _userRepository.GetByUserNameWithClubsAsync(command.userName);
             if (userResult == null)
                 return Result.Failure<string>(DomainErrors.User.UserNotFound);
 

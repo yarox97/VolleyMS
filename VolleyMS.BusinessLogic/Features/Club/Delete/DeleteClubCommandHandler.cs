@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using VolleyMS.Core.Enums;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Services;
@@ -23,8 +24,8 @@ namespace VolleyMS.BusinessLogic.Features.Club.Delete
 
             var userMember = club.UserClubs.FirstOrDefault(uc => uc.UserId == command.clubPresidentId);
 
-            if (userMember is null)
-                return Result.Failure<Guid>(DomainErrors.Club.InvalidPermission);
+            if (userMember is null || !ClubRoleConfig.HasPermission(userMember.ClubMemberRole, ClubPermission.DeleteClub))
+                return Result.Failure<Guid>(DomainErrors.Club.InvalidMemberRole);
 
 
             await _clubRepository.DeleteAsync(club.Id);
