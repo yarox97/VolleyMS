@@ -13,22 +13,24 @@ namespace VolleyMS.Core.Models
         private Contract(
             Guid id,
             decimal? monthlySalary,
-            Currency currency,
+            Currency? currency,
             DateTime beginsFrom,
             DateTime endsBy,
-            Guid userId,
-            Guid clubId)
+            User user,
+            Club club)
             : base(id)
         {
             MonthlySalary = monthlySalary;
             Currency = currency;
             BeginsFrom = beginsFrom;
             EndsBy = endsBy;
-            UserId = userId;
-            ClubId = clubId;
+            User = user;
+            UserId = user.Id;
+            Club = club;
+            ClubId = club.Id;
         }
         public decimal? MonthlySalary { get; private set; }
-        public Currency Currency { get; private set; }
+        public Currency? Currency { get; private set; }
 
         public DateTime BeginsFrom { get; private set; }
         public DateTime EndsBy { get; private set; }
@@ -36,19 +38,20 @@ namespace VolleyMS.Core.Models
         public Guid UserId { get; private set; }
         public User User { get; private set; }
 
-        // Исправил TeamId на ClubId
         public Guid ClubId { get; private set; }
         public Club Club { get; private set; }
 
+        public bool IsActive =>
+        DateTime.UtcNow >= BeginsFrom && DateTime.UtcNow <= EndsBy;
+
         public static Result<Contract> Create(
             decimal? monthlySalary,
-            Currency currency,
+            Currency? currency,
             DateTime beginsFrom,
             DateTime endsBy,
-            Guid userId,
-            Guid clubId)
+            User user,
+            Club club)
         {
-            // Валидация денег
             if (monthlySalary.HasValue && monthlySalary < 0)
             {
                 return Result.Failure<Contract>(DomainErrors.Contract.NegativeSalary);
@@ -59,15 +62,19 @@ namespace VolleyMS.Core.Models
                 return Result.Failure<Contract>(DomainErrors.Contract.InvalidDates);
             }
 
-            if (userId == Guid.Empty || clubId == Guid.Empty)
+            if(user == null)
             {
-                return Result.Failure<Contract>(Error.NullValue);
+                return Result.Failure<Contract>(DomainErrors.User.UserNotFound);
             }
 
-            // Проверка enum
+            if(club == null)
+            {
+                return Result.Failure<Contract>(DomainErrors.Club.ClubNotFound);
+            }
+
             if (!Enum.IsDefined(typeof(Currency), currency))
             {
-                return Result.Failure<Contract>(DomainErrors.Contract.InvalidDates);
+                return Result.Failure<Contract>(DomainErrors.Contract.InvalidCurrency);
             }
 
             var contract = new Contract(
@@ -76,11 +83,16 @@ namespace VolleyMS.Core.Models
                 currency,
                 beginsFrom,
                 endsBy,
-                userId,
-                clubId
+                user,
+                club
             );
 
             return Result.Success(contract);
+        }
+
+        public bool isExpired()
+        {
+            return DateTime.UtcNow > EndsBy;
         }
     }
 }

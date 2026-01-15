@@ -131,11 +131,17 @@ namespace VolleyMS.Core.Models
             return Result.Success();
         }
 
+        public bool HasMember(Guid userId)
+        {
+            return _userClubs.Any(uc => uc.UserId == userId && uc.ClubId == Id);
+        }
+
         public Result<UserClub> AddMember(User user, ClubMemberRole clubMemberRole, User creator)
         {
             if (user is null) return Result.Failure<UserClub>(DomainErrors.User.UserNotFound);
 
-            if (_userClubs.Any(uc => uc.UserId == user.Id && uc.ClubId == Id)) return Result.Failure<UserClub>(DomainErrors.Club.MemberAlreadyExists);
+            if(HasMember(user.Id))
+                return Result.Failure<UserClub>(DomainErrors.Club.MemberAlreadyExists);
 
             var userClubResult = UserClub.Create(user, this, creator, clubMemberRole);
             if (userClubResult.IsFailure) return userClubResult;

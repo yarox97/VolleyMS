@@ -35,5 +35,13 @@ namespace VolleyMS.Core.Services
             if (!_memberPermission.ContainsKey(clubMemberRole)) return false;
             return _memberPermission[clubMemberRole].Contains(permission);
         }
+
+        public static IList<ClubMemberRole> GetRolesByPermission(ClubPermission permission)
+        {
+            return _memberPermission
+                .Where(kv => kv.Value.Contains(permission))
+                .Select(kv => kv.Key)
+                .ToList();
+        }
     }
 }

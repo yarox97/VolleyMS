@@ -22,4 +22,8 @@
     <ProjectReference Include="..\VolleyMS.DataAccess\VolleyMS.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\ClubMembers\Kick TODO\" />
+  </ItemGroup>
+
 </Project>

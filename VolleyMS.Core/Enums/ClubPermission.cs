@@ -19,6 +19,7 @@
         DeleteTask,
 
         // Contract management
+        ViewContracts,
         CreateContract,
         AssignContract,
         EditContract,

@@ -134,6 +134,13 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidDates = new(
                 "Contract.InvalidDates",
                 "Contract start date cannot be later than end date.");
+            public static readonly Error ActiveContractAlreadyExists;
+            public static Error ActiveContractNotFound;
+            public static Error CannotAssignContractToSelf;
+            public static Error ContractNotFound;
+            public static Error InvalidPermission;
+
+            public static Error InvalidCurrency { get; internal set; }
         }
 
         public static class Task
