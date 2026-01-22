@@ -39,7 +39,7 @@ namespace VolleyMS.Core.Models
         public IReadOnlyCollection<UserNotification> UserNotifications => _userNotifications;
 
         public static Result<Notification> Create(
-            IList<ClubMemberRole> requiredClubMemberRoles,
+            IList<ClubMemberRole>? requiredClubMemberRoles,
             NotificationCategory notificationCategory,
             string text,
             string? linkedUrl,

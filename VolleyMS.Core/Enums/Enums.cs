@@ -57,7 +57,10 @@ public enum NotificationCategory
     ClubJoinRejected,
     System,
     MessageReceived,
-    EventReminder
+    EventReminder,
+    ContractAssigned,
+    ContractEndedByUser,
+    ContractEndedByClub
 }
 
 public enum ClubMemberRole

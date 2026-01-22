@@ -44,6 +44,7 @@ namespace VolleyMS.BusinessLogic.Features.Contracts.Get
             // Map to dto
             var contractDto = new ContractDto
             {
+                Id = contract.Id,
                 StartDate = contract.BeginsFrom,
                 EndDate = contract.EndsBy,
                 Salary = contract.MonthlySalary,

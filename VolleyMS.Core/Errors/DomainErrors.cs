@@ -141,6 +141,8 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidPermission;
 
             public static Error InvalidCurrency { get; internal set; }
+            public static Error AlreadyExpired { get; internal set; }
+            public static Error ContractNotActive { get; set; }
         }
 
         public static class Task

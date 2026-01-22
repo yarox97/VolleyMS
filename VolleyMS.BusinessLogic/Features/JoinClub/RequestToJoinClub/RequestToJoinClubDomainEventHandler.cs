@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using VolleyMS.Core.DomainEvents;
+using VolleyMS.Core.DomainEvents.ClubMembers;
 using VolleyMS.Core.Exceptions;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Requests;

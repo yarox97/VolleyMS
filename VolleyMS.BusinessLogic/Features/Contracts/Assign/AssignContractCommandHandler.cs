@@ -53,7 +53,7 @@ namespace VolleyMS.BusinessLogic.Features.Contracts.Assign
 
             // Check if the member has contract already
             var existingContract = await _contractRepository.GetActiveContractByUserAndClubAsync(member.Id, club.Id, cancellationToken);
-            if (existingContract.IsSuccess)
+            if (existingContract is not null)
                 return Result.Failure(DomainErrors.Contract.ActiveContractAlreadyExists);
 
             // Create contract
@@ -63,7 +63,8 @@ namespace VolleyMS.BusinessLogic.Features.Contracts.Assign
                 request.beginsFrom,
                 request.endsBy,
                 member,
-                club);
+                club,
+                responser); // added responser as assigner to see who was contract signed by     responser <-> player  
 
             if (contractResult.IsFailure) return contractResult;
 

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads.Categorized;
-using VolleyMS.Core.DomainEvents;
+using VolleyMS.Core.DomainEvents.ClubMembers;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Exceptions;
 using VolleyMS.Core.Models;

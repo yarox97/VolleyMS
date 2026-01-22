@@ -12,15 +12,15 @@ namespace VolleyMS.DataAccess.Repositories
         {
         }
 
-        public async Task<Result<Contract>> GetActiveContractByUserAndClubAsync(Guid userId, Guid clubId, CancellationToken cancellationToken)
+        public async Task<Contract?> GetActiveContractByUserAndClubAsync(Guid userId, Guid clubId, CancellationToken cancellationToken)
         {
+            var now = DateTime.UtcNow;
             return await _volleyMsDbContext.Contracts
-                .Include(c => c.User)
+                .AsNoTracking()
                 .Include(c => c.Club)
-                .FirstOrDefaultAsync(c => c.User.Id == userId && c.Club.Id == clubId && c.IsActive, cancellationToken)
-                is Contract contract
-                    ? Result.Success(contract)
-                    : Result.Failure<Contract>(DomainErrors.Contract.ActiveContractNotFound);
+                .Include(c => c.User)
+                .Where(c => c.UserId == userId && c.ClubId == clubId && now > c.EndsBy)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

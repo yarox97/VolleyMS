@@ -1,5 +1,5 @@
 ﻿using VolleyMS.Core.Common;
-using VolleyMS.Core.DomainEvents;
+using VolleyMS.Core.DomainEvents.ClubMembers;
 using VolleyMS.Core.Enums;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Services;

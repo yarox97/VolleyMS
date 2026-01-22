@@ -77,7 +77,6 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("VolleyBoxUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -130,6 +129,9 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("AssignerId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("BeginsFrom")
                         .HasColumnType("timestamp with time zone");
 
@@ -164,6 +166,8 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignerId");
 
                     b.HasIndex("ClubId");
 
@@ -528,6 +532,12 @@ namespace VolleyMS.DataAccess.Migrations
 
             modelBuilder.Entity("VolleyMS.Core.Models.Contract", b =>
                 {
+                    b.HasOne("VolleyMS.Core.Models.User", "Assigner")
+                        .WithMany()
+                        .HasForeignKey("AssignerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("VolleyMS.Core.Models.Club", "Club")
                         .WithMany()
                         .HasForeignKey("ClubId")
@@ -539,6 +549,8 @@ namespace VolleyMS.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Assigner");
 
                     b.Navigation("Club");
 

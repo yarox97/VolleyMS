@@ -63,6 +63,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
 builder.Services.AddScoped<IJoinClubRepository, JoinClubRepository>();
 builder.Services.AddScoped<IUserClubRepository, UserClubRepository>();
+builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(RegistrationCommandHandler).Assembly));
