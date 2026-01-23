@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.Contracts.Assign;
 using VolleyMS.BusinessLogic.Features.Contracts.End;
 using VolleyMS.BusinessLogic.Features.Contracts.Get;
+using VolleyMS.BusinessLogic.Features.Contracts.GetClubsAll;
+using VolleyMS.BusinessLogic.Features.Contracts.GetUsersAll;
 using VolleyMS.Extensions;
 
 namespace VolleyMS.Web.Controllers
@@ -29,7 +31,7 @@ namespace VolleyMS.Web.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
-        [HttpPost("end-contract/{contractId}")]
+        [HttpPut("end-contract/{contractId}")]
         [Authorize]
         public async Task<IActionResult> EndContract([FromRoute] Guid contractId)
         {
@@ -48,5 +50,28 @@ namespace VolleyMS.Web.Controllers
 
             return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
         }
+
+        [HttpGet("user/my-contracts")]
+        [Authorize]
+        public async Task<IActionResult> GetMyContracts([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var query = new GetUsersAllContractsQuery(User.GetUserId(), pageNumber, pageSize);
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpGet("club/{clubId}/contracts")]
+        [Authorize]
+        public async Task<IActionResult> GetClubContracts([FromRoute] Guid clubId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var query = new GetClubsAllContractsQuery(clubId, pageSize, pageNumber, User.GetUserId());
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
     }
 }

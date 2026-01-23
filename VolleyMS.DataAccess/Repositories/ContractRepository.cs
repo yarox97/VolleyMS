@@ -22,5 +22,47 @@ namespace VolleyMS.DataAccess.Repositories
                 .Where(c => c.UserId == userId && c.ClubId == clubId && now > c.EndsBy)
                 .FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<(IEnumerable<Contract> Items, int TotalCount)> GetUserContractsPaged(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var now = DateTime.UtcNow;
+            var baseQuery = _volleyMsDbContext.Contracts
+                .Where(c => c.UserId == userId);
+
+            var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+            var items = await baseQuery
+                .AsNoTracking()
+                .Include(c => c.Club)
+                .OrderBy(c => c.EndsBy < now)
+                .ThenByDescending(c => c.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        public async Task<(IEnumerable<Contract> Items, int TotalCount)> GetClubContractsPaged(Guid clubId, int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var now = DateTime.UtcNow;
+            var baseQuery = _volleyMsDbContext.Contracts
+                .Where(c => c.ClubId == clubId);
+
+            var totalCount = await baseQuery.CountAsync(cancellationToken);
+
+            var items = await baseQuery
+                .AsNoTracking()
+                .Include(c => c.Club)
+                .Include(c => c.User)   
+                .Include(c => c.Assigner)
+                .OrderBy(c => c.EndsBy < now)
+                .ThenByDescending(c => c.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
     }
 }
