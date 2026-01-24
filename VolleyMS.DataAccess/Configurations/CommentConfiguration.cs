@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VolleyMS.Core.Models;
+using VolleyMS.Core.Services;
 
 namespace VolleyMS.DataAccess.Configurations
 {
@@ -15,7 +16,7 @@ namespace VolleyMS.DataAccess.Configurations
 
             // Текст комментария
             builder.Property(c => c.Text)
-                .HasMaxLength(500) // 250 может быть маловато, поставил 500
+                .HasMaxLength(ValidationConfig.MAX_COMMENT_TEXT) // 250 может быть маловато, поставил 500
                 .IsRequired();
 
             // --- Связи ---

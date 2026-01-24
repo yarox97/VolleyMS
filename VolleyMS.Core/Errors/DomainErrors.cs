@@ -71,7 +71,11 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidClubMemberRole = new(
                 "Club.InvalidClubMemberRole",
                 "The specified club member role is invalid.");
-            public static readonly Error CannotChangeOwnRole;
+
+            public static readonly Error CannotChangeOwnRole = new(
+                "Club.CannotChangeOwnRole",
+                "Members cannot change their own role in the club.");
+
             public static Error MemberNotFound = new(
                 "Club.MemberNotFound",
                 "The user is not a member of the club.");
@@ -82,8 +86,7 @@ namespace VolleyMS.Core.Errors
 
             public static Error JoinRequestAlreadyExists = new(
                 "Club.JoinRequestAlreadyExists",
-                "A join request from this user to the club already exists."
-                );
+                "A join request from this user to the club already exists.");
 
             public static Error InvalidMemberRole = new(
                 "Club.InvalidMemberRole",
@@ -96,9 +99,14 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidJoinCode = new(
                 "Club.InvalidJoinCode",
                 "The provided join code is invalid.");
-            public static Error ClubMembershipNotFound;
 
-            public static Error ClubNotFound { get; set; }
+            public static Error ClubMembershipNotFound = new(
+                "Club.ClubMembershipNotFound",
+                "The club membership was not found.");
+
+            public static Error ClubNotFound = new(
+                "Club.ClubNotFound",
+                "The specified club was not found.");
         }
 
         public static class JoinClubRequest
@@ -122,7 +130,9 @@ namespace VolleyMS.Core.Errors
                 "Role.InvalidRole",
                 "Invalid club member role.");
 
-            public static Error CreatorRoleError { get; internal set; }
+            public static Error CreatorRoleError = new(
+                "Club.ClubNotFound", 
+                "The specified club was not found.");
         }
 
         public static class Contract
@@ -134,15 +144,38 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidDates = new(
                 "Contract.InvalidDates",
                 "Contract start date cannot be later than end date.");
-            public static readonly Error ActiveContractAlreadyExists;
-            public static Error ActiveContractNotFound;
-            public static Error CannotAssignContractToSelf;
-            public static Error ContractNotFound;
-            public static Error InvalidPermission;
 
-            public static Error InvalidCurrency { get; internal set; }
-            public static Error AlreadyExpired { get; internal set; }
-            public static Error ContractNotActive { get; set; }
+            public static readonly Error ActiveContractAlreadyExists = new(
+                "Contract.ActiveContractAlreadyExists",
+                "An active contract already exists for this user.");
+
+            public static Error ActiveContractNotFound = new(
+                "Contract.ActiveContractNotFound",
+                "No active contract found for this user.");
+
+            public static Error CannotAssignContractToSelf = new(
+                "Contract.CannotAssignContractToSelf",
+                "Users cannot assign contracts to themselves.");
+
+            public static Error ContractNotFound = new(
+                "Contract.ContractNotFound",
+                "The specified contract was not found.");
+
+            public static Error InvalidPermission = new(
+                "Contract.InvalidPermission",
+                "User does not have permission to perform this action.");
+
+            public static Error InvalidCurrency = new(
+                "Club.ClubNotFound", 
+                "The specified club was not found.");
+
+            public static Error AlreadyExpired = new(
+                "Club.ClubNotFound", 
+                "The specified club was not found.");
+
+            public static Error ContractNotActive = new(
+                "Club.ClubNotFound",
+                "The specified club was not found.");
         }
 
         public static class Task
@@ -165,6 +198,7 @@ namespace VolleyMS.Core.Errors
             public static readonly Error TextEmpty = new(
                 "Comment.TextEmpty",
                 "Comment text cannot be empty.");
+
             public static readonly Error NotAuthor = new(
                 "Comment.NotAuthor",
                 "Only the author can modify or delete the comment.");

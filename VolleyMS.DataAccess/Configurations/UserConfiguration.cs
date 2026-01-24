@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VolleyMS.Core.Models;
+using VolleyMS.Core.Services;
 
 namespace VolleyMS.DataAccess.Configurations
 {
@@ -15,7 +16,7 @@ namespace VolleyMS.DataAccess.Configurations
 
             // 1. Скалярные свойства
             builder.Property(u => u.UserName)
-                .HasMaxLength(50)
+                .HasMaxLength(ValidationConfig.MAX_USERNAME_LENGTH)
                 .IsRequired();
 
             // UserName должен быть уникальным
@@ -29,8 +30,8 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasIndex(u => u.Email).IsUnique();
 
             builder.Property(u => u.Password).IsRequired();
-            builder.Property(u => u.Name).HasMaxLength(50).IsRequired();
-            builder.Property(u => u.Surname).HasMaxLength(50).IsRequired();
+            builder.Property(u => u.Name).HasMaxLength(ValidationConfig.MAX_NAME_LENGTH).IsRequired();
+            builder.Property(u => u.Surname).HasMaxLength(ValidationConfig.MAX_SURNAME_LENGTH).IsRequired();
             builder.Property(u => u.AvatarUrl).HasMaxLength(500).IsRequired(false);
 
             // Конвертация Enum UserType в строку ("Admin", "Player")

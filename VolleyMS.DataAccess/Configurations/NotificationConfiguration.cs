@@ -15,7 +15,7 @@ namespace VolleyMS.DataAccess.Configurations
             builder.Property(x => x.Id).ValueGeneratedNever();
 
             builder.Property(n => n.Text)
-                .HasMaxLength(1000)
+                .HasMaxLength(10000)
                 .IsRequired();
 
             builder.Property(n => n.LinkedURL)

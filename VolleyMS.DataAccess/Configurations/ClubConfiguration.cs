@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VolleyMS.Core.Models;
+using VolleyMS.Core.Services;
 
 namespace VolleyMS.DataAccess.Configurations
 {
@@ -16,7 +17,7 @@ namespace VolleyMS.DataAccess.Configurations
             // Настройка свойств
             builder.Property(c => c.Name)
                 .IsRequired()
-                .HasMaxLength(100); // Ограничиваем длину имени
+                .HasMaxLength(ValidationConfig.MAX_CLUB_NAME_LENGTH); // Ограничиваем длину имени
 
             builder.Property(c => c.JoinCode)
                 .IsRequired()
@@ -27,7 +28,7 @@ namespace VolleyMS.DataAccess.Configurations
                 .IsUnique();
 
             builder.Property(c => c.Description)
-                .HasMaxLength(500)
+                .HasMaxLength(5000)
                 .IsRequired(false); // Может быть null
 
             builder.Property(c => c.AvatarUrl)

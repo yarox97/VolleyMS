@@ -172,6 +172,8 @@ namespace VolleyMS.Core.Models
 
             _userClubs.Remove(userClub);
 
+            RaiseDomainEvent(new ClubMemberKickedDomainEvent(user.Id, this.Id)); // Send notification to kicked member
+
             return Result.Success();
         }
     }

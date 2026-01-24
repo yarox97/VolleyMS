@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VolleyMS.Core.Models;
+using VolleyMS.Core.Services;
 using Task = VolleyMS.Core.Models.Task;
 
 namespace VolleyMS.DataAccess.Configurations
@@ -17,11 +18,11 @@ namespace VolleyMS.DataAccess.Configurations
             builder.Property(x => x.Id).ValueGeneratedNever();
 
             builder.Property(t => t.Title)
-                .HasMaxLength(100)
+                .HasMaxLength(ValidationConfig.MAX_TASK_TITLE)
                 .IsRequired();
 
             builder.Property(t => t.Description)
-                .HasMaxLength(1000)
+                .HasMaxLength(10000)
                 .IsRequired(false);
 
             // --- 1. Конвертация Enum-ов ---

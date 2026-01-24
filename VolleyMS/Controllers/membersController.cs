@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.ClubMembers.ChangeRole;
 using VolleyMS.BusinessLogic.Features.ClubMembers.Get;
+using VolleyMS.BusinessLogic.Features.ClubMembers.Kick;
 using VolleyMS.Extensions;
 
 namespace VolleyMS.Web.Controllers
@@ -39,12 +40,15 @@ namespace VolleyMS.Web.Controllers
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
 
-        //[HttpDelete("{userId}")]
-        //[Authorize(Policy = "AdminOnly")]
-        //public async Task<IActionResult> DeleteMember(Guid clubId, Guid userId)
-        //{
-        //    // Command
-        //    return Ok();
-        //}
+        [HttpDelete("{userId}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> DeleteMember(Guid clubId, Guid userId)
+        {
+            var command = new KickMemberCommand(clubId, userId, User.GetUserId());
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
     }
 }
