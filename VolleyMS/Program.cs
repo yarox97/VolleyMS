@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Quartz;
@@ -54,6 +55,9 @@ builder.Services.Configure<AuthConfiguration>(builder.Configuration
 builder.Services.AddAuth(builder.Configuration);
 
 builder.Logging.AddConsole();
+
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IClubService, ClubService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
