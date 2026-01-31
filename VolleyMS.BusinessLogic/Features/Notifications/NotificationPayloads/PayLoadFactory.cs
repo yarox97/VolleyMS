@@ -36,6 +36,11 @@ namespace VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads
                     notificationRequest.SenderSurname ?? throw new ArgumentException("SenderSurname is required")
                 )),
 
+                NotificationCategory.KickedFromClubByClub => JsonSerializer.Serialize(new ClubMemberKickedPayLoad(
+                    notificationRequest.ClubName ?? throw new ArgumentException("ClubName is required"),
+                    notificationRequest.ClubId ?? throw new ArgumentException("ClubId is required")
+                )),
+
                 // Можно добавить другие категории здесь
                 _ => null
             };

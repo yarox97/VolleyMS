@@ -54,6 +54,19 @@ namespace VolleyMS.Core.Models
             return Result.Success(club);
         }
 
+        public Result ChangePrimaryData(string? name, string? description)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+                Name = name;
+            }
+            if (description != null)
+            {
+                Description = description;
+            }
+            return Result.Success();
+        }
+
         public Result<JoinClubRequest> RequestToJoinClub(User user)
         {
             if (user is null) return Result.Failure<JoinClubRequest>(Error.NullValue);

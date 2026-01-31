@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.Club.Create;
 using VolleyMS.BusinessLogic.Features.Club.Delete;
 using VolleyMS.BusinessLogic.Features.Club.Get;
+using VolleyMS.BusinessLogic.Features.Club.UpdatePrimaryData;
 using VolleyMS.Core.Requests;
 using VolleyMS.Extensions;
 
@@ -37,6 +38,17 @@ namespace VolleyMS.Controllers
             var result = await Sender.Send(command, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpPut("{clubId}")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePrimaryData([FromRoute] Guid clubId, [FromBody] UpdatePrimaryDataDto updatePrimaryDataDto)
+        {
+            var command = new UpdatePrimaryDataCommand(clubId, User.GetUserId(), updatePrimaryDataDto.Description, updatePrimaryDataDto.Name);
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
         [HttpDelete("{clubId}")]

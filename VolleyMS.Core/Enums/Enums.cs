@@ -60,7 +60,9 @@ public enum NotificationCategory
     EventReminder,
     ContractAssigned,
     ContractEndedByUser,
-    ContractEndedByClub
+    ContractEndedByClub,
+    KickedFromClubByClub,
+    KickedFromClubByUser
 }
 
 public enum ClubMemberRole
