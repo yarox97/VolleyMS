@@ -45,6 +45,9 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidPassword = new(
                 "User.InvalidPassword",
                 "Invalid password.");
+
+            public static Error InvalidEmail { get; set; }
+            public static Error EmailTaken { get; set; }
         }
         public static class Club
         {

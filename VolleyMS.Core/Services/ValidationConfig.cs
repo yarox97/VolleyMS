@@ -7,6 +7,9 @@
         public const int MAX_NAME_LENGTH = 50;
         public const int MAX_SURNAME_LENGTH = 50;
 
+        public const int MIN_PASSWORD_LENGTH = 5;
+        public const int MIN_USERNAME_LENGHT = 5;
+
         // Club
         public const int MAX_CLUB_NAME_LENGTH = 100;
 
