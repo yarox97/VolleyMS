@@ -4,23 +4,23 @@ using VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation.Authentication;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation.LoginCheck;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation.EmailCheck;
+using VolleyMS.Web.Controllers;
 
 namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class authController : ControllerBase
+    public class authController : ApiController
     {
-        private readonly ISender Sender;
-        public authController(ISender sender)
+        public authController(ISender sender) : base(sender)
         {
-            Sender = sender;
         }
+
         [HttpPost("register")]
         public async Task<IActionResult> Registration([FromBody] RegistrationCommand command, CancellationToken cancellation)
         {
             var result = await Sender.Send(command, cancellation);
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error); 
+            return result.IsSuccess ? Ok(result.Value) : HandleFailure(result); 
         }
 
         [HttpGet("login-check")]

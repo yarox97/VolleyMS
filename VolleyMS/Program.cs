@@ -1,9 +1,11 @@
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Quartz;
 using System.Text.Json.Serialization;
 using VolleyMS.BusinessLogic.BackgorundJobs;
+using VolleyMS.BusinessLogic.Behaviours;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation;
 using VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration;
 using VolleyMS.BusinessLogic.Services;
@@ -19,6 +21,8 @@ using VolleyMS.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ConvertDomainEventToOutboxMessageInterceptor>();
+
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
 
 builder.Services.AddDataBase();
 
@@ -56,7 +60,7 @@ builder.Services.AddAuth(builder.Configuration);
 
 builder.Logging.AddConsole();
 
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+builder.Services.AddValidatorsFromAssembly(typeof(RegistrationCommandHandler).Assembly, includeInternalTypes: true);
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IClubService, ClubService>();

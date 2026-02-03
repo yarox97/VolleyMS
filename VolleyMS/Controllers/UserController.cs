@@ -5,19 +5,18 @@ using VolleyMS.BusinessLogic.Features.Users.ChangeEmail;
 using VolleyMS.BusinessLogic.Features.Users.Modify;
 using VolleyMS.BusinessLogic.Features.Users.Get;
 using VolleyMS.Extensions;
+using VolleyMS.Web.Controllers;
 
 
 namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class userController : ControllerBase
+    public class userController : ApiController
     {
-        private readonly ISender Sender;
-
         public userController(ISender sender)
+            : base(sender)
         {
-            Sender = sender;
         }
 
         [HttpGet("{userName}")]

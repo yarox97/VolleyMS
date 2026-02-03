@@ -11,13 +11,11 @@ namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class notificationController : ControllerBase
+    public class notificationController : ApiController
     {
-        private readonly ISender Sender;
-
         public notificationController(ISender sender)
+            : base(sender)  
         {
-            Sender = sender;
         }
 
         [HttpGet("user/notifications")]

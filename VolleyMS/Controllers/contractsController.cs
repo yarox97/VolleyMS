@@ -13,13 +13,11 @@ namespace VolleyMS.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class contractsController : ControllerBase
+    public class contractsController : ApiController
     {
-        private readonly ISender Sender;
-
         public contractsController(ISender sender)
+            : base(sender)
         {
-            Sender = sender;
         }
 
         [HttpPost("assign-contract")]

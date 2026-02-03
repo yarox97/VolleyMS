@@ -7,17 +7,17 @@ using VolleyMS.BusinessLogic.Features.JoinClub.GetRequests;
 using VolleyMS.BusinessLogic.Features.JoinClub.RejectRequest;
 using VolleyMS.BusinessLogic.Features.JoinClub.RequestToJoinClub;
 using VolleyMS.Extensions;
+using VolleyMS.Web.Controllers;
 
 namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class joinClubRequestsController : ControllerBase
+    public class joinClubRequestsController : ApiController
     {
-        private readonly ISender Sender;
         public joinClubRequestsController(ISender sender)
+            : base(sender)
         {
-            Sender = sender;
         }
 
         [HttpPost]

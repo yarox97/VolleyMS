@@ -7,17 +7,17 @@ using VolleyMS.BusinessLogic.Features.Club.Get;
 using VolleyMS.BusinessLogic.Features.Club.UpdatePrimaryData;
 using VolleyMS.Core.Requests;
 using VolleyMS.Extensions;
+using VolleyMS.Web.Controllers;
 
 namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class clubController : ControllerBase
+    public class clubController : ApiController
     {
-        private readonly ISender Sender;
         public clubController(ISender sender)
+            : base(sender)
         {
-            Sender = sender;
         }
 
         [HttpGet("{clubId}")]
