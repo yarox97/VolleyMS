@@ -37,16 +37,24 @@ public enum Currency
     CZK
 }
 
-public enum DaysOfWeek
+[Flags]
+public enum WeekDays
 {
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday,
-    Sunday
+    None = 0,
+    Monday = 1,   
+    Tuesday = 2,  
+    Wednesday = 4,    
+    Thursday = 8,   
+    Friday = 16,   
+    Saturday = 32,  
+    Sunday = 64,   
+
+    // presets
+    Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday,
+    Weekend = Saturday | Sunday,                                
+    EveryDay = Weekdays | Weekend                             
 }
+
 
 public enum NotificationCategory
 {
@@ -79,4 +87,13 @@ public enum JoinClubRequestStatus
     Pending,
     Approved,
     Rejected
+}
+
+public enum ProofType
+{
+    None = 0,
+    Image = 1,
+    Video = 2,
+    Document = 3,
+    ExternalLink = 4 
 }

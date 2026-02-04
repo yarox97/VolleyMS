@@ -47,18 +47,18 @@ namespace VolleyMS.Controllers
         {
             var result = await Sender.Send(command);
 
-            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+            return result.IsSuccess ? Ok() : HandleFailure(result);
         }
 
         [HttpPut("modify-email")]
         [Authorize]
-        public async Task<IActionResult> ModifyPrimaryData([FromBody] string? Email)
+        public async Task<IActionResult> ModifyEmail([FromBody] string? Email)
         {
             var command = new ChangeEmailCommand(User.GetUserId(), Email);
 
             var result = await Sender.Send(command);
 
-            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+            return result.IsSuccess ? Ok() : HandleFailure(result);
         }
     }
 }

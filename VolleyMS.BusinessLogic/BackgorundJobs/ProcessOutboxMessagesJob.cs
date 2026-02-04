@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Quartz;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using VolleyMS.Core.DomainEvents;
 using VolleyMS.DataAccess;
 using VolleyMS.DataAccess.Outbox;
