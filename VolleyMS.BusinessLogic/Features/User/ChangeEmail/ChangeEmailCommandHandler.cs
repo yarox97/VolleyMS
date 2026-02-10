@@ -20,18 +20,19 @@ namespace VolleyMS.BusinessLogic.Features.Users.ChangeEmail
             if (user is null)
                 return Result.Failure(DomainErrors.User.UserNotFound);
 
-            if (request.email == null)
-                return Result.Failure(DomainErrors.User.InvalidEmail);
+            if(request.email != null)
+            {
+                if(await _userRepository.IsEmailTaken(request.email))
+                    return Result.Failure(DomainErrors.User.EmailTaken);
 
-            if(await _userRepository.IsEmailTaken(request.email))
-                return Result.Failure(DomainErrors.User.EmailTaken);
+                var changeEmailResult = user.ChangeEmail(request.email);
 
-            var changeEmailResult = user.ChangeEmail(request.email);
+                if(changeEmailResult.IsFailure)
+                    return Result.Failure(changeEmailResult.Error);
 
-            if(changeEmailResult.IsFailure)
-                return Result.Failure(changeEmailResult.Error);
-
-            await _unitOfWork.SaveChangesAsync();
+                await _userRepository.UpdateAsync(user);
+                await _unitOfWork.SaveChangesAsync();
+            }
 
             return Result.Success();
         }

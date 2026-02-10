@@ -22,6 +22,7 @@ namespace VolleyMS.BusinessLogic.Features.Users.Modify
 
             user.ChangePrimaryData(request.Name, request.Surname);
 
+            await _userRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success();

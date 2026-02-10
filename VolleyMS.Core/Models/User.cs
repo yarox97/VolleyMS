@@ -130,7 +130,7 @@ namespace VolleyMS.Core.Models
 
         public Result ChangePrimaryData(string? Name, string? Surname)
         {
-            if (Name != null && string.IsNullOrEmpty(Name)) 
+            if (Name != null && !string.IsNullOrEmpty(Name)) 
                 this.Name = Name;
 
             if (Surname != null && string.IsNullOrEmpty(Surname)) 
@@ -141,7 +141,7 @@ namespace VolleyMS.Core.Models
 
         public Result ChangeEmail(string? Email)
         {
-            if (Email != null && string.IsNullOrEmpty(Email)) 
+            if (Email != null && !string.IsNullOrEmpty(Email)) 
                 this.Email = Email;
 
             return Result.Success();

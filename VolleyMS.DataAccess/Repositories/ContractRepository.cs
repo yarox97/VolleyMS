@@ -34,6 +34,7 @@ namespace VolleyMS.DataAccess.Repositories
             var items = await baseQuery
                 .AsNoTracking()
                 .Include(c => c.Club)
+                .Include(c => c.Assigner)
                 .OrderBy(c => c.EndsBy < now)
                 .ThenByDescending(c => c.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
@@ -63,6 +64,23 @@ namespace VolleyMS.DataAccess.Repositories
                 .ToListAsync(cancellationToken);
 
             return (items, totalCount);
+        }
+
+        public async Task<Contract> GetByIdWithDetailsAsync(Guid contractId, CancellationToken cancellationToken)
+        {
+            var contract = await _volleyMsDbContext.Contracts
+                .AsNoTracking()
+                .Include(c => c.Club)
+                .Include(c => c.User)
+                .Include(c => c.Assigner)
+                .FirstOrDefaultAsync(c => c.Id == contractId, cancellationToken);
+
+            if (contract == null)
+            {
+                throw new InvalidOperationException($"Contract with id {contractId} not found.");
+            }
+
+            return contract;
         }
     }
 }

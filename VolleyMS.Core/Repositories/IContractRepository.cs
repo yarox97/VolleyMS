@@ -17,5 +17,7 @@ namespace VolleyMS.Core.Repositories
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken);
+
+        Task<Contract> GetByIdWithDetailsAsync(Guid ClubId, CancellationToken cancellation);
     }
 }

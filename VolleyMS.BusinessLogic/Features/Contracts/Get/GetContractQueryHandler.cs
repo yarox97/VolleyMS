@@ -26,7 +26,7 @@ namespace VolleyMS.BusinessLogic.Features.Contracts.Get
                 return Result.Failure<ContractDto>(DomainErrors.User.UserNotFound);
 
             // Get the contract
-            var contract = await _contractRepository.GetByIdAsync(request.contractId);
+            var contract = await _contractRepository.GetByIdWithDetailsAsync(request.contractId, cancellationToken);
             if(contract is null)
                 return Result.Failure<ContractDto>(DomainErrors.Contract.ContractNotFound);
 
