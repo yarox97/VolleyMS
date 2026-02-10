@@ -59,16 +59,15 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
 
         public bool BeAValidNameOrSurname(string name)
         {
-            bool found = false;
             var trimmedName = name.Trim();
 
             foreach(char character in name)
             {
                 if(char.IsDigit(character)) 
-                    { found = true; break; }
+                    { return false; }
             }
 
-            return found;
+            return true;
         }
     }
 }

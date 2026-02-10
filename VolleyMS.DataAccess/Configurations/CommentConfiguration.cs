@@ -14,24 +14,15 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedNever();
 
-            // Текст комментария
             builder.Property(c => c.Text)
-                .HasMaxLength(ValidationConfig.MAX_COMMENT_TEXT) // 250 может быть маловато, поставил 500
+                .HasMaxLength(ValidationConfig.MAX_COMMENT_TEXT)
                 .IsRequired();
 
-            // --- Связи ---
-
-            // 1. Связь с Задачей
-            // Если задачу удалили, комментарии к ней не имеют смысла -> удаляем (Cascade)
-            builder.HasOne(c => c.Task)
-                .WithMany(t => t.Comments)
-                .HasForeignKey(c => c.TaskId)
+            builder.HasOne<UserTask>()
+                .WithMany(ut => ut.Comments) 
+                .HasForeignKey("UserTaskId")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // 2. Связь с Отправителем
-            // Если удаляют юзера, мы НЕ хотим, чтобы пропали комментарии в задачах.
-            // Поэтому Restrict: БД не даст удалить юзера, пока у него есть комментарии.
-            // (Либо можно сделать SetNull, если SenderId будет nullable)
             builder.HasOne(c => c.Sender)
                 .WithMany(u => u.SentComments)
                 .HasForeignKey(c => c.SenderId)

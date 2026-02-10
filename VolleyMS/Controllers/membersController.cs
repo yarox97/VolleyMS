@@ -10,12 +10,11 @@ namespace VolleyMS.Web.Controllers
 {
     [Route("api/{clubId}/[controller]")]
     [ApiController]
-    public class membersController : ControllerBase
+    public class membersController : ApiController
     {
-        private readonly ISender Sender;
         public membersController(ISender sender)
+            : base(sender)
         {
-            Sender = sender;
         }
 
         [HttpGet]

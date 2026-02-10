@@ -5,19 +5,18 @@ using VolleyMS.BusinessLogic.Features.Users.ChangeEmail;
 using VolleyMS.BusinessLogic.Features.Users.Modify;
 using VolleyMS.BusinessLogic.Features.Users.Get;
 using VolleyMS.Extensions;
+using VolleyMS.Web.Controllers;
 
 
 namespace VolleyMS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class userController : ControllerBase
+    public class userController : ApiController
     {
-        private readonly ISender Sender;
-
         public userController(ISender sender)
+            : base(sender)
         {
-            Sender = sender;
         }
 
         [HttpGet("{userName}")]
@@ -48,18 +47,18 @@ namespace VolleyMS.Controllers
         {
             var result = await Sender.Send(command);
 
-            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+            return result.IsSuccess ? Ok() : HandleFailure(result);
         }
 
         [HttpPut("modify-email")]
         [Authorize]
-        public async Task<IActionResult> ModifyPrimaryData([FromBody] string? Email)
+        public async Task<IActionResult> ModifyEmail([FromBody] string? Email)
         {
             var command = new ChangeEmailCommand(User.GetUserId(), Email);
 
             var result = await Sender.Send(command);
 
-            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+            return result.IsSuccess ? Ok() : HandleFailure(result);
         }
     }
 }

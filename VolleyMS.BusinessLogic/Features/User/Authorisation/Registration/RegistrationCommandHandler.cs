@@ -13,11 +13,10 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
         private readonly IUnitOfWork _unitOfWork;
         private readonly RegistrationValidator _validator;
         private readonly IPasswordHasher<User> _passwordHasher;
-        public RegistrationCommandHandler(IUserRepository repository, IUnitOfWork unitOfWork, RegistrationValidator validator, IPasswordHasher<User> passwordHasher)
+        public RegistrationCommandHandler(IUserRepository repository, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher)
         {
             _userRepository = repository;
             _unitOfWork = unitOfWork;
-            _validator = validator;
             _passwordHasher = passwordHasher;
         }
         public async Task<Result<Guid>> Handle(RegistrationCommand command, CancellationToken cancellation)
@@ -27,17 +26,6 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
 
             string hashedPassword = _passwordHasher.HashPassword(null, command.password);
 
-            // Validate input data 
-            var validationResult = await _validator.ValidateAsync(command);
-
-            if (!validationResult.IsValid)
-            {
-                var dictErrros = validationResult.ToDictionary();
-                if (dictErrros != null)
-                {
-                    //Return json error list 
-                }
-            }
             // Create user
             var userResult = User.Create(
                 Guid.NewGuid(),

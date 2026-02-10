@@ -25,13 +25,8 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasMaxLength(10000)
                 .IsRequired(false);
 
-            // --- 1. Конвертация Enum-ов ---
+            // Enum-ы самой задачи
             builder.Property(t => t.TaskType)
-                .HasConversion<string>()
-                .IsRequired();
-
-            // Внимание: TaskStatus системный enum? Используйте свой из Core.Shared
-            builder.Property(t => t.TaskStatus)
                 .HasConversion<string>()
                 .IsRequired();
 
@@ -39,54 +34,36 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasConversion<string>()
                 .IsRequired();
 
-            // --- 2. Конвертация списка дней недели (List<DayOfWeek>) ---
-            // Храним как строку: "Monday,Friday"
+            // --- MAPPING VALUE OBJECT (TaskSchedule) ---
+            builder.OwnsOne(t => t.TaskSchedule, sb =>
+            {
+                sb.Property(s => s.StartDate).HasColumnName("StartDate").IsRequired();
+                sb.Property(s => s.EndDate).HasColumnName("EndDate");
+                sb.Property(s => s.StartTime).HasColumnName("StartTime").IsRequired();
+                sb.Property(s => s.EndTime).HasColumnName("EndTime").IsRequired();
 
-            var daysConverter = new ValueConverter<List<DayOfWeek>, string>(
-                v => string.Join(",", v),
-                v => string.IsNullOrEmpty(v)
-                    ? new List<DayOfWeek>()
-                    : v.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                       .Select(d => Enum.Parse<DayOfWeek>(d))
-                       .ToList()
-            );
+                sb.Property(s => s.Days)
+                  .HasColumnName("DaysOfWeek")
+                  .IsRequired();
+            });
 
-            var daysComparer = new ValueComparer<List<DayOfWeek>>(
-                (c1, c2) => c1!.SequenceEqual(c2!),
-                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                c => c.ToList());
-
-            builder.Property(t => t.DayOfWeek)
-                .HasConversion(daysConverter)
-                .Metadata.SetValueComparer(daysComparer);
-
-
-            // --- 3. Связи ---
-
-            // Клуб (Обязательная связь)
+            // club
             builder.HasOne(t => t.Club)
                 .WithMany(c => c.Tasks)
                 .HasForeignKey(t => t.ClubId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Отправитель (Автор задачи)
+            // sender
             builder.HasOne(t => t.Sender)
                 .WithMany(u => u.SentTasks)
                 .HasForeignKey(t => t.SenderId)
-                .OnDelete(DeleteBehavior.Restrict); // Не удаляем задачу, если удален автор (история важна)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            // Получатели (Many-to-Many)
-            // Создаем таблицу связей TaskReceivers
+            // receivers
             builder.HasMany(t => t.Receivers)
-                .WithMany(u => u.ReceivedTasks)
-                .UsingEntity(j => j.ToTable("TaskReceivers"));
-
-            // Комментарии
-            builder.HasMany(t => t.Comments)
-                .WithOne(c => c.Task)
-                .HasForeignKey(c => c.TaskId)
+                .WithOne(ut => ut.Task)
+                .HasForeignKey(ut => ut.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

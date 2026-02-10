@@ -9,28 +9,29 @@ namespace VolleyMS.Core.Models
         private Comment() : base(Guid.Empty)
         {
         }
-        private Comment(Guid id, string text, Guid taskId, Guid senderId)
+        private Comment(Guid id, string text, UserTask userTask, Guid senderId)
             : base(id)
         {
             Text = text;
-            TaskId = taskId;
+            UserTask = userTask;
+            UserTaskId = userTask.Id;
             SenderId = senderId;
         }
         public string Text { get; private set; }
-        public Guid TaskId { get; private set; }
-        public Task Task { get; private set; }
+        public UserTask UserTask { get; private set; }
+        public Guid UserTaskId { get; private set; }    
         public Guid SenderId { get; private set; }
         public User Sender { get; private set; }
 
-        public static Result<Comment> Create(string text, Guid taskId, Guid senderId)
+        public static Result<Comment> Create(string text, UserTask userTask, Guid senderId)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return Result.Failure<Comment>(DomainErrors.Comment.TextEmpty);
 
-            if (taskId == Guid.Empty || senderId == Guid.Empty)
+            if (userTask == null || senderId == Guid.Empty)
                 return Result.Failure<Comment>(Error.NullValue);
 
-            var comment = new Comment(Guid.NewGuid(), text, taskId, senderId);
+            var comment = new Comment(Guid.NewGuid(), text, userTask, senderId);
 
             return Result.Success(comment);
         }

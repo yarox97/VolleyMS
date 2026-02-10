@@ -26,16 +26,15 @@ namespace VolleyMS.BusinessLogic.Features.Users.Modify
         {
             if (name == null) { return true; }
 
-            bool found = false;
             var trimmedName = name.Trim();
 
             foreach (char character in name)
             {
                 if (char.IsDigit(character))
-                { found = true; break; }
+                { return false; }
             }
 
-            return found;
+            return true;
         }
     }
 }
