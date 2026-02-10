@@ -194,6 +194,8 @@ namespace VolleyMS.Core.Errors
             public static readonly Error InvalidTimes = new(
                 "Task.InvalidTimes",
                 "Start time cannot be later than end time.");
+
+            public static Error NotFound { get; internal set; }
         }
 
         public static class Comment

@@ -8,6 +8,7 @@ namespace VolleyMS.Core.Models
     {
         private readonly List<User> _receivers = new();
         private readonly List<Comment> _comments = new();
+        private readonly List<TaskAttachment> _attachments = new();
 
         private Task() : base(Guid.Empty)
         {
@@ -26,6 +27,7 @@ namespace VolleyMS.Core.Models
             TimeSpan endTime,
             string title,
             string description,
+            string? payload,
             Guid clubId,
             Guid senderId)
             : base(id)
@@ -40,6 +42,7 @@ namespace VolleyMS.Core.Models
             EndTime = endTime;
             Title = title;
             Description = description;
+            Payload = payload;
             ClubId = clubId;
             SenderId = senderId;
         }
@@ -57,7 +60,7 @@ namespace VolleyMS.Core.Models
 
         public string Title { get; private set; }
         public string Description { get; private set; }
-
+        public string? Payload { get; private set; } // Json payload to a specific type of task.
         public Guid SenderId { get; private set; }
         public User Sender { get; private set; }
 
@@ -66,6 +69,7 @@ namespace VolleyMS.Core.Models
 
         public IReadOnlyCollection<User> Receivers => _receivers;
         public IReadOnlyCollection<Comment> Comments => _comments;
+        public IReadOnlyCollection<TaskAttachment> Attachments => _attachments;
 
         public static Result<Task> Create(
             TaskType taskType,
@@ -77,6 +81,7 @@ namespace VolleyMS.Core.Models
             TimeSpan endTime,
             string title,
             string description,
+            string? payload,
             Guid clubId,
             Guid senderId)
         {
@@ -107,6 +112,7 @@ namespace VolleyMS.Core.Models
                 endTime,
                 title,
                 description,
+                payload,
                 clubId,
                 senderId
             );

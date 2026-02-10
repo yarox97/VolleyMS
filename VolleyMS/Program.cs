@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ConvertDomainEventToOutboxMessageInterceptor>();
 
-builder.Services.AddDataBase();
+builder.Services.AddDataBase(builder.Configuration);
 
 builder.Services.AddQuartz(configure =>
 {
