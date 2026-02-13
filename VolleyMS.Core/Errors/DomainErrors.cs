@@ -5,6 +5,13 @@ namespace VolleyMS.Core.Errors
 {
     public static class DomainErrors
     {
+        public static class UserTask
+        {
+            public static readonly Error UserTaskNotFound = new(
+                "UserTask.UserTaskNotFound",
+                "User task not found.");
+        }
+
         public static class Attachment 
         {
             public static readonly Error TooManyFiles = new(

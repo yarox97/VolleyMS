@@ -72,7 +72,9 @@ builder.Services.AddScoped<IUserNotificationRepository, UserNotificationReposito
 builder.Services.AddScoped<IJoinClubRepository, JoinClubRepository>();
 builder.Services.AddScoped<IUserClubRepository, UserClubRepository>();
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddScoped<IFileService, CloudinaryService>();
 
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(RegistrationCommandHandler).Assembly));

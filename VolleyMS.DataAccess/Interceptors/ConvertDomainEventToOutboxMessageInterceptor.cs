@@ -37,6 +37,7 @@ namespace VolleyMS.DataAccess.Interceptors
                     Content = JsonConvert.SerializeObject(domainEvent, new JsonSerializerSettings
                     {
                         TypeNameHandling = TypeNameHandling.All,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     })
                 })
                 .ToList();

@@ -7,8 +7,8 @@ namespace VolleyMS.Core.Models
 {
     public class Task : BaseEntity
     {
-        private readonly List<Guid> _receivers = new();
-        private readonly List<Comment> _comments = new();
+        private readonly List<UserTask> _receivers = new();
+        private readonly List<UserTaskResponse> _responses = new();
         private readonly List<TaskAttachment> _attachments = new();
 
         private Task() : base(Guid.Empty)
@@ -51,8 +51,8 @@ namespace VolleyMS.Core.Models
         public Guid ClubId { get; private set; }
         public Club Club { get; private set; }
 
-        public IReadOnlyCollection<Guid> Receivers => _receivers;
-        public IReadOnlyCollection<Comment> Comments => _comments;
+        public IReadOnlyCollection<UserTask> Receivers => _receivers;
+        public IReadOnlyCollection<UserTaskResponse> Responses => _responses;
         public IReadOnlyCollection<TaskAttachment> Attachments => _attachments;
 
         public static Result<Task> Create(
@@ -110,14 +110,14 @@ namespace VolleyMS.Core.Models
             return Result.Success();
         }
 
-        public Result AssignTask(IEnumerable<Guid> Receivers)
+        public Result AssignTask(IEnumerable<User> Receivers)
         {
             if (Receivers == null || !Receivers.Any())
                 return Result.Failure(DomainErrors.Task.NoReceivers);
 
             foreach(var Receiver in Receivers)
             {
-                var assignTaskResult = UserTask.Create(Receiver, this.Id);
+                var assignTaskResult = UserTask.Create(Receiver, this);
 
                 if (assignTaskResult.IsFailure)
                     return Result.Failure(assignTaskResult.Error);

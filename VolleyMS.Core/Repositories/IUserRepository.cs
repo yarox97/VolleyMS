@@ -8,5 +8,6 @@ namespace VolleyMS.Core.Repositories
         public Task<bool> IsEmailTaken(string email);
         public Task<User?> GetByUserNameWithClubsAsync(string userName);
         public Task<User?> GetByIdWithClubsAsync(Guid userId);
+        Task<List<User>> GetUsersByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
     }
 }

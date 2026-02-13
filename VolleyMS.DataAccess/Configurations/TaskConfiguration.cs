@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using VolleyMS.Core.Models;
 using VolleyMS.Core.Services;
 using Task = VolleyMS.Core.Models.Task;
 
@@ -63,6 +60,12 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasMany(t => t.Receivers)
                 .WithOne(ut => ut.Task)
                 .HasForeignKey(ut => ut.TaskId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // attachments
+            builder.HasMany(t => t.Attachments)
+                .WithOne(ta => ta.Task)
+                .HasForeignKey(ta => ta.TaskId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

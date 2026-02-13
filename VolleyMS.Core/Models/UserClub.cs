@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.Text.Json.Serialization;
 using VolleyMS.Core.Common;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Shared;
@@ -19,6 +20,7 @@ namespace VolleyMS.Core.Models
             ClubMemberRole = clubMemberRole;
             ClubId = club.Id;
         }
+        [JsonIgnore]
         public User User { get; private set; }
         public Guid UserId { get; private set; }
         public Club Club { get; private set; }

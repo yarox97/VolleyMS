@@ -9,7 +9,7 @@ namespace VolleyMS.Core.Models
         public DateTime StartDate { get; }
         public DateTime? EndDate { get; }
         public TimeSpan StartTime { get; }
-        public TimeSpan EndTime { get; }
+        public TimeSpan? EndTime { get; }
 
         public WeekDays Days { get; }
 
@@ -18,7 +18,7 @@ namespace VolleyMS.Core.Models
             DateTime? endDate,
             WeekDays days,
             TimeSpan startTime,
-            TimeSpan endTime)
+            TimeSpan? endTime)
         {
             StartDate = startDate;
             EndDate = endDate;
@@ -27,12 +27,12 @@ namespace VolleyMS.Core.Models
             EndTime = endTime;
         }
 
-        public static Result<TaskSchedule> Create(
+        public static Result<TaskSchedule> CreateReccuring(
             DateTime startDate,
             DateTime? endDate,
             IEnumerable<DayOfWeek> daysOfWeek,
             TimeSpan startTime,
-            TimeSpan endTime)
+            TimeSpan? endTime)
         {
             if (endDate.HasValue && startDate > endDate.Value)
                 return Result.Failure<TaskSchedule>(DomainErrors.Task.InvalidDates);
@@ -51,9 +51,26 @@ namespace VolleyMS.Core.Models
             return Result.Success(new TaskSchedule(startDate, endDate, weekDaysMask, startTime, endTime));
         }
 
+        public static Result<TaskSchedule> CreateOneTime(
+            DateTime date,
+            TimeSpan startTime,
+            TimeSpan? endTime)
+        {
+            if (date.Date < DateTime.UtcNow.Date)
+                return Result.Failure<TaskSchedule>(DomainErrors.Task.InvalidDates);
+
+            if (startTime > endTime)
+                return Result.Failure<TaskSchedule>(DomainErrors.Task.InvalidTimes);
+
+            var dayOfWeek = MapSystemToWeekDays(date.DayOfWeek);
+
+            return new TaskSchedule(date.Date, date.Date, dayOfWeek, startTime, endTime);
+        }
+
         public bool IsActiveOn(DateTime date)
         {
             if (date.Date < StartDate.Date) return false;
+
             if (EndDate.HasValue && date.Date > EndDate.Value.Date) return false;
 
             return Contains(date.DayOfWeek);
@@ -63,6 +80,11 @@ namespace VolleyMS.Core.Models
         {
             var mask = MapSystemToWeekDays(systemDay);
             return (Days & mask) != 0;
+        }
+
+        public bool IsOneTime()
+        {
+            return StartDate.Date == EndDate?.Date;
         }
 
         public List<DayOfWeek> ToSystemDayOfWeekList()

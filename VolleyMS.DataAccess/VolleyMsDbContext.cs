@@ -18,6 +18,10 @@ namespace VolleyMS.DataAccess
         public DbSet<UserClub> UserClubs { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<Task> Tasks { get; set; }
+        public DbSet<TaskAttachment> TaskAttachments { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
+        public DbSet<UserTaskResponse> UserTaskResponses { get; set; }
+        public DbSet<UserTaskResponseAttachment> UserTaskResponseAttachments { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }

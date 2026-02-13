@@ -35,8 +35,13 @@ namespace VolleyMS.Core.Requests
 
         // BASIC TASK INFO
 
-        // Possible payload info
+        // Possible payload info |
+        //                       V
 
+        // Survey
+        public string? SurveyURL { get; set; } // For survey tasks
+
+        // 
 
     }
 }

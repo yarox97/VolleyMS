@@ -4,9 +4,14 @@ using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Models
 {
-    public class TaskAttachment
+    public class TaskAttachment : BaseEntity
     {
-        private TaskAttachment(MediaFile MediaFile, Task Task)
+        private TaskAttachment() 
+            : base(Guid.Empty)
+        {
+        }
+        private TaskAttachment(Guid id, MediaFile MediaFile, Task Task)
+            : base(id)
         {
             this.MediaFile = MediaFile;
             TaskId = Task.Id;
@@ -23,7 +28,7 @@ namespace VolleyMS.Core.Models
             if (Task == null) return Result.Failure<TaskAttachment>(
                 DomainErrors.Task.TaskNotFound);
 
-            return Result.Success(new TaskAttachment(MediaFile, Task));
+            return Result.Success(new TaskAttachment(Guid.NewGuid(), MediaFile, Task));
         }
 
         public Guid TaskId { get; private init; }

@@ -1,4 +1,5 @@
-﻿using VolleyMS.Core.Common;
+﻿using System.Text.Json.Serialization;
+using VolleyMS.Core.Common;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Shared;
 
@@ -22,17 +23,19 @@ namespace VolleyMS.Core.Models
         public TaskStatus Status { get; private set; }
         public DateTime? CompletedAt { get; private set; }
 
-        public static Result<Guid> Create(Guid userId, Guid taskId)
+        public static Result<UserTask> Create(User user, Task task)
         {
             var userTask = new UserTask
             {
                 Id = Guid.NewGuid(),
-                TaskId = taskId,
-                UserId = userId,
+                Task = task,
+                TaskId = task.Id,
+                User = user,
+                UserId = user.Id,
                 Status = TaskStatus.Uncompleted,
             };
 
-            return Result.Success(userTask.Id);
+            return Result.Success(userTask);
         }
         public Result Complete()
         {
@@ -48,7 +51,7 @@ namespace VolleyMS.Core.Models
                 return Result.Failure(DomainErrors.Task.MaxProofsAllowed);
 
 
-            var userTaskResponseResult = UserTaskResponse.Create(attachments, this.Task, this.User, text);
+            var userTaskResponseResult = UserTaskResponse.Create(this, attachments, text);
 
             if (userTaskResponseResult.IsFailure)
                 return Result.Failure(userTaskResponseResult.Error);

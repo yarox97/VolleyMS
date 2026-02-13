@@ -10,6 +10,7 @@ namespace VolleyMS.Core.Models
         private readonly List<Contract> _contracts = new();
         private readonly List<Task> _sentTasks = new();
         private readonly List<UserTask> _receivedTasks = new();
+        private readonly List<UserTaskResponse> _taskResponses = new();
         private readonly List<Comment> _sentComments = new();
         private readonly List<Notification> _sentNotifications = new();
         private readonly List<UserNotification> _receivedNotifications = new();
@@ -46,6 +47,7 @@ namespace VolleyMS.Core.Models
         public IReadOnlyCollection<Contract> Contracts => _contracts;
         public IReadOnlyCollection<Task> SentTasks => _sentTasks;
         public IReadOnlyCollection<UserTask> ReceivedTasks => _receivedTasks;
+        public IReadOnlyCollection<UserTaskResponse> TaskResponses => _taskResponses;
         public IReadOnlyCollection<Comment> SentComments => _sentComments;
         public IReadOnlyCollection<Notification> SentNotifications => _sentNotifications;
         public IReadOnlyCollection<UserNotification> ReceivedNotifications => _receivedNotifications;

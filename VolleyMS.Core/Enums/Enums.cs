@@ -4,18 +4,30 @@
     User
 }
 
-public enum 
-    TaskType
+public enum TaskType
 {
+    Informative,
     Attendance,
-    FileConfirmation,
-    MarkAsRead
+    GamePlan,
+    Survey
 }
+
+public enum  TaskPriority
+{
+    Lowest,
+    Low,
+    Middle,
+    High,
+    Highest
+}
+
 public enum TaskStatus
 {
     Completed,
     Uncompleted,
+    Overdued,
     Returned,
+    Unconfirmed,
     Confirmed
 }
 
@@ -89,11 +101,3 @@ public enum JoinClubRequestStatus
     Rejected
 }
 
-public enum ProofType
-{
-    None = 0,
-    Image = 1,
-    Video = 2,
-    Document = 3,
-    ExternalLink = 4 
-}

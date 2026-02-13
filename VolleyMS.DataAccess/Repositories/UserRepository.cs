@@ -37,5 +37,19 @@ namespace VolleyMS.DataAccess.Repositories
             return await _volleyMsDbContext.Users
                 .AnyAsync(u => u.Email.ToLower() == email.ToLower());
         }
+
+        public async Task<List<User>> GetUsersByIdsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default)
+        {
+            if (userIds == null || !userIds.Any())
+            {
+                return new List<User>();
+            }
+
+            var distinctIds = userIds.Distinct().ToList();
+
+            return await _volleyMsDbContext.Users
+                .Where(user => distinctIds.Contains(user.Id))
+                .ToListAsync(cancellationToken);
+        }
     }
 }

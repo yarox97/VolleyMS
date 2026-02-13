@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VolleyMS.Core.Models;
-using Task = VolleyMS.Core.Models.Task;
 
 namespace VolleyMS.DataAccess.Configurations
 {
@@ -20,14 +19,29 @@ namespace VolleyMS.DataAccess.Configurations
 
             builder.Property(ut => ut.CompletedAt);
 
-            builder.HasOne<User>()
+            // user
+            builder.HasOne(ut => ut.User)
                 .WithMany(u => u.ReceivedTasks)
                 .HasForeignKey(ut => ut.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<Task>()
-                .WithMany(t => t.Receivers)
-                .HasForeignKey(ut => ut.TaskId);
+            // Task 
+            builder.HasOne(ut => ut.Task)
+                .WithMany(ut => ut.Receivers)
+                .HasForeignKey(ut => ut.TaskId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // comments
+            builder.HasMany(ut => ut.Comments)
+                .WithOne(c => c.UserTask)
+                .HasForeignKey(c => c.UserTaskId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // responses
+            builder.HasMany(ut => ut.TaskResponses)
+                .WithOne()
+                .HasForeignKey(utr => utr.UserTaskId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
