@@ -1,12 +1,17 @@
-﻿namespace VolleyMS.Core.Requests
+﻿using Microsoft.AspNetCore.Http;
+
+namespace VolleyMS.Core.Requests
 {
     public class TaskRequest
     {
         // BASIC TASK INFO
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public required string Title { get; set; } 
+        public required string Description { get; set; } =  string.Empty;
         public TaskType TaskType { get; set; }
-       
+
+        // Receivers
+        public IEnumerable<Guid> Receivers { get; set; } = new List<Guid>();
+
         // Date 
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
@@ -17,12 +22,14 @@
         // Penalty type to fine or to bonus players. 
         public PenaltyType penaltyType { get; set; } = PenaltyType.None; // Not obligatory, default value can be set to None
 
+        // Files (optional)
+        public ICollection<IFormFile>? Files { get; set; }
+
         // Club which task is pinned to
         public Guid ClubId { get; set; }
         public string ClubName { get; set; }
 
         // Sender
-        public Guid SenderId { get; set; }
         public string SenderName { get; set; }
         public string SenderSurname { get; set; }
 

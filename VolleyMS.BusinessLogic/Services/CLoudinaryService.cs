@@ -44,5 +44,10 @@ namespace VolleyMS.BusinessLogic.Services
         {
             // Логика извлечения PublicId из URL и удаления
         }
+
+        public static string GetPublicIdFromUrl(string url)
+        {
+            return Path.GetFileNameWithoutExtension(url);
+        }
     }
 }

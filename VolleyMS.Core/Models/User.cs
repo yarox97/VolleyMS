@@ -1,7 +1,6 @@
 ﻿using VolleyMS.Core.Common;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Shared;
-using static VolleyMS.Core.Errors.DomainErrors;
 
 namespace VolleyMS.Core.Models
 {

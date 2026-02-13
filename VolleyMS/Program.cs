@@ -24,7 +24,7 @@ builder.Services.AddSingleton<ConvertDomainEventToOutboxMessageInterceptor>();
 
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
 
-builder.Services.AddDataBase();
+builder.Services.AddDataBase(builder.Configuration);
 
 builder.Services.AddQuartz(configure =>
 {

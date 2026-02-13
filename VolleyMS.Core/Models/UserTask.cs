@@ -6,34 +6,33 @@ namespace VolleyMS.Core.Models
 {
     public class UserTask : BaseEntity
     {
-        private readonly List<TaskProof> _proofs = new();
+        private readonly List<UserTaskResponse> _taskResponses = new();
         private readonly List<Comment> _comments = new();
 
         public UserTask() : base(Guid.Empty)
         {
         }
 
-        public IReadOnlyCollection<TaskProof> Proofs => _proofs.AsReadOnly();
+        public IReadOnlyCollection<UserTaskResponse> TaskResponses => _taskResponses.AsReadOnly();
         public IReadOnlyCollection<Comment> Comments => _comments.AsReadOnly();
         public Guid UserId { get; private set; }
         public User User { get; private set; }
         public Guid TaskId { get; private set; }
         public Task Task { get; private set; }
         public TaskStatus Status { get; private set; }
-        public string? ProofUrl { get; private set; }
         public DateTime? CompletedAt { get; private set; }
 
-        public static Result<UserTask> Create(User user, Task task)
+        public static Result<Guid> Create(Guid userId, Guid taskId)
         {
-            return new UserTask
+            var userTask = new UserTask
             {
                 Id = Guid.NewGuid(),
-                Task = task,
-                TaskId = task.Id,
-                User = user,
-                UserId = user.Id,
+                TaskId = taskId,
+                UserId = userId,
                 Status = TaskStatus.Uncompleted,
             };
+
+            return Result.Success(userTask.Id);
         }
         public Result Complete()
         {
@@ -43,28 +42,29 @@ namespace VolleyMS.Core.Models
             return Result.Success();
         }
 
-        public Result AddProof(string name, string url, ProofType type)
+        public Result AddUserResponse(IList<UserTaskResponseAttachment>? attachments, string? text)
         {
-            if (_proofs.Count >= 5)
+            if (attachments.Count >= 5)
                 return Result.Failure(DomainErrors.Task.MaxProofsAllowed);
 
-            var proofResult = TaskProof.Create(this.Id, name, url, type);
 
-            if (proofResult.IsFailure)
-                return Result.Failure(proofResult.Error);
+            var userTaskResponseResult = UserTaskResponse.Create(attachments, this.Task, this.User, text);
 
-            _proofs.Add(proofResult.Value);
+            if (userTaskResponseResult.IsFailure)
+                return Result.Failure(userTaskResponseResult.Error);
+
+            _taskResponses.Add(userTaskResponseResult.Value);
             return Result.Success();
         }
 
 
         public Result RemoveProof(Guid proofId)
         {
-            var proof = _proofs.FirstOrDefault(p => p.Id == proofId);
+            var proof = _taskResponses.FirstOrDefault(p => p.Id == proofId);
             if (proof == null)
                 return Result.Failure(DomainErrors.Task.ProofNotFound);
 
-            _proofs.Remove(proof);
+            _taskResponses.Remove(proof);
             return Result.Success();
         }
     }

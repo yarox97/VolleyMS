@@ -7,7 +7,7 @@ namespace VolleyMS.Core.Models
 {
     public class Task : BaseEntity
     {
-        private readonly List<UserTask> _receivers = new();
+        private readonly List<Guid> _receivers = new();
         private readonly List<Comment> _comments = new();
         private readonly List<TaskAttachment> _attachments = new();
 
@@ -18,18 +18,24 @@ namespace VolleyMS.Core.Models
             Guid id,
             string title,
             string description,
+            TaskType taskType,
+            PenaltyType penaltyType,
+            TaskSchedule taskSchedule,
             string? payload,
-            Guid clubId,
-            Guid senderId)
+            Club club,
+            User sender)
             : base(id)
         {
             TaskType = taskType;
             PenaltyType = penaltyType;
+            TaskSchedule = taskSchedule;
             Title = title;
             Description = description;
             Payload = payload;
-            ClubId = clubId;
-            SenderId = senderId;
+            Club = club;
+            ClubId = club.Id;
+            Sender = sender;
+            SenderId = sender.Id;
         }
 
         public TaskType TaskType { get; private set; }
@@ -45,7 +51,7 @@ namespace VolleyMS.Core.Models
         public Guid ClubId { get; private set; }
         public Club Club { get; private set; }
 
-        public IReadOnlyCollection<UserTask> Receivers => _receivers;
+        public IReadOnlyCollection<Guid> Receivers => _receivers;
         public IReadOnlyCollection<Comment> Comments => _comments;
         public IReadOnlyCollection<TaskAttachment> Attachments => _attachments;
 
@@ -55,53 +61,63 @@ namespace VolleyMS.Core.Models
             TaskSchedule taskSchedule,
             TaskType taskType,
             PenaltyType penaltyType,
-            DateTime startDate,
-            DateTime? endDate,
-            List<DayOfWeek> dayOfWeek,
-            TimeSpan startTime,
-            TimeSpan endTime,
-            string title,
-            string description,
             string? payload,
-            Guid clubId,
-            Guid senderId)
+            Club club,
+            User sender)
         {
             if (string.IsNullOrWhiteSpace(title))
                 return Result.Failure<Task>(DomainErrors.Task.TitleEmpty);
 
-            if (clubId == Guid.Empty || senderId == Guid.Empty)
-                return Result.Failure<Task>(Error.NullValue);
+            if(club is null)
+                return Result.Failure<Task>(DomainErrors.Club.ClubNotFound);
+
+            if(sender is null)
+                return Result.Failure<Task>(DomainErrors.User.UserNotFound);
 
             var task = new Task(
                 Guid.NewGuid(),
                 title,
                 description,
-                taskSchedule,
                 taskType,
                 penaltyType,
-                startDate,
-                endDate,
-                dayOfWeek ?? new List<DayOfWeek>(),
-                startTime,
-                endTime,
-                title,
-                description,
+                taskSchedule,
                 payload,
-                clubId,
-                senderId
+                club,
+                sender
             );
 
             return Result.Success(task);
         }
 
-        public Result AssignTask(IEnumerable<User> Receivers)
+        public Result AddAttachments(ICollection<MediaFile> mediaFiles)
+        {
+            var validMediaFiles = new List<MediaFile>();
+            foreach (MediaFile mediaFile in mediaFiles)
+            {
+                if (mediaFile is not null)
+                    validMediaFiles.Add(mediaFile);
+            }
+
+            foreach (MediaFile mediaFile in validMediaFiles)
+            {
+                var attachment = TaskAttachment.Create(mediaFile, this);
+                if (attachment.IsFailure)
+                    continue; // LOGG this but let the other files to be.
+                    //return Result.Failure(attachment.Error);
+
+                _attachments.Add(attachment.Value);
+            }
+            return Result.Success();
+        }
+
+        public Result AssignTask(IEnumerable<Guid> Receivers)
         {
             if (Receivers == null || !Receivers.Any())
                 return Result.Failure(DomainErrors.Task.NoReceivers);
 
-            foreach(User Receiver in Receivers)
+            foreach(var Receiver in Receivers)
             {
-                var assignTaskResult = UserTask.Create(Receiver, this);
+                var assignTaskResult = UserTask.Create(Receiver, this.Id);
 
                 if (assignTaskResult.IsFailure)
                     return Result.Failure(assignTaskResult.Error);

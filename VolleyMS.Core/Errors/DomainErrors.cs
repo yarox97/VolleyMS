@@ -1,9 +1,18 @@
-﻿using VolleyMS.Core.Shared;
+﻿using VolleyMS.Core.Services;
+using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Errors
 {
     public static class DomainErrors
     {
+        public static class Attachment 
+        {
+            public static readonly Error TooManyFiles = new(
+                "Attachment.TooManyFiles",
+                $"Cannot add more than {ValidationConfig.MAX_TASK_FILES_ALLOWED} files.");
+
+        }
+
         public static class User
         {
             public static readonly Error UserNameEmpty = new(

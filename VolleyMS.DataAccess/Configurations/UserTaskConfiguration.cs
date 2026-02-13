@@ -28,12 +28,6 @@ namespace VolleyMS.DataAccess.Configurations
             builder.HasOne<Task>()
                 .WithMany(t => t.Receivers)
                 .HasForeignKey(ut => ut.TaskId);
-
-            // proofgs
-            builder.HasMany(ut => ut.Proofs)
-                .WithOne()
-                .HasForeignKey(p => p.UserTaskId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -15,6 +15,7 @@
 
         // Task
         public static int MAX_TASK_TITLE = 100;
+        public static int MAX_TASK_FILES_ALLOWED = 5;
 
         // Comment
         public static int MAX_COMMENT_TEXT = 1024;

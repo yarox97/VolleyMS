@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.Notifications.Get;
 using VolleyMS.BusinessLogic.Features.Notifications.Check;
-using VolleyMS.Core.Shared;
 using VolleyMS.Extensions;
 using VolleyMS.BusinessLogic.Features.Notifications.Delete;
 using VolleyMS.Web.Controllers;
+using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Controllers
 {
