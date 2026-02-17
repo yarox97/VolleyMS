@@ -105,6 +105,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.Create
                 description: taskRequest.Description,
                 taskSchedule: taskSchedule,
                 taskType: taskRequest.TaskType,
+                taskPriority: taskRequest.TaskPriority,
                 penaltyType: taskRequest.penaltyType,
                 payload: payload,
                 club: club,

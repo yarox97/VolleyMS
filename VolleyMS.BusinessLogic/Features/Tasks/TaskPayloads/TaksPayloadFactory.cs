@@ -7,17 +7,53 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.TaskPayloads
 {
     public static class TaksPayloadFactory
     {
-        public static Result<string>? CreatePayLoad(TaskRequest taskRequest, Guid creatorId)
+        public static Result<string>? CreatePayLoad(TaskRequest req, Guid creatorId)
         {
-            return taskRequest.TaskType switch
+            try
             {
-                TaskType.Survey => JsonSerializer.Serialize(new TaskTypeSurveyPayload
+                object? payloadData = req.TaskType switch
                 {
-                    surveyUrl = taskRequest.SurveyURL ?? throw new ArgumentException("SurveyURL is required for Survey tasks")
-                }),
+                    // Info
+                    TaskType.Info => new TaskTypeInfoPayload
+                    {
+                        ConfirmationButtonText = req.ConfirmationButtonText ?? "Mark as read"
+                    },
 
-                _ => null
-            };
+                    // FileConfirmation
+                    TaskType.DocumentSign => new TaskTypeDocumentPayload
+                    {
+                        ConfirmationButtonText = req.ConfirmationButtonText ?? "Confirm",
+                    },
+
+                    // Match
+                    TaskType.Match => new TaskTypeMatchPayload
+                    {
+                        OpponentName = req.OpponentName ?? "TBD",
+                        IsHomeGame = req.IsHomeGame ?? false,
+                        HallAddress = req.HallAddress ?? "Addres was not given",
+
+                        GatheringTime = req.GatheringTime ?? req.StartTime.Subtract(TimeSpan.FromHours(1)).ToString(@"hh\:mm"),
+
+                        DepartureTime = (!req.IsHomeGame.GetValueOrDefault()) ? req.DepartureTime : null,
+                        GoogleMapsLink = req.GoogleMapsLink
+                    },
+
+                    TaskType.Survey => new TaskTypeSurveyPayload
+                    { 
+                        surveyUrl = req.SurveyURL ?? throw new Exception("Survey URL is required for survey tasks.")
+                    },
+
+                    _ => null
+                };
+
+                if (payloadData == null) return Result.Success<string>(null!);
+
+                return Result.Success(JsonSerializer.Serialize(payloadData));
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure<string>(new Error("PayloadFactory.Error", ex.Message));
+            }
         }
     }
 }

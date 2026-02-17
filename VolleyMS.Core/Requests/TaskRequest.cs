@@ -8,6 +8,7 @@ namespace VolleyMS.Core.Requests
         public required string Title { get; set; } 
         public required string Description { get; set; } =  string.Empty;
         public TaskType TaskType { get; set; }
+        public TaskPriority TaskPriority { get; set; }
 
         // Receivers
         public IEnumerable<Guid> Receivers { get; set; } = new List<Guid>();
@@ -35,13 +36,24 @@ namespace VolleyMS.Core.Requests
 
         // BASIC TASK INFO
 
+
+
         // Possible payload info |
         //                       V
+        public string? ConfirmationButtonText { get; set; }
+
+        // Match
+        public string? OpponentName { get; set; } 
+        public bool? IsHomeGame { get; set; } 
+        public string? HallAddress { get; set; } 
+        public string? GatheringTime { get; set; } 
+        public string? DepartureTime { get; set; }
+        public string? GoogleMapsLink { get; set; } 
 
         // Survey
         public string? SurveyURL { get; set; } // For survey tasks
 
-        // 
+        
 
     }
 }

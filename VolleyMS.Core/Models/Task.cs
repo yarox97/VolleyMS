@@ -14,11 +14,13 @@ namespace VolleyMS.Core.Models
         private Task() : base(Guid.Empty)
         {
         }
+
         private Task(
             Guid id,
             string title,
             string description,
             TaskType taskType,
+            TaskPriority taskPriority,
             PenaltyType penaltyType,
             TaskSchedule taskSchedule,
             string? payload,
@@ -26,25 +28,30 @@ namespace VolleyMS.Core.Models
             User sender)
             : base(id)
         {
-            TaskType = taskType;
-            PenaltyType = penaltyType;
-            TaskSchedule = taskSchedule;
             Title = title;
             Description = description;
+            TaskType = taskType;
+            TaskPriority = taskPriority;
+            PenaltyType = penaltyType;
+            TaskSchedule = taskSchedule;
             Payload = payload;
+
             Club = club;
             ClubId = club.Id;
+
             Sender = sender;
             SenderId = sender.Id;
         }
 
         public TaskType TaskType { get; private set; }
+        public TaskPriority TaskPriority { get; private set; }
         public PenaltyType PenaltyType { get; private set; }
         public TaskSchedule TaskSchedule { get; private set; }
 
         public string Title { get; private set; }
         public string Description { get; private set; }
-        public string? Payload { get; private set; } // Json payload to a specific type of task.
+        public string? Payload { get; private set; }
+
         public Guid SenderId { get; private set; }
         public User Sender { get; private set; }
 
@@ -60,6 +67,7 @@ namespace VolleyMS.Core.Models
             string description,
             TaskSchedule taskSchedule,
             TaskType taskType,
+            TaskPriority taskPriority,
             PenaltyType penaltyType,
             string? payload,
             Club club,
@@ -68,10 +76,10 @@ namespace VolleyMS.Core.Models
             if (string.IsNullOrWhiteSpace(title))
                 return Result.Failure<Task>(DomainErrors.Task.TitleEmpty);
 
-            if(club is null)
+            if (club is null)
                 return Result.Failure<Task>(DomainErrors.Club.ClubNotFound);
 
-            if(sender is null)
+            if (sender is null)
                 return Result.Failure<Task>(DomainErrors.User.UserNotFound);
 
             var task = new Task(
@@ -79,6 +87,7 @@ namespace VolleyMS.Core.Models
                 title,
                 description,
                 taskType,
+                taskPriority,
                 penaltyType,
                 taskSchedule,
                 payload,
@@ -89,43 +98,106 @@ namespace VolleyMS.Core.Models
             return Result.Success(task);
         }
 
-        public Result AddAttachments(ICollection<MediaFile> mediaFiles)
+        public Result UpdateDetails(
+            string title,
+            string description,
+            TaskPriority taskPriority,
+            PenaltyType penaltyType,
+            TaskSchedule taskSchedule,
+            string? payload)
         {
-            var validMediaFiles = new List<MediaFile>();
-            foreach (MediaFile mediaFile in mediaFiles)
+            if (string.IsNullOrWhiteSpace(title))
+                return Result.Failure(DomainErrors.Task.TitleEmpty);
+
+            Title = title;
+            Description = description;
+            TaskPriority = taskPriority;
+            PenaltyType = penaltyType;
+            TaskSchedule = taskSchedule;
+            Payload = payload;
+
+            // Можно добавить RaiseDomainEvent(new TaskUpdatedDomainEvent(this));
+            return Result.Success();
+        }
+
+        public Result UpdateReceivers(IEnumerable<User> newReceivers)
+        {
+            if (newReceivers == null)
+                return Result.Failure(DomainErrors.Task.NoReceivers);
+
+            var newUsersList = newReceivers.ToList();
+            var newUserIds = newUsersList.Select(u => u.Id).ToHashSet();
+
+            var toRemove = _receivers.Where(ut => !newUserIds.Contains(ut.UserId)).ToList();
+
+            foreach (var userTask in toRemove)
             {
-                if (mediaFile is not null)
-                    validMediaFiles.Add(mediaFile);
+                _receivers.Remove(userTask);
             }
 
-            foreach (MediaFile mediaFile in validMediaFiles)
-            {
-                var attachment = TaskAttachment.Create(mediaFile, this);
-                if (attachment.IsFailure)
-                    continue; // LOGG this but let the other files to be.
-                    //return Result.Failure(attachment.Error);
+            var currentIds = _receivers.Select(ut => ut.UserId).ToHashSet();
 
-                _attachments.Add(attachment.Value);
+            foreach (var user in newUsersList)
+            {
+                if (!currentIds.Contains(user.Id))
+                {
+                    var assignResult = UserTask.Create(user, this);
+                    if (assignResult.IsFailure) return Result.Failure(assignResult.Error);
+
+                    _receivers.Add(assignResult.Value);
+                }
+            }
+
+            return Result.Success();
+        }
+
+        public Result AddAttachments(ICollection<MediaFile> mediaFiles)
+        {
+            if (mediaFiles == null) return Result.Success();
+
+            foreach (var mediaFile in mediaFiles)
+            {
+                if (_attachments.Any(a => a.MediaFile.Id == mediaFile.Id))
+                    continue;
+
+                var attachmentResult = TaskAttachment.Create(mediaFile, this);
+                if (attachmentResult.IsSuccess)
+                {
+                    _attachments.Add(attachmentResult.Value);
+                }
             }
             return Result.Success();
         }
 
-        public Result AssignTask(IEnumerable<User> Receivers)
+        public Result RemoveAttachment(MediaFile mediaFile)
         {
-            if (Receivers == null || !Receivers.Any())
-                return Result.Failure(DomainErrors.Task.NoReceivers);
+            if (mediaFile == null) return Result.Failure(new Error("File.Null", "File is null"));
 
-            foreach(var Receiver in Receivers)
+            var attachment = _attachments.FirstOrDefault(a => a.MediaFile.Id == mediaFile.Id);
+
+            if (attachment == null)
             {
-                var assignTaskResult = UserTask.Create(Receiver, this);
-
-                if (assignTaskResult.IsFailure)
-                    return Result.Failure(assignTaskResult.Error);
-
-                _receivers.Add(assignTaskResult.Value); // Add receiver 
+                return Result.Failure(new Error("Attachment.NotFound", "This file is not attached to the task"));
             }
 
-            RaiseDomainEvent(new TaskAssignedDomainEvent(Receivers, ClubId));
+            _attachments.Remove(attachment);
+            return Result.Success();
+        }
+
+        public Result AssignTask(IEnumerable<User> receivers)
+        {
+            if (receivers == null || !receivers.Any())
+                return Result.Failure(DomainErrors.Task.NoReceivers);
+
+            foreach (var user in receivers)
+            {
+                var assignResult = UserTask.Create(user, this);
+                if (assignResult.IsFailure) return Result.Failure(assignResult.Error);
+
+                _receivers.Add(assignResult.Value);
+            }
+
+            RaiseDomainEvent(new TaskAssignedDomainEvent(receivers, ClubId));
 
             return Result.Success();
         }

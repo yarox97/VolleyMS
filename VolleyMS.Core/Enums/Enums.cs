@@ -6,10 +6,12 @@
 
 public enum TaskType
 {
-    Informative,
     Attendance,
     GamePlan,
-    Survey
+    Survey,
+    Info,             
+    DocumentSign,     
+    Match              
 }
 
 public enum  TaskPriority

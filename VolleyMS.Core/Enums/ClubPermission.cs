@@ -17,6 +17,7 @@
         CreateTask,
         EditTask,
         DeleteTask,
+        ViewTasks, // view all tasks in the club, not just assigned to the user
 
         // Contract management
         ViewContracts,

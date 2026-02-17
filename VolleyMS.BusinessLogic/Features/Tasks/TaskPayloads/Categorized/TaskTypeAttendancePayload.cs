@@ -1,4 +1,7 @@
 ﻿namespace VolleyMS.BusinessLogic.Features.Tasks.TaskPayloads.Categorized
 {
-    public sealed record TaskTypeAttendancePayload();
+    public class TaskTypeAttendancePayload
+    {
+        public string ConfirmationButtonText { get; set; } = "Confirm attendance";
+    }
 }
