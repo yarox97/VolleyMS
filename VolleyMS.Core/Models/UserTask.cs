@@ -45,13 +45,13 @@ namespace VolleyMS.Core.Models
             return Result.Success();
         }
 
-        public Result AddUserResponse(IList<UserTaskResponseAttachment>? attachments, string? text)
+        public Result AddUserResponse(IList<MediaFile>? attachments, string? text)
         {
             if (attachments.Count >= 5)
                 return Result.Failure(DomainErrors.Task.MaxProofsAllowed);
 
 
-            var userTaskResponseResult = UserTaskResponse.Create(this, attachments, text);
+            var userTaskResponseResult = UserTaskResponse.Create(this, text, attachments);
 
             if (userTaskResponseResult.IsFailure)
                 return Result.Failure(userTaskResponseResult.Error);

@@ -59,7 +59,7 @@ namespace VolleyMS.DataAccess.Repositories
             var query = _volleyMsDbContext.Tasks
                 .Include(t => t.Club)
                 .Include(t => t.Sender)
-                .Where(t => t.Receivers.Any(r => r.UserId == clubId));
+                .Where(t => t.ClubId == clubId);
 
             var totalCount = await query.CountAsync(cancellationToken);
 

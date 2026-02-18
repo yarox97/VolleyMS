@@ -2,6 +2,7 @@
 using VolleyMS.BusinessLogic.Features.Notifications.NotificationPayloads;
 using VolleyMS.BusinessLogic.Features.Tasks.TaskPayloads;
 using VolleyMS.BusinessLogic.Services;
+using VolleyMS.Core.Enums;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
@@ -45,9 +46,18 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.Create
                 return Result.Failure<Core.Models.Task>(DomainErrors.Club.ClubNotFound);
 
             // Check sender existence
-            var sender = await _userRepository.GetByIdAsync(command.UserId);
+            var sender = await _userRepository.GetByIdWithClubsAsync(command.UserId);
             if (sender is null)
                 return Result.Failure<Core.Models.Task>(DomainErrors.User.UserNotFound);
+
+            // Check permissions
+            var userRoleResult = sender.GetRoleInClub(club.Id);
+            if (userRoleResult.IsFailure || userRoleResult?.Value == null)
+                return Result.Failure<Core.Models.Task>(DomainErrors.Club.MemberNotFound);
+             var userRole = userRoleResult.Value;
+
+            if(!ClubRoleConfig.HasPermission(userRole, ClubPermission.CreateTask))
+                return Result.Failure<Core.Models.Task>(DomainErrors.Club.InvalidPermission);
 
             // Check if the receivers are members of the club
             if (command.TaskRequest.Receivers == null || !command.TaskRequest.Receivers.Any())
@@ -107,6 +117,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.Create
                 taskType: taskRequest.TaskType,
                 taskPriority: taskRequest.TaskPriority,
                 penaltyType: taskRequest.penaltyType,
+                penaltyAmount: taskRequest.PenaltyAmount,
                 payload: payload,
                 club: club,
                 sender: sender

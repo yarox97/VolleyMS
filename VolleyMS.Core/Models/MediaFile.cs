@@ -27,8 +27,6 @@ namespace VolleyMS.Core.Models
             Size = size;
         }
 
-
-        public Guid Id { get; init; }
         public string Url { get; private set; }
         public string StorageId { get; private set; } // Cloudinary public id at this point
         public string FileName { get; private set; }

@@ -10,25 +10,24 @@ namespace VolleyMS.Core.Models
             : base(Guid.Empty)
         {
         }
-        private TaskAttachment(Guid id, MediaFile MediaFile, Task Task)
+        private TaskAttachment(Guid id, MediaFile MediaFile, Guid TaskId)
             : base(id)
         {
             this.MediaFile = MediaFile;
-            TaskId = Task.Id;
-            this.Task = Task;
+            this.TaskId = TaskId;
         }
 
-        public static Result<TaskAttachment> Create(MediaFile MediaFile, Task Task)
+        public static Result<TaskAttachment> Create(MediaFile MediaFile, Guid TaskId)
         {
             if (MediaFile == null) return Result.Failure<TaskAttachment>(
                 new Error("MediaFile.NotFound",
                             "Specified mediafile could not be found")
                 );
 
-            if (Task == null) return Result.Failure<TaskAttachment>(
+            if (TaskId == Guid.Empty) return Result.Failure<TaskAttachment>(
                 DomainErrors.Task.TaskNotFound);
 
-            return Result.Success(new TaskAttachment(Guid.NewGuid(), MediaFile, Task));
+            return Result.Success(new TaskAttachment(Guid.NewGuid(), MediaFile, TaskId));
         }
 
         public Guid TaskId { get; private init; }

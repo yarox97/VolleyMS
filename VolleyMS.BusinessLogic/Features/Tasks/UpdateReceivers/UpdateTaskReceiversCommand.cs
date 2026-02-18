@@ -5,6 +5,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateReceivers
 {
     public sealed record UpdateTaskReceiversCommand(
         Guid TaskId,
-        IEnumerable<Guid> NewReceiverIds
+        IEnumerable<Guid> NewReceiverIds,
+        Guid RequestorId
     ) : IRequest<Result>;
 }

@@ -206,7 +206,6 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.MediaFile", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("ContentType")
@@ -323,6 +322,9 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("TaskPriority")
+                        .HasColumnType("integer");
+
                     b.Property<string>("TaskType")
                         .IsRequired()
                         .HasColumnType("text");
@@ -347,7 +349,6 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.TaskAttachment", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -374,7 +375,7 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.HasIndex("TaskId");
 
-                    b.ToTable("TaskAttachments");
+                    b.ToTable("TaskAttachments", (string)null);
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.User", b =>

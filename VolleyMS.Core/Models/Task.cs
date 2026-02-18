@@ -22,6 +22,7 @@ namespace VolleyMS.Core.Models
             TaskType taskType,
             TaskPriority taskPriority,
             PenaltyType penaltyType,
+            decimal? penaltyAmount,
             TaskSchedule taskSchedule,
             string? payload,
             Club club,
@@ -33,6 +34,7 @@ namespace VolleyMS.Core.Models
             TaskType = taskType;
             TaskPriority = taskPriority;
             PenaltyType = penaltyType;
+            PenaltyAmount = penaltyAmount;
             TaskSchedule = taskSchedule;
             Payload = payload;
 
@@ -46,6 +48,7 @@ namespace VolleyMS.Core.Models
         public TaskType TaskType { get; private set; }
         public TaskPriority TaskPriority { get; private set; }
         public PenaltyType PenaltyType { get; private set; }
+        public decimal? PenaltyAmount { get; private set; }
         public TaskSchedule TaskSchedule { get; private set; }
 
         public string Title { get; private set; }
@@ -69,6 +72,7 @@ namespace VolleyMS.Core.Models
             TaskType taskType,
             TaskPriority taskPriority,
             PenaltyType penaltyType,
+            decimal? penaltyAmount,
             string? payload,
             Club club,
             User sender)
@@ -89,6 +93,7 @@ namespace VolleyMS.Core.Models
                 taskType,
                 taskPriority,
                 penaltyType,
+                penaltyAmount,
                 taskSchedule,
                 payload,
                 club,
@@ -160,7 +165,7 @@ namespace VolleyMS.Core.Models
                 if (_attachments.Any(a => a.MediaFile.Id == mediaFile.Id))
                     continue;
 
-                var attachmentResult = TaskAttachment.Create(mediaFile, this);
+                var attachmentResult = TaskAttachment.Create(mediaFile, this.Id);
                 if (attachmentResult.IsSuccess)
                 {
                     _attachments.Add(attachmentResult.Value);

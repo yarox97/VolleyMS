@@ -26,33 +26,29 @@ namespace VolleyMS.Core.Models
             UserTaskId = userTask.Id;
         }
 
-        public static Result<UserTaskResponse> Create(UserTask userTask, IList<UserTaskResponseAttachment>? attachments, string? text)
+        public static Result<UserTaskResponse> Create(
+            UserTask userTask,
+            string? text,
+            IEnumerable<MediaFile>? mediaFiles)
         {
-            if(attachments?.Count > 5)
-            {
-                return Result.Failure<UserTaskResponse>(DomainErrors.Attachment.TooManyFiles);
-            }
-
-            if(userTask == null)
-            {
+            if (userTask == null)
                 return Result.Failure<UserTaskResponse>(DomainErrors.UserTask.UserTaskNotFound);
-            }
 
-            var userTaskResponse = new UserTaskResponse(Guid.NewGuid(), userTask, text);
+            var response = new UserTaskResponse(Guid.NewGuid(), userTask, text);
 
-            if (attachments != null)
+            if (mediaFiles != null && mediaFiles.Any())
             {
-                foreach (var userTaskResponseAttachment in attachments)
-                {
-                    if (userTaskResponse._attachments.Count >= 5)
-                        return Result.Failure<UserTaskResponse>(DomainErrors.Attachment.TooManyFiles);
+                if (mediaFiles.Count() > 5)
+                    return Result.Failure<UserTaskResponse>(DomainErrors.Attachment.TooManyFiles);
 
-                    // Создаем связь
-                    userTaskResponse._attachments.Add(new UserTaskResponseAttachment(userTaskResponse, userTaskResponseAttachment.Media));
+                foreach (var media in mediaFiles)
+                {
+                    var attachment = new UserTaskResponseAttachment(response, media);
+                    response._attachments.Add(attachment);
                 }
             }
 
-            return Result.Success(userTaskResponse);
+            return Result.Success(response);
         }
     }
 }

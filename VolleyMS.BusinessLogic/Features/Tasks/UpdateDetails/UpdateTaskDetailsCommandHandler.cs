@@ -1,8 +1,10 @@
 ﻿using MediatR;
 using VolleyMS.BusinessLogic.Features.Tasks.TaskPayloads;
+using VolleyMS.Core.Enums;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
+using VolleyMS.Core.Services;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
@@ -10,11 +12,13 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
     public class UpdateTaskDetailsCommandHandler : IRequestHandler<UpdateTaskDetailsCommand, Result>
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateTaskDetailsCommandHandler(ITaskRepository taskRepository, IUnitOfWork unitOfWork)
+        public UpdateTaskDetailsCommandHandler(ITaskRepository taskRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             _taskRepository = taskRepository;
+            _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -24,7 +28,19 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
             if (task is null)
                 return Result.Failure(DomainErrors.Task.TaskNotFound);
 
-            // 1. Создаем новое расписание (Value Object)
+            // check permissions
+            var user = await _userRepository.GetByIdWithClubsAsync(command.requestorId);
+            if (user is null)
+                return Result.Failure(DomainErrors.User.UserNotFound);
+
+            var userRoleResult = user.GetRoleInClub(task.ClubId);
+            if (userRoleResult.IsFailure || userRoleResult?.Value == null)
+                return Result.Failure(DomainErrors.Club.MemberNotFound);
+
+            if(!ClubRoleConfig.HasPermission(userRoleResult.Value, ClubPermission.EditTask))
+                return Result.Failure(DomainErrors.Club.InvalidPermission);
+
+            // new schedule
             Result<TaskSchedule> scheduleResult;
             if (command.DaysOfWeek != null && command.DaysOfWeek.Any())
             {

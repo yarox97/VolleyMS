@@ -24,6 +24,8 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.RemoveAttachment
 
         public async Task<Result> Handle(RemoveTaskAttachmentCommand command, CancellationToken ct)
         {
+
+
             var task = await _taskRepository.GetWithAttachments(command.TaskId);
             if (task is null)
                 return Result.Failure(DomainErrors.Task.TaskNotFound);

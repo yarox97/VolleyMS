@@ -40,14 +40,72 @@ namespace VolleyMS.BusinessLogic.Services
             return uploadResult.SecureUrl.ToString();
         }
 
-        public async Task DeleteFileAsync(string publicUrl)
+        public async Task DeleteFileAsync(string publicUrlOrId)
         {
-            // Логика извлечения PublicId из URL и удаления
+            var publicId = GetPublicIdFromUrl(publicUrlOrId);
+
+            if (string.IsNullOrWhiteSpace(publicId)) return;
+
+            var deletionParams = new DeletionParams(publicId)
+            {
+                ResourceType = ResourceType.Image
+            };
+
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+
+            if (result.Result != "ok" && result.Result != "not found")
+            {
+                // LOGG
+            }
         }
 
         public static string GetPublicIdFromUrl(string url)
         {
-            return Path.GetFileNameWithoutExtension(url);
+            if (string.IsNullOrWhiteSpace(url)) return string.Empty;
+
+            if (!url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                return url;
+
+            try
+            {
+                var uri = new Uri(url);
+                var pathSegments = uri.Segments;
+
+                int uploadIndex = -1;
+                for (int i = 0; i < pathSegments.Length; i++)
+                {
+                    if (pathSegments[i].Equals("upload/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        uploadIndex = i;
+                        break;
+                    }
+                }
+
+                if (uploadIndex == -1 || uploadIndex == pathSegments.Length - 1)
+                    return Path.GetFileNameWithoutExtension(url);
+
+                var relevantSegments = pathSegments.Skip(uploadIndex + 1).ToList();
+
+                if (relevantSegments.Any() && relevantSegments[0].StartsWith("v") && relevantSegments[0].Length > 1 && char.IsDigit(relevantSegments[0][1]))
+                {
+                    relevantSegments.RemoveAt(0);
+                }
+
+                var fullPath = string.Join("", relevantSegments);
+
+                var extensionIndex = fullPath.LastIndexOf('.');
+                if (extensionIndex > 0)
+                {
+                    fullPath = fullPath.Substring(0, extensionIndex);
+                }
+
+                return fullPath;
+            }
+            catch
+            {
+                return Path.GetFileNameWithoutExtension(url);
+            }
         }
     }
 }
+

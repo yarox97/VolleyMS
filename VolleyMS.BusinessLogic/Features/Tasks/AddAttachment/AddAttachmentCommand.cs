@@ -6,7 +6,8 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.AddAttachment
 {
     public sealed record AddTaskAttachmentCommand(
         Guid TaskId,
-        ICollection<IFormFile> Files
+        ICollection<IFormFile> Files,
+        Guid RequestorId
     ) : IRequest<Result>;
 }  
 

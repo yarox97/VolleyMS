@@ -7,6 +7,8 @@ namespace VolleyMS.BusinessLogic.Contracts.DTOs.TaskDtos
         string Description,
         string TaskType,
         string TaskPriority,
+        string PenaltyType,
+        string? PenaltyAmount,
         TaskScheduleDto Schedule,
         Guid ClubId,
         string ClubName,

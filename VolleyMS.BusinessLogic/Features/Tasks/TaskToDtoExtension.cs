@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VolleyMS.BusinessLogic.Contracts.DTOs.TaskDtos;
+﻿using VolleyMS.BusinessLogic.Contracts.DTOs.TaskDtos;
 
 namespace VolleyMS.BusinessLogic.Features.Tasks
 { 
     public static class TaskToDtoExtension
     {
-        public static TaskDto ToDto(this VolleyMS.Core.Models.Task task)
+        public static TaskDto ToDto(this Core.Models.Task task)
         {
             return new TaskDto(
                 task.Id,
@@ -17,6 +12,8 @@ namespace VolleyMS.BusinessLogic.Features.Tasks
                 task.Description,
                 task.TaskType.ToString(),
                 task.TaskPriority.ToString(),
+                task.PenaltyType.ToString(),
+                task.PenaltyAmount.ToString(),
                 new TaskScheduleDto(
                     task.TaskSchedule.StartDate,
                     task.TaskSchedule.EndDate,

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
@@ -15,6 +10,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
         TaskType TaskType,       
         TaskPriority TaskPriority,
         PenaltyType PenaltyType,
+        decimal? PenaltyAmount,
 
         // Расписание
         DateTime StartDate,
@@ -30,7 +26,9 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
         string? GatheringTime,
         string? DepartureTime,
         string? GoogleMapsLink,
-        string? SurveyURL
+        string? SurveyURL,
+
+        Guid requestorId
     ) : IRequest<Result>
     {
         public Core.Requests.TaskRequest ToTaskRequest()
@@ -42,6 +40,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
                 TaskType = this.TaskType,
                 TaskPriority = this.TaskPriority,
                 penaltyType = this.PenaltyType,
+                PenaltyAmount = this.PenaltyAmount,
 
                 StartDate = this.StartDate,
                 EndDate = this.EndDate,

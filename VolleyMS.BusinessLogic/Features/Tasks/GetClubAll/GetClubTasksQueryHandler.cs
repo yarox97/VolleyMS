@@ -24,7 +24,6 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.GetClubAll
             GetClubTasksQuery request,
             CancellationToken cancellationToken)
         {
-
             int page = request.Page <= 0 ? 1 : request.Page;
             int pageSize = request.PageSize <= 0 ? 10 : request.PageSize;
             

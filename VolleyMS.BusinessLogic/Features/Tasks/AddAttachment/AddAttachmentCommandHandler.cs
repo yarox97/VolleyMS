@@ -1,49 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using VolleyMS.BusinessLogic.Services;
+using VolleyMS.Core.Enums;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Services;
 using VolleyMS.Core.Shared;
+using VolleyMS.DataAccess.Repositories;
 
 namespace VolleyMS.BusinessLogic.Features.Tasks.AddAttachment
 {
     public class AddTaskAttachmentCommandHandler : IRequestHandler<AddTaskAttachmentCommand, Result>
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IFileService _fileService;
         private readonly IUnitOfWork _unitOfWork;
 
         public AddTaskAttachmentCommandHandler(
             ITaskRepository taskRepository,
+            IUserRepository userRepository,
             IFileService fileService,
             IUnitOfWork unitOfWork)
         {
             _taskRepository = taskRepository;
+            _userRepository = userRepository;
             _fileService = fileService;
             _unitOfWork = unitOfWork;
         }
 
         public async Task<Result> Handle(AddTaskAttachmentCommand command, CancellationToken ct)
         {
-            var task = await _taskRepository.GetWithAttachments(command.TaskId);
-            if (task is null)
-                return Result.Failure(DomainErrors.Task.TaskNotFound);
-
-            if (command.Files == null || !command.Files.Any())
-                return Result.Success();
-
             var uploadedPublicIds = new List<string>();
+            var mediaFiles = new List<MediaFile>();
 
             try
             {
-                var mediaFiles = new List<MediaFile>();
-
                 foreach (var formFile in command.Files)
                 {
                     var url = await _fileService.UploadFileAsync(formFile, "TaskAttachments");
@@ -59,12 +51,33 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.AddAttachment
                         mediaFiles.Add(mediaFileResult.Value);
                 }
 
+                var task = await _taskRepository.GetWithAttachments(command.TaskId);
+                if (task is null)
+                    return Result.Failure(DomainErrors.Task.TaskNotFound);
+
+                // check permissions
+                var user = await _userRepository.GetByIdWithClubsAsync(command.RequestorId);
+                if (user is null)
+                    return Result.Failure(DomainErrors.User.UserNotFound);
+
+                var userRoleResult = user.GetRoleInClub(task.ClubId);
+                if (userRoleResult.IsFailure || userRoleResult?.Value == null)
+                    return Result.Failure(DomainErrors.Club.MemberNotFound);
+
+                if (!ClubRoleConfig.HasPermission(userRoleResult.Value, ClubPermission.EditTask))
+                    return Result.Failure(DomainErrors.Club.InvalidPermission);
+
+
+                if (command.Files == null || !command.Files.Any())
+                    return Result.Success();
+
                 var result = task.AddAttachments(mediaFiles);
 
                 if (result.IsFailure)
                     return Result.Failure(result.Error);
 
-                await _unitOfWork.SaveChangesAsync(ct);
+                await _unitOfWork.SaveChangesAsync();
+
                 return Result.Success();
             }
             catch (Exception)
@@ -73,7 +86,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.AddAttachment
                 {
                     await _fileService.DeleteFileAsync(publicId);
                 }
-                return Result.Failure(new Error("Attachment.UploadFailed", "Failed to save attachments"));
+                return Result.Failure(new Error("FileServie.Error", "File service returned error while adding task attachment"));
             }
         }
     }

@@ -5,7 +5,8 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.RemoveAttachment
 {
     public sealed record RemoveTaskAttachmentCommand(
         Guid TaskId,
-        Guid MediaFileId
+        Guid MediaFileId,
+        Guid UserId
     ) : IRequest<Result>;
     
 }

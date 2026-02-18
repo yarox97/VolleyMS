@@ -22,6 +22,7 @@ namespace VolleyMS.Core.Requests
 
         // Penalty type to fine or to bonus players. 
         public PenaltyType penaltyType { get; set; } = PenaltyType.None; // Not obligatory, default value can be set to None
+        public decimal? PenaltyAmount { get; set; } // Optional, only if penaltyType is not None
 
         // Files (optional)
         public ICollection<IFormFile>? Files { get; set; }

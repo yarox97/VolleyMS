@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.Tasks.AddAttachment;
 using VolleyMS.BusinessLogic.Features.Tasks.Create;
+using VolleyMS.BusinessLogic.Features.Tasks.GetClubAll;
+using VolleyMS.BusinessLogic.Features.Tasks.GetDetails;
 using VolleyMS.BusinessLogic.Features.Tasks.GetUserAll;
 using VolleyMS.BusinessLogic.Features.Tasks.Remove;
 using VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails;
@@ -32,32 +34,57 @@ namespace VolleyMS.Web.Controllers
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("user")]
         [Authorize]
-        public async Task<IActionResult> GetUserTasks(Guid userId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetUserTasks([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            if(userId != User.GetUserId()) return Forbid();
+            if(User.GetUserIdOrNull() == null) return Forbid();
 
-            var query = new GetUserTasksQuery(userId, page, pageSize);
+            var query = new GetUserTasksQuery(User.GetUserId(), page, pageSize);
 
             var result = await Sender.Send(query);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
 
-
-        [HttpPut("{id}/details")]
+        [HttpGet("club/{clubId}")]
         [Authorize]
-        public async Task<IActionResult> UpdateDetails(Guid id, [FromBody] UpdateTaskDetailsCommand command)
+        public async Task<IActionResult> GetClubTasks(Guid clubId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            if (id != command.TaskId) return BadRequest("Id mismatch");
+            if (User.GetUserIdOrNull() == null) return Forbid();
+
+            var query = new GetClubTasksQuery(clubId, User.GetUserId(), page, pageSize);
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpGet("{taskId}")]
+        [Authorize]
+        public async Task<IActionResult> GetTaskDetails(Guid taskId)
+        {
+            if (User.GetUserIdOrNull() == null) return Forbid();
+
+            var query = new GetTaskDetailsQuery(taskId, User.GetUserId());
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        }
+
+        [HttpPut("{taskId}/details")]
+        [Authorize]
+        public async Task<IActionResult> UpdateDetails(Guid taskId, [FromBody] UpdateTaskDetailsCommand command)
+        {
+            if (taskId != command.TaskId) return BadRequest("Id mismatch");
 
             var result = await Sender.Send(command);
 
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
 
-        [HttpPut("{id}/receivers")]
+        [HttpPut("{taskId}/receivers")]
         [Authorize]
         public async Task<IActionResult> UpdateReceivers(Guid taskId, [FromBody] UpdateTaskReceiversCommand command)
         {
@@ -68,9 +95,9 @@ namespace VolleyMS.Web.Controllers
             return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
 
-        [HttpDelete("club/{clubId}/tasks/{id}")]
+        [HttpDelete("club/{clubId}/tasks/{taskId}")]
         [Authorize]
-        public async Task<IActionResult> Delete(Guid taskId, Guid clubId)
+        public async Task<IActionResult> Delete(Guid clubId, Guid taskId)
         {
             var result = await Sender.Send(new RemoveTaskCommand(taskId, User.GetUserId(), clubId));
 
@@ -81,7 +108,7 @@ namespace VolleyMS.Web.Controllers
         [Authorize]
         public async Task<IActionResult> AddAttachments(Guid id, [FromForm] ICollection<IFormFile> files)
         {
-            var command = new AddTaskAttachmentCommand(id, files);
+            var command = new AddTaskAttachmentCommand(id, files, User.GetUserId());
 
             var result = await Sender.Send(command);
 
