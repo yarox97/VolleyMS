@@ -82,5 +82,15 @@ namespace VolleyMS.DataAccess.Repositories
 
             return contract;
         }
+
+        public async Task<Contract?> GetByUserIdAndClubId(Guid userId, Guid clubId, CancellationToken cancellationToken)
+        {
+            return await _volleyMsDbContext.Contracts
+                .AsNoTracking()
+                .Include(c => c.Club)
+                .Include(c => c.User)
+                .Where(c => c.UserId == userId && c.ClubId == clubId)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

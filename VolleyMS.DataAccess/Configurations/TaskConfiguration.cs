@@ -37,7 +37,7 @@ namespace VolleyMS.DataAccess.Configurations
                 sb.Property(s => s.StartDate).HasColumnName("StartDate").IsRequired();
                 sb.Property(s => s.EndDate).HasColumnName("EndDate");
                 sb.Property(s => s.StartTime).HasColumnName("StartTime").IsRequired();
-                sb.Property(s => s.EndTime).HasColumnName("EndTime").IsRequired();
+                sb.Property(s => s.EndTime).HasColumnName("EndTime");
 
                 sb.Property(s => s.Days)
                   .HasColumnName("DaysOfWeek")

@@ -108,9 +108,29 @@ namespace VolleyMS.Core.Models
             string description,
             TaskPriority taskPriority,
             PenaltyType penaltyType,
+            decimal? penaltyAmount,
             TaskSchedule taskSchedule,
             string? payload)
         {
+            if (DateTime.UtcNow >= TaskSchedule.StartDate)
+            {
+                if (PenaltyType != penaltyType || PenaltyAmount != penaltyAmount)
+                {
+                    return Result.Failure(new Error(
+                        "Task.CannotChangePenalty",
+                        "Cannot change penalty of already started task!."));
+                }
+            }
+
+            var domainEvent = new TaskUpdatedDomainEvent(
+            TaskId: this.Id,
+            OldTitle: this.Title,
+            OldDescription: this.Description,
+            OldTaskPriority: this.TaskPriority,
+            OldStartDate: this.TaskSchedule.StartDate,
+            OldEndDate: (DateTime)this.TaskSchedule.EndDate
+            );
+
             if (string.IsNullOrWhiteSpace(title))
                 return Result.Failure(DomainErrors.Task.TitleEmpty);
 
@@ -118,10 +138,11 @@ namespace VolleyMS.Core.Models
             Description = description;
             TaskPriority = taskPriority;
             PenaltyType = penaltyType;
+            PenaltyAmount = penaltyAmount;
             TaskSchedule = taskSchedule;
             Payload = payload;
 
-            // Можно добавить RaiseDomainEvent(new TaskUpdatedDomainEvent(this));
+            RaiseDomainEvent(domainEvent);
             return Result.Success();
         }
 
@@ -150,6 +171,7 @@ namespace VolleyMS.Core.Models
                     if (assignResult.IsFailure) return Result.Failure(assignResult.Error);
 
                     _receivers.Add(assignResult.Value);
+                    RaiseDomainEvent(new TaskAssignedDomainEvent(this.Id, new[] { user }, ClubId));
                 }
             }
 
@@ -202,7 +224,7 @@ namespace VolleyMS.Core.Models
                 _receivers.Add(assignResult.Value);
             }
 
-            RaiseDomainEvent(new TaskAssignedDomainEvent(receivers, ClubId));
+            RaiseDomainEvent(new TaskAssignedDomainEvent(this.Id, receivers, ClubId));
 
             return Result.Success();
         }

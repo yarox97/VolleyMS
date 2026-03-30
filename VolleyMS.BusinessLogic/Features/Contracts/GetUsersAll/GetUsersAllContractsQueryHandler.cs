@@ -37,7 +37,9 @@ namespace VolleyMS.BusinessLogic.Features.Contracts.GetUsersAll
                 AssignedAt = c.CreatedAt,
                 IsActive = c.IsActive,
                 Salary = c.MonthlySalary,
-                Currency = c.Currency
+                Currency = c.Currency,
+                ResponserName = c.Assigner.Name,
+                ResponserSurname = c.Assigner.Surname
             });
 
             // Return paginated result

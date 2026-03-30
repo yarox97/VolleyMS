@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VolleyMS.BusinessLogic.Features.Tasks.AddAttachment;
+using VolleyMS.BusinessLogic.Features.Tasks.Complete;
+using VolleyMS.BusinessLogic.Features.Tasks.Confirm;
 using VolleyMS.BusinessLogic.Features.Tasks.Create;
 using VolleyMS.BusinessLogic.Features.Tasks.GetClubAll;
 using VolleyMS.BusinessLogic.Features.Tasks.GetDetails;
 using VolleyMS.BusinessLogic.Features.Tasks.GetUserAll;
 using VolleyMS.BusinessLogic.Features.Tasks.Remove;
+using VolleyMS.BusinessLogic.Features.Tasks.Return;
+using VolleyMS.BusinessLogic.Features.Tasks.SubmitResponse;
 using VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails;
 using VolleyMS.BusinessLogic.Features.Tasks.UpdateReceivers;
 using VolleyMS.Core.Requests;
@@ -36,11 +40,11 @@ namespace VolleyMS.Web.Controllers
 
         [HttpGet("user")]
         [Authorize]
-        public async Task<IActionResult> GetUserTasks([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetUserTasks([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string filter = "all")
         {
-            if(User.GetUserIdOrNull() == null) return Forbid();
+            if (User.GetUserIdOrNull() == null) return Forbid();
 
-            var query = new GetUserTasksQuery(User.GetUserId(), page, pageSize);
+            var query = new GetUserTasksQuery(User.GetUserId(), filter, page, pageSize);
 
             var result = await Sender.Send(query);
 
@@ -86,9 +90,20 @@ namespace VolleyMS.Web.Controllers
 
         [HttpPut("{taskId}/receivers")]
         [Authorize]
-        public async Task<IActionResult> UpdateReceivers(Guid taskId, [FromBody] UpdateTaskReceiversCommand command)
+        public async Task<IActionResult> UpdateReceivers(Guid taskId, [FromBody] UpdateTaskReceiversRequest request)
         {
-            if (taskId != command.TaskId) return BadRequest("Id mismatch");
+            var currentUserId = User.GetUserId();
+
+            var validReceiverIds = request.NewReceiverIds
+                .Where(id => id != currentUserId)
+                .Distinct()
+                .ToList();
+
+            var command = new UpdateTaskReceiversCommand(
+                taskId,
+                validReceiverIds,
+                currentUserId
+            );
 
             var result = await Sender.Send(command);
 
@@ -113,6 +128,50 @@ namespace VolleyMS.Web.Controllers
             var result = await Sender.Send(command);
 
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
+        [HttpPost("{taskId}/respond")]
+        [Authorize]
+        public async Task<IActionResult> SubmitTaskResponse([FromRoute] Guid taskId, [FromForm] string? Text, [FromForm] IList<IFormFile?> Files)
+        {
+            var command = new SubmitTaskResponseCommand(taskId, User.GetUserId(), Text, Files);
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
+        [HttpPut("{userTaskId}/complete")]
+        [Authorize]
+        public async Task<IActionResult> CompleteTask([FromRoute] Guid userTaskId)
+        {
+            var command = new CompleteTaskCommand(userTaskId, User.GetUserId());
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+        }
+
+        [HttpPut("{userTaskId}/return")]
+        [Authorize]
+        public async Task<IActionResult> ReturnTask([FromRoute] Guid userTaskId)
+        {
+            var command = new ReturnTaskCommand(userTaskId, User.GetUserId());
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? NoContent() : BadRequest(result.Error);
+        }
+
+        [HttpPost("{userTaskId}/confirm")]
+        [Authorize]
+        public async Task<IActionResult> ConfirmTask([FromRoute] Guid userTaskId, [FromBody] ConfirmUserTaskCommandDto confirmUserTaskCommandDto)
+        {
+            var command = new ConfirmUserTaskCommand(userTaskId, User.GetUserId(), confirmUserTaskCommandDto.TaskStatus, confirmUserTaskCommandDto.ApplyPenalty);
+
+            var result = await Sender.Send(command);
+
+            return result.IsSuccess ? NoContent() : BadRequest(result.Error);
         }
     }
 }

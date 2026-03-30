@@ -63,6 +63,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.UpdateDetails
                 command.Description,
                 command.TaskPriority,
                 command.PenaltyType,
+                command.PenaltyAmount,
                 scheduleResult.Value,
                 payloadResult?.Value // new payload, if it was successfully created, otherwise keep the old one
             );

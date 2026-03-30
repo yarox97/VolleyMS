@@ -79,6 +79,17 @@ namespace VolleyMS.DataAccess.Configurations
                 .WithOne(n => n.Sender)
                 .HasForeignKey(n => n.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // attributes owned entity
+            builder.OwnsOne(u => u.Attributes, a =>
+            {
+                a.Property(p => p.Position).HasColumnName("Position");
+                a.Property(p => p.HeightCm).HasColumnName("HeightCm");
+                a.Property(p => p.WeightKg).HasColumnName("WeightKg");
+                a.Property(p => p.DominantHand).HasColumnName("DominantHand");
+                a.Property(p => p.SpikeReachCm).HasColumnName("SpikeReachCm");
+                a.Property(p => p.BlockReachCm).HasColumnName("BlockReachCm");
+            });
         }
     }
 }

@@ -84,7 +84,14 @@ public enum NotificationCategory
     ContractEndedByUser,
     ContractEndedByClub,
     KickedFromClubByClub,
-    KickedFromClubByUser
+    KickedFromClubByUser,
+
+    TaskAssigned,
+    TaskCompleted,
+    TaskOverdue,
+    TaskReturned,
+    TaskModified,
+    TaskConfirmed,
 }
 
 public enum ClubMemberRole
@@ -103,3 +110,36 @@ public enum JoinClubRequestStatus
     Rejected
 }
 
+public enum PayslipStatus
+{
+    Draft = 1,      // Черновик (текущий месяц, куда падают все новые штрафы/премии)
+    Approved = 2,   // Утвержден (месяц закрыт, суммы зафиксированы)
+    Paid = 3,       // Выплачен
+    Cancelled = 4   // Отменен (в случае ошибки)
+}
+
+public enum AdjustmentType
+{
+    BonusValue = 1,    
+    BounsPercent = 2,// Премия
+    PenaltyValue = 3,
+    PenaltyPercent = 4// Штраф
+}
+
+public enum PlayerPosition
+{
+    None = 0,
+    OutsideHitter = 1,  // Доигровщик
+    Setter = 2,         // Связующий
+    Libero = 3,         // Либеро
+    MiddleBlocker = 4,  // Центральный блокирующий
+    OppositeHitter = 5  // Диагональный
+}
+
+public enum DominantHand
+{
+    None = 0,
+    Right = 1,          // Правша
+    Left = 2,           // Левша
+    Ambidextrous = 3    // Амбидекстр (обе руки)
+}

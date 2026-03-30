@@ -1,6 +1,7 @@
 ﻿using VolleyMS.Core.Common;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Shared;
+using VolleyMS.Core.ValueObjects;
 
 namespace VolleyMS.Core.Models
 {
@@ -43,6 +44,7 @@ namespace VolleyMS.Core.Models
         public string Surname { get; private set; }
         public string Email { get; private set; }
         public string? AvatarUrl { get; private set; }
+        public PlayerAttributes Attributes { get; private set; }
         public IReadOnlyCollection<UserClub> UserClubs => _userClubs;
         public IReadOnlyCollection<Contract> Contracts => _contracts;
         public IReadOnlyCollection<Task> SentTasks => _sentTasks;
@@ -126,6 +128,12 @@ namespace VolleyMS.Core.Models
                 return Result.Failure(DomainErrors.User.InvalidUserType);
 
             UserType = newRole;
+            return Result.Success();
+        }
+
+        public Result UpdateAttributes(PlayerAttributes newAttributes)
+        {
+            Attributes = newAttributes;
             return Result.Success();
         }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Common;
 using VolleyMS.Core.Models;
+using VolleyMS.Core.Models.Payslips;
 using VolleyMS.DataAccess.Configurations;
 using VolleyMS.DataAccess.Outbox;
 using Task = VolleyMS.Core.Models.Task;
@@ -13,7 +14,7 @@ namespace VolleyMS.DataAccess
         {
         }
 
-        public DbSet<Club> Clubs { get; set; }
+        public DbSet<Club> Clubs { get; set; } // przykładowy DbSet dla encji Club
         public DbSet<User> Users { get; set; }
         public DbSet<UserClub> UserClubs { get; set; }
         public DbSet<Contract> Contracts { get; set; }
@@ -27,10 +28,13 @@ namespace VolleyMS.DataAccess
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<JoinClubRequest> JoinClubRequests { get; set; }
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
-
+        public DbSet<Payslip> Payslips { get; set; }
+        public DbSet<PayslipAdjustment> PayslipAdjustments { get; set; } // Pozostałe zdefiniowane encje
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ClubConfiguration).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                typeof(ClubConfiguration).Assembly);
+            // stosujemy konfiguracje z całego assembly, w którym znajduje się ClubConfiguration
 
             base.OnModelCreating(modelBuilder);
 
@@ -41,7 +45,6 @@ namespace VolleyMS.DataAccess
             });
 
         }
-
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker.Entries<AuditableFields>();

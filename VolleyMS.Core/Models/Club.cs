@@ -39,8 +39,7 @@ namespace VolleyMS.Core.Models
         public string? VolleyBoxUrl { get; private set; }
         public IReadOnlyCollection<Task> Tasks => _tasks;
         public IReadOnlyCollection<UserClub> UserClubs => _userClubs;
-        public IReadOnlyCollection<JoinClubRequest> JoinClubRequests => _joinClubRequests;
-
+        public IReadOnlyCollection<JoinClubRequest> JoinClubRequests => _joinClubRequests; // pola klubu
         public static Result<Club> Create(string name, string joinCode, string? description, string? avatarUrl, string? backGroundUrl, string? volleyBoxUrl, User creator)
         {
             if(string.IsNullOrEmpty(name)) return Result.Failure<Club>(DomainErrors.Club.NameEmpty);
@@ -53,7 +52,6 @@ namespace VolleyMS.Core.Models
 
             return Result.Success(club);
         }
-
         public Result ChangePrimaryData(string? name, string? description)
         {
             if (!string.IsNullOrEmpty(name))
@@ -66,7 +64,6 @@ namespace VolleyMS.Core.Models
             }
             return Result.Success();
         }
-
         public Result<JoinClubRequest> RequestToJoinClub(User user)
         {
             if (user is null) return Result.Failure<JoinClubRequest>(Error.NullValue);

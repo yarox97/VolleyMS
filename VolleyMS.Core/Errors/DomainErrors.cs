@@ -5,21 +5,6 @@ namespace VolleyMS.Core.Errors
 {
     public static class DomainErrors
     {
-        public static class UserTask
-        {
-            public static readonly Error UserTaskNotFound = new(
-                "UserTask.UserTaskNotFound",
-                "User task not found.");
-        }
-
-        public static class Attachment 
-        {
-            public static readonly Error TooManyFiles = new(
-                "Attachment.TooManyFiles",
-                $"Cannot add more than {ValidationConfig.MAX_TASK_FILES_ALLOWED} files.");
-
-        }
-
         public static class User
         {
             public static readonly Error UserNameEmpty = new(
@@ -65,6 +50,22 @@ namespace VolleyMS.Core.Errors
             public static Error InvalidEmail { get; set; }
             public static Error EmailTaken { get; set; }
         }
+
+        public static class UserTask
+        {
+            public static readonly Error UserTaskNotFound = new(
+                "UserTask.UserTaskNotFound",
+                "User task not found.");
+        }
+
+        public static class Attachment 
+        {
+            public static readonly Error TooManyFiles = new(
+                "Attachment.TooManyFiles",
+                $"Cannot add more than {ValidationConfig.MAX_TASK_FILES_ALLOWED} files.");
+
+        }
+
         public static class Club
         {
             public static readonly Error NameEmpty = new(
@@ -127,6 +128,7 @@ namespace VolleyMS.Core.Errors
                 "Club.ClubNotFound",
                 "The specified club was not found.");
         }
+        public static object Payslip { get; set; }
 
         public static class JoinClubRequest
         {
@@ -212,7 +214,9 @@ namespace VolleyMS.Core.Errors
                 "Start time cannot be later than end time.");
 
             public static Error NoReceivers { get; internal set; }
-            public static Error TaskNotFound { get; internal set; }
+            public static Error TaskNotFound = new(
+                "Task.NotFound",
+                "Task was not found");
             public static Error NoProofsAdded { get; internal set; }
             public static Error ProofNotFound { get; internal set; }
             public static Error MaxProofsAllowed { get; internal set; }

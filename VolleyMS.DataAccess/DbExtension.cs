@@ -25,7 +25,7 @@ namespace VolleyMS.DataAccess
                 o.UseNpgsql($"host={host};port={port};Database={dataBaseName};Username={username};password={password}")
                     .AddInterceptors(interceptor);
 
-                o.EnableSensitiveDataLogging();
+                //o.EnableSensitiveDataLogging();
                 o.LogTo(Console.WriteLine, LogLevel.Information);
             });
         }

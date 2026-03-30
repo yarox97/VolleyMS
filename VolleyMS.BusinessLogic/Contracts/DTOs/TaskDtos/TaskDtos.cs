@@ -15,7 +15,10 @@ namespace VolleyMS.BusinessLogic.Contracts.DTOs.TaskDtos
         Guid SenderId,
         string SenderName,
         string? Payload,
-        List<AttachmentDto> Attachments
+        List<AttachmentDto> Attachments,
+
+        string? MyStatus,
+        bool HasResponses
     );
 
     public record TaskScheduleDto(
@@ -37,10 +40,21 @@ namespace VolleyMS.BusinessLogic.Contracts.DTOs.TaskDtos
         List<TaskReceiverDto> Receivers
     );
 
+    public record UserTaskResponseDto(
+        Guid Id,
+        string? Text,
+        DateTime CreatedAt,
+        List<AttachmentDto> Attachments
+    );
+
     public record TaskReceiverDto(
+        Guid UserTaskId,
         Guid UserId,
         string FullName,
         TaskStatus TaskStatus,
-        DateTime? CompletedAt
+        DateTime? CompletedAt,
+        List<UserTaskResponseDto> Responses,
+
+        bool? HasActiveContract = false
     );
 }

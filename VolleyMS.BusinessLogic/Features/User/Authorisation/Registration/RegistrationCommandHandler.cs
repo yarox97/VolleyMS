@@ -4,6 +4,7 @@ using VolleyMS.Core.Errors;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Shared;
+using VolleyMS.Core.ValueObjects;
 
 namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
 {
@@ -12,8 +13,8 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly RegistrationValidator _validator;
-        private readonly IPasswordHasher<User> _passwordHasher;
-        public RegistrationCommandHandler(IUserRepository repository, IUnitOfWork unitOfWork, IPasswordHasher<User> passwordHasher)
+        private readonly IPasswordHasher<Core.Models.User> _passwordHasher;
+        public RegistrationCommandHandler(IUserRepository repository, IUnitOfWork unitOfWork, IPasswordHasher<Core.Models.User> passwordHasher)
         {
             _userRepository = repository;
             _unitOfWork = unitOfWork;
@@ -27,11 +28,11 @@ namespace VolleyMS.BusinessLogic.Features.Users.Authorisation.Registration
             string hashedPassword = _passwordHasher.HashPassword(null, command.password);
 
             // Create user
-            var userResult = User.Create(
+            var userResult = Core.Models.User.Create(
                 Guid.NewGuid(),
                 command.userName,
                 hashedPassword,
-                UserType.User,
+                UserType.Admin,
                 command.name, 
                 command.surname, 
                 command.email,

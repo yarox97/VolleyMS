@@ -291,6 +291,98 @@ namespace VolleyMS.DataAccess.Migrations
                     b.ToTable("Notifications", (string)null);
                 });
 
+            modelBuilder.Entity("VolleyMS.Core.Models.Payslips.Payslip", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<Guid>("ContractId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContractId", "Month", "Year")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "Month", "Year");
+
+                    b.ToTable("Payslips", (string)null);
+                });
+
+            modelBuilder.Entity("VolleyMS.Core.Models.Payslips.PayslipAdjustment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsReverted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PayslipId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<Guid?>("SourceTaskId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayslipId");
+
+                    b.ToTable("PayslipAdjustments", (string)null);
+                });
+
             modelBuilder.Entity("VolleyMS.Core.Models.Task", b =>
                 {
                     b.Property<Guid>("Id")
@@ -314,6 +406,9 @@ namespace VolleyMS.DataAccess.Migrations
 
                     b.Property<string>("Payload")
                         .HasColumnType("text");
+
+                    b.Property<decimal?>("PenaltyAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("PenaltyType")
                         .IsRequired()
@@ -529,6 +624,9 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
@@ -595,7 +693,6 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.UserTaskResponseAttachment", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -734,6 +831,36 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("VolleyMS.Core.Models.Payslips.Payslip", b =>
+                {
+                    b.HasOne("VolleyMS.Core.Models.Contract", "Contract")
+                        .WithMany()
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("VolleyMS.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("VolleyMS.Core.Models.Payslips.PayslipAdjustment", b =>
+                {
+                    b.HasOne("VolleyMS.Core.Models.Payslips.Payslip", "Payslip")
+                        .WithMany("Adjustments")
+                        .HasForeignKey("PayslipId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payslip");
+                });
+
             modelBuilder.Entity("VolleyMS.Core.Models.Task", b =>
                 {
                     b.HasOne("VolleyMS.Core.Models.Club", "Club")
@@ -761,7 +888,7 @@ namespace VolleyMS.DataAccess.Migrations
                                 .HasColumnType("timestamp with time zone")
                                 .HasColumnName("EndDate");
 
-                            b1.Property<TimeSpan>("EndTime")
+                            b1.Property<TimeSpan?>("EndTime")
                                 .HasColumnType("interval")
                                 .HasColumnName("EndTime");
 
@@ -806,6 +933,49 @@ namespace VolleyMS.DataAccess.Migrations
                     b.Navigation("MediaFile");
 
                     b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("VolleyMS.Core.Models.User", b =>
+                {
+                    b.OwnsOne("VolleyMS.Core.ValueObjects.PlayerAttributes", "Attributes", b1 =>
+                        {
+                            b1.Property<Guid>("UserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int?>("BlockReachCm")
+                                .HasColumnType("integer")
+                                .HasColumnName("BlockReachCm");
+
+                            b1.Property<int?>("DominantHand")
+                                .HasColumnType("integer")
+                                .HasColumnName("DominantHand");
+
+                            b1.Property<int?>("HeightCm")
+                                .HasColumnType("integer")
+                                .HasColumnName("HeightCm");
+
+                            b1.Property<int?>("Position")
+                                .HasColumnType("integer")
+                                .HasColumnName("Position");
+
+                            b1.Property<int?>("SpikeReachCm")
+                                .HasColumnType("integer")
+                                .HasColumnName("SpikeReachCm");
+
+                            b1.Property<double?>("WeightKg")
+                                .HasColumnType("double precision")
+                                .HasColumnName("WeightKg");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("Users");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("Attributes")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.UserClub", b =>
@@ -915,6 +1085,11 @@ namespace VolleyMS.DataAccess.Migrations
             modelBuilder.Entity("VolleyMS.Core.Models.Notification", b =>
                 {
                     b.Navigation("UserNotifications");
+                });
+
+            modelBuilder.Entity("VolleyMS.Core.Models.Payslips.Payslip", b =>
+                {
+                    b.Navigation("Adjustments");
                 });
 
             modelBuilder.Entity("VolleyMS.Core.Models.Task", b =>

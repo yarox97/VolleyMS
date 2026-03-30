@@ -4,8 +4,12 @@ namespace VolleyMS.BusinessLogic.Features.Tasks
 { 
     public static class TaskToDtoExtension
     {
-        public static TaskDto ToDto(this Core.Models.Task task)
+        public static TaskDto ToDto(this Core.Models.Task task, Guid? currentUserId = null)
         {
+            var myUserTask = currentUserId.HasValue
+            ? task.Receivers.FirstOrDefault(r => r.UserId == currentUserId.Value)
+            : null;
+
             return new TaskDto(
                 task.Id,
                 task.Title,
@@ -13,7 +17,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks
                 task.TaskType.ToString(),
                 task.TaskPriority.ToString(),
                 task.PenaltyType.ToString(),
-                task.PenaltyAmount.ToString(),
+                task.PenaltyAmount?.ToString(),
                 new TaskScheduleDto(
                     task.TaskSchedule.StartDate,
                     task.TaskSchedule.EndDate,
@@ -26,7 +30,19 @@ namespace VolleyMS.BusinessLogic.Features.Tasks
                 task.SenderId,
                 $"{task.Sender?.Name} {task.Sender?.Surname}",
                 task.Payload,
-                task.Attachments.Select(a => new AttachmentDto(a.MediaFile.FileName, a.MediaFile.Url, a.MediaFile.Size)).ToList()
+
+                task.Attachments?
+                    .Where(a => a.MediaFile != null)
+                    .Select(a => new AttachmentDto(
+                        a.MediaFile.FileName,
+                        a.MediaFile.Url,
+                        a.MediaFile.Size
+                    )).ToList() ?? new List<AttachmentDto>(),
+
+                MyStatus: myUserTask?.Status.ToString(),
+                HasResponses: currentUserId.HasValue
+                    ? myUserTask?.TaskResponses?.Any() == true
+                    : task.Responses?.Any() == true
             );
         }
     }

@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using VolleyMS.BusinessLogic.Features.Users.UpdateAttributes;
 using VolleyMS.BusinessLogic.Features.Users.ChangeEmail;
-using VolleyMS.BusinessLogic.Features.Users.Modify;
 using VolleyMS.BusinessLogic.Features.Users.Get;
+using VolleyMS.BusinessLogic.Features.Users.Modify;
 using VolleyMS.Extensions;
 using VolleyMS.Web.Controllers;
 
@@ -59,6 +61,30 @@ namespace VolleyMS.Controllers
             var result = await Sender.Send(command);
 
             return result.IsSuccess ? Ok() : HandleFailure(result);
+        }
+
+        [HttpPut("modify-attributes")]
+        public async Task<IActionResult> UpdateAttributes([FromBody] UpdateAttributesDto request, CancellationToken cancellation)
+        {
+            var userId = User.GetUserId();
+            if(userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var command = new UpdatePlayerAttributesCommand(
+                userId,
+                request.Position,
+                request.HeightCm,
+                request.WeightKg,
+                request.DominantHand,
+                request.SpikeReachCm,
+                request.BlockReachCm
+            );
+
+            var result = await Sender.Send(command, cancellation);
+
+            return result.IsSuccess ? Ok() : BadRequest(result.Error);
         }
     }
 }

@@ -19,5 +19,6 @@ namespace VolleyMS.Core.Repositories
         CancellationToken cancellationToken);
 
         Task<Contract> GetByIdWithDetailsAsync(Guid ClubId, CancellationToken cancellation);
+        Task<Contract?> GetByUserIdAndClubId(Guid userId, Guid clubId, CancellationToken cancellationToken);
     }
 }

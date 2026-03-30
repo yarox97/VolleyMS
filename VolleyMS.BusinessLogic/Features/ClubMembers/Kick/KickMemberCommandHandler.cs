@@ -12,13 +12,15 @@ namespace VolleyMS.BusinessLogic.Features.ClubMembers.Kick
         private readonly IClubRepository _clubRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUserClubRepository _userClubRepository;
+        private readonly IContractRepository _contractRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public KickMemberCommandHandler(IClubRepository clubRepository, IUserRepository userRepository, IUserClubRepository userClubRepository, IUnitOfWork unitOfWork)
+        public KickMemberCommandHandler(IClubRepository clubRepository, IUserRepository userRepository, IUserClubRepository userClubRepository, IUnitOfWork unitOfWork, IContractRepository contractRepository)
         {
             _clubRepository = clubRepository;
             _userRepository = userRepository;
             _userClubRepository = userClubRepository;
             _unitOfWork = unitOfWork;
+            _contractRepository = contractRepository;
         }
         public async Task<Result> Handle(KickMemberCommand request, CancellationToken cancellationToken)
         {
@@ -51,6 +53,15 @@ namespace VolleyMS.BusinessLogic.Features.ClubMembers.Kick
             var kickMemberResult = club.RemoveMember(member);
             if (kickMemberResult.IsFailure)
                 return Result.Failure(kickMemberResult.Error);
+
+            // terminate active contract if exists
+            var contract = await _contractRepository.GetActiveContractByUserAndClubAsync(member.Id, club.Id, cancellationToken);
+            if (contract is not null)
+            {
+                var endContractResult = contract?.EndContract(member);
+                if(endContractResult is not null && endContractResult.IsFailure)
+                    return Result.Failure(endContractResult.Error);
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             return Result.Success();

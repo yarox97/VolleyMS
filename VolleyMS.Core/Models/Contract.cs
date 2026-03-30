@@ -51,6 +51,10 @@ namespace VolleyMS.Core.Models
 
         public bool IsActive =>
         DateTime.UtcNow >= BeginsFrom && DateTime.UtcNow <= EndsBy;
+        public bool IsExpired()
+        {
+            return DateTime.UtcNow > EndsBy;
+        }
 
         public static Result<Contract> Create(
             decimal? monthlySalary,
@@ -107,10 +111,6 @@ namespace VolleyMS.Core.Models
             return Result.Success(contract);
         }
         
-        public bool IsExpired()
-        {
-            return DateTime.UtcNow > EndsBy;
-        }
 
         public Result EndContract(User user)
         {
@@ -123,15 +123,17 @@ namespace VolleyMS.Core.Models
             {
                 RaiseDomainEvent(new ContractEndedByMemberDomainEvent(this.Id, user.Id, this.ClubId)); // send notification to all aliged users with view contract permission
                 EndsBy = DateTime.UtcNow;
+                return Result.Success();
             }
 
             if(user == this.Assigner)
             {
                 RaiseDomainEvent(new ContractEndedByAssignerDomainEvent(this.Id, user.Id, this.UserId, this.ClubId)); // send notification to all aliged users with view contract permission
                 EndsBy = DateTime.UtcNow;
+                return Result.Success();
             }
 
-            return Result.Success();
+            return Result.Failure(DomainErrors.Contract.InvalidPermission);
         }
     }
 }

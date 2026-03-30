@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using VolleyMS.BusinessLogic.Contracts.DTOs.TaskDtos;
+using Microsoft.AspNetCore.Http;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.BusinessLogic.Features.Tasks.SubmitResponse
@@ -8,6 +8,6 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.SubmitResponse
         Guid TaskId,
         Guid UserId,
         string? Text,
-        List<AttachmentDto>? Files 
+        IList<IFormFile?> Files
     ) : IRequest<Result>;
 }

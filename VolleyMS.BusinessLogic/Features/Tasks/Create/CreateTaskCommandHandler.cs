@@ -71,14 +71,19 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.Create
             }
 
             // create task schedule if days of week are provided
+            var startDateUtc = DateTime.SpecifyKind(command.TaskRequest.StartDate, DateTimeKind.Utc);
+            var endDateUtc = command.TaskRequest.EndDate.HasValue
+                ? DateTime.SpecifyKind(command.TaskRequest.EndDate.Value, DateTimeKind.Utc)
+                : (DateTime?)null;
+
             var taskSchedule = default(Core.Models.TaskSchedule);
 
             if (taskRequest.DaysOfWeek != null && taskRequest.DaysOfWeek.Any())
             {
                 // create task schedule fo the recurring task
                 var taskScheduleResult = TaskSchedule.CreateReccuring(
-                    startDate: taskRequest.StartDate, 
-                    endDate: taskRequest.EndDate, 
+                    startDate: startDateUtc,
+                    endDate: endDateUtc,     
                     daysOfWeek: taskRequest.DaysOfWeek,
                     startTime: taskRequest.StartTime,
                     endTime: taskRequest.EndTime);
@@ -92,7 +97,7 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.Create
             {
                 // create task schedule for the one-time task
                 var taskScheduleResult = TaskSchedule.CreateOneTime(
-                    date: taskRequest.StartDate, 
+                    date: startDateUtc, 
                     startTime: taskRequest.StartTime,
                     endTime: taskRequest.EndTime);
 

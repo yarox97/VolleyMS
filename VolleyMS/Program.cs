@@ -37,6 +37,27 @@ builder.Services.AddQuartz(configure =>
                 .WithSimpleSchedule(schedule =>
                     schedule.WithIntervalInSeconds(10)
                             .RepeatForever()));
+
+    var payslipJobKey = new JobKey(nameof(DailyPayslipGeneratorJob));
+
+    configure
+    .AddJob<DailyPayslipGeneratorJob>(opts => opts.WithIdentity(payslipJobKey))
+    .AddTrigger(trigger =>
+        trigger.ForJob(payslipJobKey)
+            .WithIdentity($"{nameof(DailyPayslipGeneratorJob)}-trigger")
+            .WithSimpleSchedule(x => x
+                .WithIntervalInSeconds(30)
+                .RepeatForever()));
+
+    var overdueJobKey = new JobKey(nameof(CheckOverdueTasksJob));
+
+    configure
+        .AddJob<CheckOverdueTasksJob>(opts => opts.WithIdentity(overdueJobKey))
+        .AddTrigger(trigger =>
+            trigger.ForJob(overdueJobKey)
+                .WithIdentity($"{nameof(CheckOverdueTasksJob)}-trigger")
+                .WithCronSchedule("0 * * * * ?")
+        );
 });
 
 builder.Services.AddQuartzHostedService(options =>
@@ -75,6 +96,8 @@ builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileService, CloudinaryService>();
+builder.Services.AddScoped<IPayslipRepository, PayslipRepository>();
+builder.Services.AddScoped<IUserTaskRepository, UserTaskRepository>();
 
 builder.Services.AddMediatR(cfg => 
     cfg.RegisterServicesFromAssembly(typeof(RegistrationCommandHandler).Assembly));

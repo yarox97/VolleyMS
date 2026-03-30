@@ -40,7 +40,7 @@ namespace VolleyMS.Web.Controllers
         }
 
         [HttpDelete("{userId}")]
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize]
         public async Task<IActionResult> DeleteMember(Guid clubId, Guid userId)
         {
             var command = new KickMemberCommand(clubId, userId, User.GetUserId());

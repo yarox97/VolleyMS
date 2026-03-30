@@ -23,15 +23,17 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.GetUserAll
                 request.UserId,
                 page,
                 pageSize,
+                request.Filter,
                 cancellationToken);
 
-            var dtos = pagedTasks.Items.Select(t => t.ToDto()).ToList();
+            var dtos = pagedTasks.Items.Select(t => t.ToDto(request.UserId)).ToList();
 
             var result = new PaginatedResult<TaskDto>(
                 dtos,
+                pagedTasks.TotalCount,
                 pagedTasks.PageNumber,
-                pagedTasks.PageSize,
-                pagedTasks.TotalCount);
+                pagedTasks.PageSize
+                );
 
             return Result.Success(result);
         }

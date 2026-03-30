@@ -21,8 +21,22 @@
 
         // Tasks
         public Guid? TaskId { get; set; }
-        public DateTime? TaskDueDate { get; set; }
+        public DateTime? StartsFrom { get; set; }
+        public DateTime? EndsBy { get; set; }
+        public DateTime? OldStartsFrom { get; set; }
+        public DateTime? OldEndsBy { get; set; }
+        public DateTime? CompletedAt { get; set; }
+        public DateTime? ConfirmedAt { get; set; }
         public string? TaskPriority { get; set; }
+        public string? OldTaskPriority { get; set; }
+        public string? TaskTitle { get; set; }
+        public string? OldTaskTitle { get; set; }
+        public string? TaskDescription { get; set; }
+        public string? OldTaskDescription { get; set; }
+        public string? TaskPenaltyValue { get; set; }
+        public string? OldTaskPenaltyValue { get; set; }  
+        public string? TaskPenaltyType { get; set; }
+        public string? OldTaskPenaltyType { get; set; }
 
         // Events
         public Guid? EventId { get; set; }

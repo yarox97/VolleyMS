@@ -2,5 +2,9 @@
 
 namespace VolleyMS.Core.DomainEvents.Tasks
 {
-    public sealed record TaskAssignedDomainEvent(IEnumerable<User> receivers, Guid clubId) : IDomainEvent;
+    public record TaskAssignedDomainEvent(
+        Guid TaskId,
+        IEnumerable<User> Receivers,
+        Guid ClubId
+    ) : IDomainEvent;
 }

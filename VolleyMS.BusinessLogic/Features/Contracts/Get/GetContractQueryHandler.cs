@@ -59,9 +59,9 @@ namespace VolleyMS.BusinessLogic.Features.Contracts.Get
                 MemberName = contract.User.Name,
                 MemberSurname = contract.User.Surname,
 
-                ResponserName = requestor.Name,
-                ResponserSurname = requestor.Surname,
-                ResponserUserName = requestor.UserName,
+                ResponserName = contract.Assigner?.Name ?? "System",
+                ResponserSurname = contract.Assigner?.Surname ?? "",
+                ResponserUserName = contract.Assigner?.UserName ?? "system",
             };
 
             return Result.Success(contractDto);

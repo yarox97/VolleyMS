@@ -4,15 +4,19 @@ using VolleyMS.BusinessLogic.Features.Users.Get;
 using VolleyMS.Core.Errors;
 using VolleyMS.Core.Repositories;
 using VolleyMS.Core.Shared;
+using VolleyMS.Core.Enums; 
 
 namespace VolleyMS.BusinessLogic.Features.Users.Get
 {
     public sealed class GetUserQueryHandler : IRequestHandler<GetUserQuery, Result<UserDto>>
     {
         private readonly IUserRepository _userRepository;
-        public GetUserQueryHandler(IUserRepository userRepository)
+        private readonly ITaskRepository _taskRepository;
+
+        public GetUserQueryHandler(IUserRepository userRepository, ITaskRepository taskRepository)
         {
             _userRepository = userRepository;
+            _taskRepository = taskRepository;
         }
 
         public async Task<Result<UserDto>> Handle(GetUserQuery query, CancellationToken cancellationToken)
@@ -22,34 +26,49 @@ namespace VolleyMS.BusinessLogic.Features.Users.Get
             if (user == null)
                 return Result.Failure<UserDto>(DomainErrors.User.UserNotFound);
 
-            UserDto userDto = new UserDto();
+            var stats = await _taskRepository.GetUserTaskStatsAsync(user.Id, cancellationToken);
 
-            if (query.requestorId == null || query.requestorId != user.Id)
+            int completionRate = stats.TotalTasks == 0
+                ? 0
+                : (int)Math.Round((double)stats.TasksFinished / stats.TotalTasks * 100);
+
+            UserDto userDto = new UserDto
             {
-                userDto.Id = user.Id;
-                userDto.UserName = user.UserName;
-                userDto.FirstName = user.Name;
-                userDto.LastName = user.Surname;
-                userDto.AvatarUrl = user.AvatarUrl;
-            }
-            else
-            {
-                userDto.Id = user.Id;
-                userDto.UserName = user.UserName;
-                userDto.FirstName = user.Name;
-                userDto.LastName = user.Surname;
-                userDto.Email = user.Email;
-                userDto.AvatarUrl = user.AvatarUrl;
-                userDto.createdAt = user.CreatedAt;
-                userDto.userType = user.UserType;
-                userDto.clubDtos = user.UserClubs.Select(uc => new UserClubDto
+                Id = user.Id,
+                UserName = user.UserName,
+                FirstName = user.Name,
+                LastName = user.Surname,
+                AvatarUrl = user.AvatarUrl,
+                createdAt = user.CreatedAt,
+                userType = user.UserType,
+
+                MatchesPlayed = stats.MatchesPlayed,
+                TasksFinished = stats.TasksFinished,
+                TaskCompletionRate = completionRate,
+
+                clubDtos = user.UserClubs.Select(uc => new UserClubDto
                 {
                     JoinDate = uc.CreatedAt,
                     UserId = user.Id,
                     ClubId = uc.Club.Id,
                     ClubName = uc.Club.Name,
                     Role = uc.ClubMemberRole
-                }).ToList();
+                }).ToList(),
+
+                Attributes = user.Attributes != null ? new PlayerAttributesDto
+                {
+                    Position = user.Attributes.Position?.ToString(),
+                    HeightCm = user.Attributes.HeightCm,
+                    WeightKg = user.Attributes.WeightKg,
+                    DominantHand = user.Attributes.DominantHand?.ToString(),
+                    SpikeReachCm = user.Attributes.SpikeReachCm,
+                    BlockReachCm = user.Attributes.BlockReachCm
+                } : null
+            };
+
+            if (query.requestorId != null && query.requestorId == user.Id)
+            {
+                userDto.Email = user.Email;
             }
 
             return Result.Success(userDto);

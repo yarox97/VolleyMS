@@ -10,8 +10,8 @@ namespace VolleyMS.DataAccess.Configurations
         {
             builder.ToTable("UserTaskResponseAttachments");
 
-            builder.Property<Guid>("Id").ValueGeneratedOnAdd();
-            builder.HasKey("Id");
+            builder.HasKey(ut => ut.Id);
+            builder.Property(ut => ut.Id).ValueGeneratedNever();
 
             // response 
             builder.HasOne(uta => uta.UserTaskResponse)
