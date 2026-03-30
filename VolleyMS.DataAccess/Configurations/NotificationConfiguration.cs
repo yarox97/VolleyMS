@@ -23,22 +23,17 @@ namespace VolleyMS.DataAccess.Configurations
                 .IsRequired(false);
 
             builder.Property(n => n.Payload)
-                .HasMaxLength(2000) // JSON payload может быть длинным
+                .HasMaxLength(2000) // JSON payload 
                 .IsRequired(false);
 
-            // --- 1. Конвертация Категории (Enum) ---
+            // catergory convert 
             builder.Property(n => n.Category)
                 .HasConversion<string>()
                 .IsRequired();
 
-            // --- 2. СЛОЖНЫЙ МОМЕНТ: Список Ролей (List<Enum>) ---
-            // База данных не хранит массивы. Мы сохраним это как строку, разделенную запятыми.
-            // Пример в базе: "Player,Coach,Admin"
-
             var rolesConverter = new ValueConverter<IList<ClubMemberRole>, string>(
-                // В базу: List -> String
-                v => string.Join(",", v),
-                // Из базы: String -> List (с проверкой на пустоту)
+                v => string.Join(",", v), // do bazy jako string 
+
                 v => string.IsNullOrEmpty(v)
                     ? new List<ClubMemberRole>()
                     : v.Split(',', StringSplitOptions.RemoveEmptyEntries)
@@ -46,7 +41,7 @@ namespace VolleyMS.DataAccess.Configurations
                        .ToList()
             );
 
-            // Применяем компаратор, чтобы EF Core понимал, изменился ли список
+            // from db separated string converter to list of clubMemberRoles 
             var rolesComparer = new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<IList<ClubMemberRole>>(
                 (c1, c2) => c1!.SequenceEqual(c2!),
                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
@@ -56,21 +51,19 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasConversion(rolesConverter)
                 .Metadata.SetValueComparer(rolesComparer);
 
-            // --- 3. Связь с Отправителем (Sender) ---
-            // Sender может быть null (системное уведомление)
+            // sender relationship
             builder.HasOne(n => n.Sender)
                 .WithMany(u => u.SentNotifications)
                 .HasForeignKey(n => n.SenderId)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict); // Не удаляем уведомление, если удален отправитель
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // --- 4. Связь с Получателями (UserNotifications) ---
+            // user notifications mxn relation
             builder.HasMany(n => n.UserNotifications)
                 .WithOne(un => un.Notification)
                 .HasForeignKey(un => un.NotificationId)
-                .OnDelete(DeleteBehavior.Cascade); // Если удалили само уведомление, удаляем записи о доставке
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Доступ к полю
             builder.Metadata.FindNavigation(nameof(Notification.UserNotifications))!
                 .SetPropertyAccessMode(PropertyAccessMode.Field);
         }

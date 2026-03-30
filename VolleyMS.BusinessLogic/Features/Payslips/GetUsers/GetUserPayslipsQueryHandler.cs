@@ -33,7 +33,6 @@ namespace VolleyMS.BusinessLogic.Features.Payslips.GetUsers
 
             PaginatedResult<Payslip> paginatedPayslips;
 
-            // СЦЕНАРИЙ 1: Запрошены расчетные листы по конкретному контракту
             if (request.ContactId.HasValue && request.ContactId.Value != Guid.Empty)
             {
                 paginatedPayslips = await _payslipRepository.GetByContractIdWithDetailsAsync(
@@ -46,7 +45,7 @@ namespace VolleyMS.BusinessLogic.Features.Payslips.GetUsers
                     return Result.Success(new PaginatedResult<PayslipDto>(new List<PayslipDto>(), 0, request.page, request.pageSize));
                 }
 
-                // Проверка прав (только если смотрим конкретный контракт)
+                // permission chcek 
                 bool isOwner = requestor.Id == payslip.Contract.UserId;
                 bool hasManagerPermission = false;
 
@@ -61,16 +60,13 @@ namespace VolleyMS.BusinessLogic.Features.Payslips.GetUsers
                     return Result.Failure<PaginatedResult<PayslipDto>>(DomainErrors.Club.InvalidPermission);
                 }
             }
-            // СЦЕНАРИЙ 2: Запрошены ВСЕ расчетные листы текущего пользователя (например, для графика)
             else
             {
-                // Используем метод репозитория для поиска всех пейслипов по ID юзера
-                // (Убедитесь, что сигнатура метода совпадает с вашей. Если ContactId там опционален, передайте null)
                 paginatedPayslips = await _payslipRepository.GetByUserIdWithDetailsAsync(
                     request.UserId, request.page, request.pageSize, null, cancellationToken);
             }
 
-            // МАППИНГ в DTO (общий для обоих сценариев)
+            // mapp to dtos
             var dtoList = paginatedPayslips.Items.Select(p => new PayslipDto(
                 Id: p.Id,
                 Month: p.Month,

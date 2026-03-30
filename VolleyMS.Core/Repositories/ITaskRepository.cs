@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Models;
+using VolleyMS.Core.Requests;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.Core.Repositories
@@ -15,5 +16,6 @@ namespace VolleyMS.Core.Repositories
         public Task<UserTask?> GetUserTaskByTaskIdAndUserIdAsync(Guid taskId, Guid userId, CancellationToken cancellationToken);
         public Task<UserTask?> GetUserTaskByIdAsync(Guid userTaskId, CancellationToken cancellationToken);
         public Task<(int MatchesPlayed, int TasksFinished, int TotalTasks)> GetUserTaskStatsAsync(Guid userId, CancellationToken ct);
+        public Task<List<TaskMonthlyStats>> GetStatsForLastMonthsAsync(Guid userId, int monthsCount);
     }
 }

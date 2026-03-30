@@ -22,7 +22,6 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasMaxLength(10000)
                 .IsRequired(false);
 
-            // Enum-ы самой задачи
             builder.Property(t => t.TaskType)
                 .HasConversion<string>()
                 .IsRequired();
@@ -31,7 +30,7 @@ namespace VolleyMS.DataAccess.Configurations
                 .HasConversion<string>()
                 .IsRequired();
 
-            // --- MAPPING VALUE OBJECT (TaskSchedule) ---
+            // value object mapping
             builder.OwnsOne(t => t.TaskSchedule, sb =>
             {
                 sb.Property(s => s.StartDate).HasColumnName("StartDate").IsRequired();

@@ -74,9 +74,8 @@ namespace VolleyMS.DataAccess.Repositories
         {
             return await _volleyMsDbContext.UserClubs
                 .AsNoTracking()
-                .Include(uc => uc.User) // Подгружаем данные пользователя
+                .Include(uc => uc.User) 
                 .Where(uc => uc.ClubId == clubId)
-                // Убираем Select(uc => uc.User!), возвращаем саму связь
                 .ToListAsync();
         }
     }

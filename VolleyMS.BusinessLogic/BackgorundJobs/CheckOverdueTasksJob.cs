@@ -5,7 +5,7 @@ using Quartz;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using VolleyMS.Core.Enums; // Убедитесь, что здесь ваши энамы TaskStatus
+using VolleyMS.Core.Enums; 
 using VolleyMS.DataAccess;
 
 namespace VolleyMS.BusinessLogic.BackgorundJobs
@@ -54,12 +54,12 @@ namespace VolleyMS.BusinessLogic.BackgorundJobs
                 if (updatedCount > 0)
                 {
                     await dbContext.SaveChangesAsync(context.CancellationToken);
-                    _logger.LogInformation($"Автоматически отмечено как просроченные: {updatedCount} задач.");
+                    _logger.LogInformation($"Marked as overdue: {updatedCount} .");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка во время проверки просроченных задач!");
+                _logger.LogError(ex, "Unexpected error while checking task overdue!");
                 throw new JobExecutionException(ex);
             }
         }

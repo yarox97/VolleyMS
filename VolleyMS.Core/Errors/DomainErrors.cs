@@ -47,8 +47,9 @@ namespace VolleyMS.Core.Errors
                 "User.InvalidPassword",
                 "Invalid password.");
 
-            public static Error InvalidEmail { get; set; }
-            public static Error EmailTaken { get; set; }
+            public static Error EmailTaken = new(
+                "User.EmailTaken",
+                "Email is already taken.");
         }
 
         public static class UserTask
@@ -128,7 +129,6 @@ namespace VolleyMS.Core.Errors
                 "Club.ClubNotFound",
                 "The specified club was not found.");
         }
-        public static object Payslip { get; set; }
 
         public static class JoinClubRequest
         {
@@ -213,14 +213,21 @@ namespace VolleyMS.Core.Errors
                 "Task.InvalidTimes",
                 "Start time cannot be later than end time.");
 
-            public static Error NoReceivers { get; internal set; }
+            public static Error NoReceivers = new(
+                "Task.NoReceivers",
+                "At least one receiver must be assigned to the task.");
+
             public static Error TaskNotFound = new(
                 "Task.NotFound",
                 "Task was not found");
-            public static Error NoProofsAdded { get; internal set; }
-            public static Error ProofNotFound { get; internal set; }
-            public static Error MaxProofsAllowed { get; internal set; }
-            public static Error NoDaysSelected { get; internal set; }
+
+            public static Error MaxProofsAllowed = new(
+                "Task.MaxProofsAllowed",
+                $"Cannot add more than {ValidationConfig.MAX_TASK_FILES_ALLOWED} proofs to a task.");
+
+            public static Error NoDaysSelected = new(
+                "Task.NoDaysSelected",
+                "At least one day must be selected for a recurring task.");
         }
 
         public static class Comment

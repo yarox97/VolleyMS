@@ -18,7 +18,7 @@ namespace VolleyMS.BusinessLogic.Services
 
         public Result<string> HandleCategorizedPayload(NotificationRequest notificationRequest, Guid? senderId)
         {
-            var payload = PayLoadFactory.CreatePayLoad(notificationRequest, senderId); // ТУТ НАДО КИДАТЬ ВСЕ ОШИБКИ КОРОЧЕ ЧТОБЫ ОНИ ПРОПИХИВАЛИСЬ ВЫШЕ
+            var payload = PayLoadFactory.CreatePayLoad(notificationRequest, senderId); 
 
             return payload ?? Result.Failure<string>(DomainErrors.Notification.ErrorCreatingPayload);
         }  

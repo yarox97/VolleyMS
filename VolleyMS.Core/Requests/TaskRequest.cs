@@ -18,8 +18,8 @@ namespace VolleyMS.Core.Requests
         public DateTime? EndDate { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
-        public bool IsRecurring { get; set; } // <-- ДОБАВЛЕНО
-        public List<DayOfWeek>? DaysOfWeek { get; set; } // <-- ИЗМЕНЕНО на List<int>
+        public bool IsRecurring { get; set; } 
+        public List<DayOfWeek>? DaysOfWeek { get; set; } 
 
         // Penalty type to fine or to bonus players. 
         public PenaltyType penaltyType { get; set; } = PenaltyType.None; // Not obligatory, default value can be set to None

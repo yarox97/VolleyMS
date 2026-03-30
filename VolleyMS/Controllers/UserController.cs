@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using VolleyMS.BusinessLogic.Features.Users.UpdateAttributes;
 using VolleyMS.BusinessLogic.Features.Users.ChangeEmail;
 using VolleyMS.BusinessLogic.Features.Users.Get;
+using VolleyMS.BusinessLogic.Features.Users.GetTaskTrends;
 using VolleyMS.BusinessLogic.Features.Users.Modify;
+using VolleyMS.BusinessLogic.Features.Users.UpdateAttributes;
+using VolleyMS.Core.Shared;
 using VolleyMS.Extensions;
 using VolleyMS.Web.Controllers;
 
@@ -85,6 +87,19 @@ namespace VolleyMS.Controllers
             var result = await Sender.Send(command, cancellation);
 
             return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        }
+
+        [HttpGet("tasks-trends")]
+        [Authorize]
+        public async Task<IActionResult> GetTaskTrends([FromQuery] Guid? userId)
+        {
+            var targetUserId = userId ?? User.GetUserId();
+
+            var query = new GetTaskTrendsQuery(targetUserId);
+
+            var result = await Sender.Send(query);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
         }
     }
 }

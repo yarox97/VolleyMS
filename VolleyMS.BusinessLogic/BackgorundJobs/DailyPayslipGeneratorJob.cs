@@ -72,16 +72,16 @@ namespace VolleyMS.BusinessLogic.BackgorundJobs
                 if (generatedCount > 0)
                 {
                     await dbContext.SaveChangesAsync(context.CancellationToken);
-                    _logger.LogInformation($"Успешно сгенерировано {generatedCount} пейслипов за {month}/{year}.");
+                    _logger.LogInformation($"Generated {generatedCount} payslips for {month}/{year}.");
                 }
                 else
                 {
-                    _logger.LogInformation("Нет новых пейслипов для генерации. Все уже создано или нет активных контрактов.");
+                    _logger.LogInformation("No new payslip to generate.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Критическая ошибка при генерации пейслипов!");
+                _logger.LogError(ex, "Unexpected error while createing payslip!");
                 throw new JobExecutionException(ex);
             }
         }

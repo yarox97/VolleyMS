@@ -14,7 +14,7 @@ namespace VolleyMS.DataAccess
         {
         }
 
-        public DbSet<Club> Clubs { get; set; } // przykładowy DbSet dla encji Club
+        public DbSet<Club> Clubs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserClub> UserClubs { get; set; }
         public DbSet<Contract> Contracts { get; set; }
@@ -29,12 +29,12 @@ namespace VolleyMS.DataAccess
         public DbSet<JoinClubRequest> JoinClubRequests { get; set; }
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
         public DbSet<Payslip> Payslips { get; set; }
-        public DbSet<PayslipAdjustment> PayslipAdjustments { get; set; } // Pozostałe zdefiniowane encje
+        public DbSet<PayslipAdjustment> PayslipAdjustments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(ClubConfiguration).Assembly);
-            // stosujemy konfiguracje z całego assembly, w którym znajduje się ClubConfiguration
+            // stosujemy konfiguracje z całego assembly w którym znajduje się ClubConfiguration
 
             base.OnModelCreating(modelBuilder);
 

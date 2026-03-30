@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VolleyMS.Core.Models;
 using VolleyMS.Core.Repositories;
+using VolleyMS.Core.Requests;
 using VolleyMS.Core.Shared;
 
 namespace VolleyMS.DataAccess.Repositories
@@ -181,6 +182,40 @@ namespace VolleyMS.DataAccess.Repositories
             if (stats == null) return (0, 0, 0);
 
             return (stats.MatchesPlayed, stats.TasksFinished, stats.TotalTasks);
+        }
+
+        public async Task<List<TaskMonthlyStats>> GetStatsForLastMonthsAsync(Guid userId, int monthsCount)
+        {
+            var now = DateTime.UtcNow;
+            var startDate = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc)
+                                .AddMonths(-monthsCount + 1);
+
+            var groupedData = await _volleyMsDbContext.UserTasks
+                .Where(ut => ut.UserId == userId
+                          && ut.CompletedAt != null
+                          && ut.CompletedAt >= startDate
+                          && (ut.Status == TaskStatus.Completed || ut.Status == TaskStatus.Confirmed))
+                .GroupBy(ut => new {
+                    Year = ut.CompletedAt.Value.Year,
+                    Month = ut.CompletedAt.Value.Month,
+                    TaskType = ut.Task.TaskType 
+                })
+                .Select(g => new {
+                    g.Key.Year,
+                    g.Key.Month,
+                    g.Key.TaskType,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            return groupedData
+                .Select(g => new TaskMonthlyStats(
+                    g.Year,
+                    g.Month,
+                    g.TaskType.ToString(),
+                    g.Count
+                ))
+                .ToList();
         }
     }
 }

@@ -9,13 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyMS.Core", "VolleyMS.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyMS.DataAccess", "VolleyMS.DataAccess\VolleyMS.DataAccess.csproj", "{91512940-229B-4E22-BC39-41167EE8BE1F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wwwroot", "wwwroot", "{193D1224-C99C-4A29-B552-A9DFF567BBF9}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{1E3EC251-FC2C-4494-AF3C-1D448A5EE7F8}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Downloads\DefaultAvatar.jpg = ..\..\..\Downloads\DefaultAvatar.jpg
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyMS.BusinessLogic", "VolleyMS.BusinessLogic\VolleyMS.BusinessLogic.csproj", "{B1F93A2F-DFDF-419E-A894-A35D298E7C83}"
 EndProject
 Global
@@ -43,9 +36,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1E3EC251-FC2C-4494-AF3C-1D448A5EE7F8} = {193D1224-C99C-4A29-B552-A9DFF567BBF9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6633770-25CE-4C16-8F90-A2DECA6A9D1A}

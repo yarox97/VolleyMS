@@ -50,7 +50,7 @@ namespace VolleyMS.BusinessLogic.Features.Payslips.GetAdjustments
                 return Result.Success(emptyResult);
             }
 
-            // === ИСПРАВЛЕННАЯ ЛОГИКА ПРОВЕРКИ ПРАВ ===
+            // permissin check 
             bool isOwner = user.Id == payslip.Contract.UserId;
             bool hasManagerPermission = false;
 
@@ -60,12 +60,10 @@ namespace VolleyMS.BusinessLogic.Features.Payslips.GetAdjustments
                 hasManagerPermission = ClubRoleConfig.HasPermission(userRoleResult.Value, ClubPermission.ViewContracts);
             }
 
-            // Если не владелец и не менеджер — отказываем в доступе
             if (!isOwner && !hasManagerPermission)
             {
                 return Result.Failure<PaginatedResult<PayslipAdjustmentDto>>(DomainErrors.Club.InvalidPermission);
             }
-            // ========================================
 
             // map to dtos
             var dtos = payslipAdjustments.Items.Select(a => new PayslipAdjustmentDto

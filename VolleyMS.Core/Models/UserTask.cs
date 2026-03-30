@@ -23,7 +23,7 @@ namespace VolleyMS.Core.Models
         public Task Task { get; private set; }
         public TaskStatus Status { get; private set; }
         public DateTime? CompletedAt { get; private set; }
-        public bool IsOverdue => (Status != TaskStatus.Confirmed || Status != TaskStatus.Completed) && DateTime.UtcNow > Task.TaskSchedule.EndDate;
+        public bool IsOverdue => Status != TaskStatus.Confirmed && Status != TaskStatus.Completed && DateTime.UtcNow > Task.TaskSchedule.EndDate;
         public bool IsConfirmed { get; private set; }
         public static Result<UserTask> Create(User user, Task task)
         {
@@ -80,6 +80,7 @@ namespace VolleyMS.Core.Models
 
             Status = finalStatus;
             IsConfirmed = true;
+            CompletedAt = DateTime.UtcNow;
 
             if (applyPenalty && Task.PenaltyAmount.HasValue && Task.PenaltyAmount.Value > 0)
             {

@@ -37,9 +37,6 @@ namespace VolleyMS.BusinessLogic.Features.Tasks.Confirm
 
             if (currentPayslip == null)
             {
-                // We need the active contract to create a payslip (to know base salary & currency)
-                // Assuming a user has only one active contract per club, we need to find the correct one.
-                // Since the DomainEvent has TaskId, we can fetch the task to know the ClubId.
 
                 var task = await _dbContext.Tasks
                     .AsNoTracking()

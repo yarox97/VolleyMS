@@ -9,7 +9,7 @@ namespace VolleyMS.Core.ValueObjects
         public double? WeightKg { get; private set; }
         public DominantHand? DominantHand { get; private set; }
         public int? SpikeReachCm { get; private set; }
-        public int? BlockReachCm { get; private set; } // Pola atrybutów zawodnika
+        public int? BlockReachCm { get; private set; } 
         private PlayerAttributes() { }
 
         private PlayerAttributes(
@@ -26,7 +26,7 @@ namespace VolleyMS.Core.ValueObjects
             DominantHand = dominantHand;
             SpikeReachCm = spikeReachCm;
             BlockReachCm = blockReachCm;
-        } // Konstruktory
+        } 
         public static Result<PlayerAttributes> Create(
             PlayerPosition? position,
             int? heightCm,

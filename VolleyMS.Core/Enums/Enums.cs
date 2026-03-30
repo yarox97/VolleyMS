@@ -112,34 +112,34 @@ public enum JoinClubRequestStatus
 
 public enum PayslipStatus
 {
-    Draft = 1,      // Черновик (текущий месяц, куда падают все новые штрафы/премии)
-    Approved = 2,   // Утвержден (месяц закрыт, суммы зафиксированы)
-    Paid = 3,       // Выплачен
-    Cancelled = 4   // Отменен (в случае ошибки)
+    Draft = 1,      
+    Approved = 2,   
+    Paid = 3,       
+    Cancelled = 4  
 }
 
 public enum AdjustmentType
 {
     BonusValue = 1,    
-    BounsPercent = 2,// Премия
+    BounsPercent = 2,
     PenaltyValue = 3,
-    PenaltyPercent = 4// Штраф
+    PenaltyPercent = 4
 }
 
 public enum PlayerPosition
 {
     None = 0,
-    OutsideHitter = 1,  // Доигровщик
-    Setter = 2,         // Связующий
-    Libero = 3,         // Либеро
-    MiddleBlocker = 4,  // Центральный блокирующий
-    OppositeHitter = 5  // Диагональный
+    OutsideHitter = 1,  
+    Setter = 2,         
+    Libero = 3,         
+    MiddleBlocker = 4,  
+    OppositeHitter = 5  
 }
 
 public enum DominantHand
 {
     None = 0,
-    Right = 1,          // Правша
-    Left = 2,           // Левша
-    Ambidextrous = 3    // Амбидекстр (обе руки)
+    Right = 1,         
+    Left = 2,           
+    Ambidextrous = 3   
 }
