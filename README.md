@@ -9,3 +9,5 @@ Key features:
 **Tasks** - creating various types of task (daily survey, match, info etc.), assinging them to club members and verifying completion with the ability to apply financial fines/bonueses
 
 **Finances** - maintaining contract history, creating new agreements and automatically generating monthly payslips (including all the fines and bonuses gathered by the member of a club)
+
+<img width="894" height="423" alt="profilepage" src="https://github.com/user-attachments/assets/8499e589-4459-45e9-b741-f1e6a08dfe6e" />
