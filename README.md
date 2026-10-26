@@ -10,4 +10,7 @@ Key features:
 
 **Finances** - maintaining contract history, creating new agreements and automatically generating monthly payslips (including all the fines and bonuses gathered by the member of a club)
 
+
+
 <img width="894" height="423" alt="profilepage" src="https://github.com/user-attachments/assets/8499e589-4459-45e9-b741-f1e6a08dfe6e" />
+_frontend solution demo_
